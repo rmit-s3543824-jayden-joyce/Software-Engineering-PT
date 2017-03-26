@@ -2,7 +2,7 @@ import java.io.*;
 
 public class Login
 {	
-	static String delim = " ";
+	static String delim = "\\|";
 	
 	public boolean verifyLoginDetails(String username, String password, String userType) throws IOException {
 		

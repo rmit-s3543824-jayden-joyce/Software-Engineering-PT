@@ -3,7 +3,7 @@ import java.util.Scanner;
 
 public class Registration {
 	
-	public static String customerList = "src/customerList.txt";
+	public static String customerList = "customerList.txt";
 	
 	public static void main(String[] args) {
 		

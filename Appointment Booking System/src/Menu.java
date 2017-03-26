@@ -89,6 +89,7 @@ public class Menu {
 					System.out.println("Login successful!\n");
 				break;
 				case "2":
+					Registration.register();
 					//register new customer/business owner
 				break;
 				case "3":
