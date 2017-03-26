@@ -1,11 +1,11 @@
 import java.io.IOException;
-import java.net.URL;
+import java.io.Console;
 import java.util.Scanner;
 
 public class Menu {
 	
-	static String customerList = "src/customerList.txt";
-	static String businessOwnerList = "src/businessOwnerList.txt";
+	static String customerList = "customerList.txt";
+	static String businessOwnerList = "businessOwnerList.txt";
 	
 	public static void main(String[] args) throws IOException
 	{
@@ -13,12 +13,13 @@ public class Menu {
 		Scanner sc = new Scanner(System.in);
 		boolean menu = true;
 		String Username;
-		String Password;
+		char passwordArray[];
 		
 		do
 		{
 			menuScreen();
 			boolean loginOption = true;
+			Console console = System.console();			
 			String input = sc.next();
 			
 			switch(input)
@@ -26,7 +27,7 @@ public class Menu {
 				case "1":
 					String userType;
 					
-					System.out.println("Select user-type:");
+					System.out.println("\nSelect user-type:");
 					System.out.println("1. Customer");
 					System.out.println("2. Business Owner");
 					System.out.print(">>> ");
@@ -41,14 +42,25 @@ public class Menu {
 					
 					do
 					{
-						System.out.println("\n(Case-sensitive)");
+						if(userType.equals("1"))
+						{
+							System.out.println("\nLogin (Customer)");
+							System.out.println("------------------------");
+						}
+						else
+						{
+							System.out.println("\nLogin (Business Owner)");
+							System.out.println("------------------------");
+						}
+						
 						System.out.println("Username:");
 						System.out.print(">>> ");
 						Username = sc.next();
 						System.out.println("Password:");
 						System.out.print(">>> ");
-						Password = sc.next();
-						if(Password.isEmpty() || Username.isEmpty())
+						passwordArray = console.readPassword();
+						
+						if(passwordArray.length == 0 || Username.isEmpty())
 						{
 							System.out.println("Username or password in incorrect.\n");
 						}
@@ -61,14 +73,14 @@ public class Menu {
 					
 					if(userType.equals("1"))
 					{
-						if(login.verifyLoginDetails(Username, Password, customerList) == false)
+						if(login.verifyLoginDetails(Username, new String(passwordArray), customerList) == false)
 						{
 							break;
 						}
 					}
 					else
 					{
-						if(login.verifyLoginDetails(Username, Password, businessOwnerList) == false)
+						if(login.verifyLoginDetails(Username, new String(passwordArray), businessOwnerList) == false)
 						{
 							break;
 						}

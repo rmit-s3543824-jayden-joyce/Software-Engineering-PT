@@ -1,6 +1,4 @@
-import java.util.Scanner;
 import java.io.*;
-import java.lang.reflect.Array;
 
 public class Login
 {	
