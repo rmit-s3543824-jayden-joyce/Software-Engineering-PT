@@ -1,0 +1,2 @@
+Suggar Haircut; Jeremy; 123 Pacific Road; 0412345678; SuggarUserName; SuggarPassword
+Domino Pizza; XephiZ; 456 Ocean Road; 0411112222; DominoUserName; DominoPassword
