@@ -39,15 +39,6 @@ public class CustomerManagement {
 				case 3:
 					System.out.println("Successfully logged out.");
 					return;
-
-				case 4:
-					System.out.println("Please choose the respective day of the Month (-1 to exit)\n");
-					int day = 0;
-					while (day != -1) {
-						day = Integer.valueOf(in.nextLine());
-						selectedBusiness.addAvailableDay(day);
-					}
-					break;
 				}
 			}
 
@@ -69,7 +60,9 @@ public class CustomerManagement {
 					break;
 
 				case 3:
-					addBooking();
+					selectedBusiness.displayOpeningDayAndTime();
+					System.out.println("Press any key to return.");
+					in.nextLine();
 					break;
 
 				case 4:
@@ -83,7 +76,7 @@ public class CustomerManagement {
 
 				case 5:
 
-					while (selectedBusiness.getOpenTime() == null) {
+					do {
 						System.out.println("Opening Time");
 
 						System.out.println("Please specify the opening hour (24HR format)");
@@ -113,9 +106,9 @@ public class CustomerManagement {
 						}
 						int minute = Integer.valueOf(msg);
 						selectedBusiness.setOpenTime(hour, minute);
-					}
+					} while (selectedBusiness.getOpenTime() == null);
 
-					while (selectedBusiness.getCloseTime() == null) {
+					do {
 						System.out.println("Closing Time");
 						System.out.println("Please specify the closing hour (24HR format)");
 						System.out.println("-----------------------------------------------");
@@ -142,7 +135,7 @@ public class CustomerManagement {
 						}
 						int minute = Integer.valueOf(msg);
 						selectedBusiness.setCloseTime(hour, minute);
-					}
+					} while (selectedBusiness.getCloseTime() == null);
 					break;
 
 				case 6:
@@ -164,8 +157,17 @@ public class CustomerManagement {
 				System.out.println("\nThe input business does not exist.");
 				return null;
 			} else {
+
 				selectedBusiness = new Business(businessTokens[0], businessTokens[1], businessTokens[2],
-						businessTokens[3], businessTokens[4], businessTokens[5]);
+						businessTokens[3], businessTokens[4], businessTokens[5], businessTokens[7], businessTokens[8],
+						businessTokens[9], businessTokens[10]);
+
+				StringTokenizer st = new StringTokenizer(businessTokens[6], ";");
+
+				while (st.hasMoreTokens()) {
+					int dayValue = Integer.valueOf(st.nextToken());
+					selectedBusiness.addOpeningDays(dayValue);
+				}
 			}
 		}
 
@@ -289,18 +291,6 @@ public class CustomerManagement {
 					+ selectedBusiness.getCloseTime() + "\n");
 	}
 
-	public void checkSummaries() {
-
-	}
-
-	public void addBooking() {
-
-	}
-
-	public void storeAvailableDays() throws IOException {
-
-	}
-
 	public void printMenu() {
 		if (selectedBusiness == null) {
 
@@ -315,8 +305,7 @@ public class CustomerManagement {
 		if (selectedBusiness != null) {
 			System.out.printf("%s has been selected. Please choose your option\n", selectedBusiness.getName());
 			System.out.println("----------------------------\n" + "1. Change Business \n" + "2. View Availability \n"
-					+ "3. Book Session \n" + "4. Add Available Days for the business (for testing purpose)\n"
-					+ "5. Set Opening and Closing Time \n" + "6. Return to Main Menu \n"
+					+ "3. View Business Opening Days and Time \n" + "4. Return to Main Menu \n"
 					+ "----------------------------");
 		}
 	}
