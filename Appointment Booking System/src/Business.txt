@@ -1,2 +1,0 @@
-Suggar Haircut|Jeremy|123 Pacific Road|0412345678|SuggarUserName|SuggarPassword|1;2;3;4;5|9|0|17|0|
-
