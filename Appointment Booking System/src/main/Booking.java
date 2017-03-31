@@ -22,7 +22,7 @@ public class Booking {
 		this.time = LocalTime.of(Integer.valueOf(hour),Integer.valueOf(minute));
 		this.customerName = customerName;
 		this.employeeName = employeeName;
-		this.status = "Pending";
+		this.status = "New";
 		//this.employee = searchEmployee(employeeName);
 		refreshStatus();
 	}
