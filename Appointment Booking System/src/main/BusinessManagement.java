@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.Scanner;
 import java.util.StringTokenizer;
 
+import registration.EmployeeManagement;
+
 public class BusinessManagement {
 
 	private Business selectedBusiness;
@@ -27,11 +29,8 @@ public class BusinessManagement {
 
 			switch (userInput) {
 			case 1:
-				System.out.println("Employee Management interface");
+				EmployeeManagement.employeeManagement();
 				break;
-
-			
-
 			case 2:
 				viewSummariesOfBookings();
 				System.out.println("\nPress any key to return.");
