@@ -1,3 +1,5 @@
+package registration;
+
 import java.io.*;
 import java.util.Scanner;
 
@@ -47,7 +49,7 @@ public class Registration {
 				
 				if (isUniqueUser(username)) {
 					
-					if (usernameRequirementsTest(username)) { //TODO
+					if (usernameRequirementsTest(username)) {
 						
 						userFlag = true;
 						
@@ -71,7 +73,7 @@ public class Registration {
 			
 			if (isNotBlank(password)) {
 				
-				if (passwordRequirementsTest(password)) { //TODO
+				if (passwordRequirementsTest(password)) {
 
 					//resets passwordVerification to null to prevent errors
 					passwordVerification = null;
@@ -122,7 +124,7 @@ public class Registration {
 			
 			if (isNotBlank(phone)) {
 				
-				if (isPhoneNumber(password)) { //TODO
+				if (isPhoneNumber(phone)) {
 					
 					phoneFlag = true;
 					
@@ -165,6 +167,20 @@ public class Registration {
 	/* checks that the password matches the requirements */
 	private static boolean passwordRequirementsTest(String password) {
 		
+		if (password.matches("(.*)\\|(.*)")) {
+			
+			System.out.println("Password may not contain '|'");
+			
+			return false;
+			
+		} else if (!password.matches(".{8,}")) {
+			
+			System.out.println("Password must be at least eight characters");
+			
+			return false;
+			
+		}
+		
 		return true;
 		
 	}
@@ -191,8 +207,19 @@ public class Registration {
 
 	/* checks that the phone number is a phone number */
 	private static boolean isPhoneNumber(String number) {
+		
+		if (number.matches("(\\+?614)\\d{8}|(04)\\d{8}")) {
 
-		return true;
+			return true;
+			
+		} else {
+			
+			System.out.println("Please enter an Australian Mobile Number");
+			return false;
+			
+		}
+		
+		
 	}
 	
 	/* checks that the username is unique */
@@ -210,10 +237,7 @@ public class Registration {
 			
 			while ((currentLine = reader.readLine()) != null) {
 				
-				System.out.println(currentLine);
-				
 				dataValues = currentLine.split(deliminator);
-				System.out.println(dataValues[0]);
 				
 				if (dataValues[0].equals(username)) {
 					
@@ -235,6 +259,14 @@ public class Registration {
 	
 	/* checks that the username meets requirements */
 	private static boolean usernameRequirementsTest(String username) {
+		
+		if (username.matches("(.*)\\|(.*)")) {
+			
+			System.out.println("The character '|' may not be used");
+			
+			return false;
+			
+		} 
 		
 		return true;
 	}
