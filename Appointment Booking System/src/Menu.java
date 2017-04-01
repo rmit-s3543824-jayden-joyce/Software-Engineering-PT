@@ -5,6 +5,7 @@ public class Menu {
 	
 	public static void main(String[] args) throws IOException
 	{
+		int selection;
 		Scanner sc = new Scanner(System.in);
 		boolean menu = true;
 		
@@ -16,7 +17,15 @@ public class Menu {
 			switch(input)
 			{
 				case "1":
-					Login.login();
+					selection = Login.login();
+					if(selection == 1)
+					{
+						//customerManagement();
+					}
+					else if(selection == 2)
+					{
+						//businessManagement();
+					}
 				break;
 				case "2":
 					Registration.register();

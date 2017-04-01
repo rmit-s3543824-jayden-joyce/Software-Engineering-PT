@@ -7,9 +7,9 @@ public class Login
 	static String customerList = "customerList.txt";
 	static String businessOwnerList = "businessOwnerList.txt";
 	
-	public static void login() throws IOException
+	public static int login() throws IOException
 	{
-		String userType, Username;
+		String userType, Username, Password;
 		char passwordArray[];
 		boolean loginOption = true;
 		Console console = System.console();	
@@ -23,7 +23,7 @@ public class Login
 		if(!userType.equals("1") && !userType.equals("2"))
 		{
 			System.out.println("Invalid input.");
-			return;
+			return 0;
 		}
 		
 		do
@@ -33,15 +33,18 @@ public class Login
 			System.out.println("Username:");
 			System.out.print(">>> ");
 			Username = consoleReader.next();
+					
 			System.out.println("Password:");
 			System.out.print(">>> ");
 			//console.readPassword has built-in password masking
 			passwordArray = console.readPassword();
+			//Convert to string for simplicity
+			Password = new String(passwordArray);
 			
 			//Checks for invalid entries
-			if(passwordArray.length == 0 || Username.isEmpty())
+			if(Password.isEmpty() || Username.isEmpty())
 			{
-				System.out.println("Username or password in incorrect.\n");
+				System.out.println("Username or password are invalid.\n");
 			}
 			else
 			{
@@ -52,20 +55,21 @@ public class Login
 		//Depending on user type, decides which file to read from
 		if(userType.equals("1"))
 		{
-			if(verifyLoginDetails(Username, new String(passwordArray), customerList) == false)
+			if(verifyLoginDetails(Username, Password, customerList) == true)
 			{
-				return;
+				System.out.println("Login successful!\n");
+				return 1;
 			}
 		}
 		else
 		{
-			if(verifyLoginDetails(Username, new String(passwordArray), businessOwnerList) == false)
+			if(verifyLoginDetails(Username, Password, businessOwnerList) == true)
 			{
-				return;
+				System.out.println("Login successful!\n");
+				return 2;
 			}
 		}
-		
-		System.out.println("Login successful!\n");
+		return 0;
 	}
 	
 	public static void userTypeSelection()
