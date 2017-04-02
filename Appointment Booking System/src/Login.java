@@ -10,7 +10,7 @@ public class Login
 	public static int login() throws IOException
 	{
 		String userType, Username, Password;
-		char passwordArray[];
+		//char passwordArray[];
 		boolean loginOption = true;
 		Console console = System.console();	
 		Scanner consoleReader = new Scanner(System.in);
@@ -37,9 +37,11 @@ public class Login
 			System.out.println("Password:");
 			System.out.print(">>> ");
 			//console.readPassword has built-in password masking
-			passwordArray = console.readPassword();
+			//passwordArray = console.readPassword();
 			//Convert to string for simplicity
-			Password = new String(passwordArray);
+			//Password = new String(passwordArray);
+			
+			Password = consoleReader.next();
 			
 			//Checks for invalid entries
 			if(Password.isEmpty() || Username.isEmpty())
