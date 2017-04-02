@@ -553,6 +553,7 @@ public class ScheduleManagement {
 		
 	}*/
 	
+	//allows bookings to be made
 	public static void scheduleBooking(String employeeID, String customerID, int[] dateTime) {
 
 		String deliminator = "\\|";
