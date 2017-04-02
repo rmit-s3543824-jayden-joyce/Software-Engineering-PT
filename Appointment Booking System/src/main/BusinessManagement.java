@@ -4,8 +4,6 @@ import java.io.IOException;
 import java.util.Scanner;
 import java.util.StringTokenizer;
 
-import registration.EmployeeManagement;
-
 public class BusinessManagement {
 
 	private Business selectedBusiness;

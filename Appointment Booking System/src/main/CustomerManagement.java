@@ -20,6 +20,11 @@ public class CustomerManagement {
 		while (true) {
 			printMenu();
 			String msg = in.nextLine();
+			while(!isNumericAndPositive(msg)){
+				System.out.println("Please enter a valid option\n"
+									+"-----------------------------");
+				msg = in.nextLine();
+			}
 			userInput = Integer.valueOf(msg);
 
 			if (selectedBusiness == null) {
@@ -308,6 +313,19 @@ public class CustomerManagement {
 					+ "3. View Business Opening Days and Time \n" + "4. Return to Main Menu \n"
 					+ "----------------------------");
 		}
+	}
+	
+	public boolean isNumericAndPositive(String str){
+		try{
+			int d = Integer.parseInt(str);
+			if(d<0){
+				return false;
+			}
+		}
+		catch(NumberFormatException nfe){
+			return false;
+		}
+		return true;
 	}
 
 }
