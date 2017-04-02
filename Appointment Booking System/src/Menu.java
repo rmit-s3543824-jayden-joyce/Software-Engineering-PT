@@ -1,6 +1,9 @@
 import java.io.IOException;
 import java.util.Scanner;
 
+import main.BusinessManagement;
+import main.CustomerManagement;
+
 public class Menu {
 	
 	public static void main(String[] args) throws IOException
@@ -20,11 +23,11 @@ public class Menu {
 					selection = Login.login();
 					if(selection == 1)
 					{
-						//customerManagement();
+						CustomerManagement cManage = new CustomerManagement();
 					}
 					else if(selection == 2)
 					{
-						//businessManagement();
+						BusinessManagement bManage = new BusinessManagement("Suggar Haircut");
 					}
 				break;
 				case "2":
