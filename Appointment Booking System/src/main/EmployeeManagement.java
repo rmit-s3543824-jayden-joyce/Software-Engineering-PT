@@ -4,6 +4,7 @@ package main;
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -16,6 +17,17 @@ public class EmployeeManagement {
 	public static String employeeList = "employeeList.txt";
 	static String delimWrite = "|";
 	static String delimRead = "\\|";
+	
+	public static void main(String[] args) {
+		
+		try {
+			employeeManagement();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
 	
 	public static void employeeManagement() throws IOException
 	{
@@ -35,18 +47,23 @@ public class EmployeeManagement {
 					addEmployee(employeeId);
 				break;
 				case "2":
-					//listEmployees();
+					listEmployees();
 				break;
 				case "3":
-					//showScheduledHours();
+					ScheduleManagement.interfaceShowSchedule();
 				break;
 				case "4":
-					//employeeScheduleRemove();
+					//allows user to add a work schedule
+					ScheduleManagement.interfaceAddSchedule();
 				break;
 				case "5":
-					//employeeScheduleAdd();
+					//allows user to remove a work schedule
+					ScheduleManagement.interfaceRemoveSchedule();
 				break;
 				case "6":
+					ScheduleManagement.interfaceShowAvailability();
+				break;
+				case "7":
 					employeeMenu = false;
 				break;
 				default:
@@ -117,6 +134,13 @@ public class EmployeeManagement {
 					{
 						if(selection.equals("1"))
 						{
+							//creates employee file
+							if(!Utility.createFile(employeeId)) {
+								
+								//ensures that the employee details are not saved if a file is not created
+								break;
+								
+							}
 							//Writes employee details to file
 							bw.write(employeeDetails);
 							//Prints new line for when the next employee is to be added
@@ -142,7 +166,7 @@ public class EmployeeManagement {
 		return;
 	}
 	
-	private static void listEmployees() {
+	public static void listEmployees() {
 		
 		String deliminator = "\\|";
 		String[] dataValues;
@@ -161,52 +185,7 @@ public class EmployeeManagement {
 				
 				i++;
 				System.out.print(i + ". ");
-				System.out.println(dataValues[0]);
-					
-				reader.close();
-				
-			}
-			
-		} catch (IOException ioe1) {
-			
-		}
-	
-	}
-	
-	private static void showScheduledHours(String employeeName) {
-		
-		String deliminator = "\\|";
-		String[] dataValues;
-		String currentLine;
-		
-		int i = 1;
-		
-		BufferedReader reader = null;
-		
-		try {
-			
-			reader = new BufferedReader(new FileReader(employeeList));
-			
-			while ((currentLine = reader.readLine()) != null) {
-				
-				dataValues = currentLine.split(deliminator);
-				
-				if (dataValues[0].equals(employeeName)) {
-					
-					while (dataValues[i] != null) {
-						
-						System.out.print("Scheduled for ");
-						System.out.print(dataValues[i] + "/" + dataValues[i+1] + "/" + dataValues[i+2]);
-						System.out.print(" between ");
-						System.out.println(dataValues[i+3] + " and " + dataValues[i+4]);
-						
-						i =+ 5;
-						
-					}
-					
-					break;
-					
-				}
+				System.out.println(dataValues[0] + " - " + dataValues[1] + " " + dataValues[2]);
 				
 			}
 			
@@ -216,170 +195,6 @@ public class EmployeeManagement {
 			
 		}
 	
-	}
-	
-	private static void employeeScheduleRemove (String employeeName, int[] dateTime) {
-		
-		String deliminator = "\\|";
-		String[] dataValues;
-		String currentLine;
-		String[] data = new String[999];
-		
-		int size = 0;
-		int i;
-		
-		BufferedReader reader = null;
-		
-		//reads employee detail file into memory
-		try {
-			
-			reader = new BufferedReader(new FileReader(employeeList));
-			
-			while ((currentLine = reader.readLine()) != null) {
-
-				dataValues = currentLine.split(deliminator);
-				
-				//adds the additional work schedule for the employee
-				if (dataValues[0].equals(employeeName)) {
-					
-					i = 1;
-
-					while (dataValues[i] != null) {
-						
-						if (Integer.parseInt(dataValues[i]) == dateTime[0] && 
-								Integer.parseInt(dataValues[i+1]) == dateTime[1] &&
-								Integer.parseInt(dataValues[i+2]) == dateTime[2] &&
-								Integer.parseInt(dataValues[i+3]) == dateTime[3] &&
-								Integer.parseInt(dataValues[i+4]) == dateTime[4]) {
-							
-							currentLine = "";
-											
-							for (int j = 0; j < i; j++) {
-								
-								currentLine = currentLine + dataValues[j] + "|";
-								
-							}
-							
-							//moves 'cursor' position to the next time date sequence
-							i =+ 5;
-							
-							while (dataValues[i] != null) {
-								
-								currentLine = currentLine + dataValues[i] + "|";
-								
-								i++;
-								
-							}
-							
-							break;
-							
-						}
-						
-						i =+ 5;
-						
-					}
-					
-				}
-				
-				data[size] = currentLine;
-				size++;
-				
-			}
-			
-			reader.close();
-			
-		} catch (IOException ioe1) {
-			
-		}
-		
-		saveEmployeeSchedule(data, size);
-		
-	}
-	
-	private static void employeeScheduleAdd(String employeeName, int[] dateTime) {
-		
-		String deliminator = "\\|";
-		String[] dataValues;
-		String currentLine;
-		String[] data = new String[999];
-		
-		int size = 0;
-		
-		BufferedReader reader = null;
-		
-		//reads employee detail file into memory
-		try {
-			
-			reader = new BufferedReader(new FileReader(employeeList));
-			
-			while ((currentLine = reader.readLine()) != null) {
-
-				dataValues = currentLine.split(deliminator);
-				
-				//adds the additional work schedule for the employee
-				if (dataValues[0].equals(employeeName)) {
-
-					for (int j = 0; j < 5; j++) {
-						
-						currentLine = currentLine + "|" + dateTime[j];
-						
-					}
-					
-				}
-				
-				data[size] = currentLine;
-				size++;
-				
-			}
-			
-			reader.close();
-			
-		} catch (IOException ioe1) {
-			
-		}
-		
-		saveEmployeeSchedule(data, size);
-
-	}
-	
-	//returns true if success, false if failure
-	private static boolean saveEmployeeSchedule(String[] data, int size) {
-		
-		BufferedWriter writer = null;
-		
-		try {
-			
-			//wraps FileWriter in BufferedWrite, in order to use newLine()
-			writer = new BufferedWriter(new FileWriter(employeeList, false));
-			
-			for (int j = 0; j < size; j++) {
-
-				writer.write(data[j]);
-				writer.newLine();
-				
-			}
-			
-		} catch (IOException ioe2) {
-			
-		} finally {
-			
-			if ( writer != null) {
-				try {
-					writer.close();
-				} catch (IOException ioe3) {
-					
-				}
-				
-			} else {
-				
-				return false;
-				
-			}
-			
-		}
-		
-		return true;
-		
 	}
 	
 	public static String generateId() throws IOException
@@ -429,8 +244,12 @@ public class EmployeeManagement {
 		System.out.println("\nEmployee Management");
 		System.out.println("------------------------");
 		System.out.println("1. Add employee");
-		System.out.println("2. Add working time/date");
-		System.out.println("3. BACK");
+		System.out.println("2. List employees");
+		System.out.println("3. Show Schedule");
+		System.out.println("4. Add Schedule");
+		System.out.println("5. Remove Schedule");
+		System.out.println("6. Show Employee Availability");
+		System.out.println("7. BACK");
 		System.out.print(">>> ");
 		return;
 	}

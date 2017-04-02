@@ -182,8 +182,15 @@ public class CustomerManagement {
 		return selectedBusiness;
 
 	}
-
+	
 	public void viewAvailability() {
+		
+		System.out.println("The following times and dates are currently available");
+		ScheduleManagement.interfaceShowGeneralAvailability();
+		
+	}
+
+	/*public void viewAvailability() {
 
 		if (selectedBusiness.getAvailableDays().isEmpty()) {
 			System.out.println("The business has either no available days or has not given its availability yet");
@@ -202,26 +209,15 @@ public class CustomerManagement {
 		System.out.println(nextMonth.getMonth());
 		System.out.println(" Su| Mo| Tu| We| Th| Fr| Sa|");
 
-		if (valueOfStartDay == 7)
+		if (valueOfStartDay == 7) {
+			
 			dayCount = 1;
-
-		if (valueOfStartDay == 1)
-			dayCount = 0;
-
-		if (valueOfStartDay == 2)
-			dayCount = -1;
-
-		if (valueOfStartDay == 3)
-			dayCount = -2;
-
-		if (valueOfStartDay == 4)
-			dayCount = -3;
-
-		if (valueOfStartDay == 5)
-			dayCount = -4;
-
-		if (valueOfStartDay == 6)
-			dayCount = -5;
+			
+		} else {
+			
+			dayCount = -(valueOfStartDay) + 1;
+			
+		}
 
 		for (; dayCount <= nextMonth.lengthOfMonth(); dayCount++) {
 
@@ -294,7 +290,7 @@ public class CustomerManagement {
 		else
 			System.out.print("The business opens at " + selectedBusiness.getOpenTime() + " to "
 					+ selectedBusiness.getCloseTime() + "\n");
-	}
+	}*/
 
 	public void printMenu() {
 		if (selectedBusiness == null) {
