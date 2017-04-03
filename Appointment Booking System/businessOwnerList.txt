@@ -1,0 +1,3 @@
+bo0001|password1
+bo0002|password2
+bo0003|password3
