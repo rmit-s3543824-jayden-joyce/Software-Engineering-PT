@@ -1,17 +1,17 @@
 package main;
+
 import java.io.*;
 import java.util.Scanner;
 
 public class Login
 {	
 	static String delim = "\\|";
-	static String customerList = "src/customerList.txt";
+	static String customerList = "customerList.txt";
 	static String businessOwnerList = "businessOwnerList.txt";
 	
 	public static int login() throws IOException
 	{
 		String userType, Username, Password;
-		int returnType = 0;
 		//char passwordArray[];
 		boolean loginOption = true;
 		Console console = System.console();	
@@ -45,28 +45,35 @@ public class Login
 			
 			Password = consoleReader.next();
 			
-			//Depending on user type, decides which file to read from
-			if(userType.equals("1"))
+			//Checks for invalid entries
+			if(Password.isEmpty() || Username.isEmpty())
 			{
-				if(verifyLoginDetails(Username, Password, customerList) == true)
-				{
-					System.out.println("Login successful!\n");
-					returnType = 1;
-					loginOption = false;
-				}
+				System.out.println("Username or password are invalid.\n");
 			}
 			else
 			{
-				if(verifyLoginDetails(Username, Password, businessOwnerList) == true)
-				{
-					System.out.println("Login successful!\n");
-					returnType = 2;
-					loginOption = false;
-				}
+				loginOption = false;
 			}
 		}while(loginOption);
 		
-		return returnType;
+		//Depending on user type, decides which file to read from
+		if(userType.equals("1"))
+		{
+			if(verifyLoginDetails(Username, Password, customerList) == true)
+			{
+				System.out.println("Login successful!\n");
+				return 1;
+			}
+		}
+		else
+		{
+			if(verifyLoginDetails(Username, Password, businessOwnerList) == true)
+			{
+				System.out.println("Login successful!\n");
+				return 2;
+			}
+		}
+		return 0;
 	}
 	
 	public static void userTypeSelection()
@@ -97,13 +104,6 @@ public class Login
 		FileReader fr = new FileReader(userType);
 		BufferedReader reader = new BufferedReader(fr);
 		
-		if(isBlank(username) || isBlank(password))
-		{
-			System.out.println("Username or password not found\n");
-			reader.close();
-			return false;
-		}
-		
 		//Reads each line from respective text file
 		while((line = reader.readLine()) != null)
 		{
@@ -123,18 +123,5 @@ public class Login
 		System.out.println("Username or password not found\n");
 		reader.close();
 		return false;
-	}
-	
-	public static boolean isBlank(String value)
-	{
-		if(value.isEmpty())
-		{
-			return true;	
-		} 
-		else
-		{
-			return false;	
-		}
-		
 	}
 }
