@@ -63,6 +63,13 @@ public class Business {
 	}
 
 	public void addOpeningDays(int dayValue) {
+		
+		// To check if there is no duplicate of opening day
+		for(int i = 0; i < openingDays.size(); i++){
+			if(openingDays.get(i).getValue() == dayValue){
+				return;
+			}
+		}
 
 		openingDays.add(DayOfWeek.of(dayValue));
 		Collections.sort(openingDays);
@@ -129,10 +136,18 @@ public class Business {
 	}
 
 	public void displayOpeningDayAndTime() {
-		System.out.print(this.name + " opens on ");
-		for (int i = 0; i < openingDays.size(); i++) {
-			System.out.print(openingDays.get(i)+", ");
+
+		if (this.openingDays.size() == 0) {
+			System.out.println("The busines has not given any opening days.");
+			return;
 		}
-		System.out.println("\nFrom " + this.openTime + " to " + this.closeTime);
+
+		else {
+			System.out.print(this.name + " opens on ");
+			for (int i = 0; i < openingDays.size(); i++) {
+				System.out.print(openingDays.get(i) + ", ");
+			}
+			System.out.println("\nFrom " + this.openTime + " to " + this.closeTime);
+		}
 	}
 }

@@ -14,7 +14,7 @@ public class CustomerManagement {
 
 	static Business selectedBusiness;
 
-	public CustomerManagement() throws IOException {
+	public void runMenu() throws IOException {
 
 		int userInput;
 

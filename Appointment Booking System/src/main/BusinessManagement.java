@@ -16,9 +16,19 @@ public class BusinessManagement {
 	private Business selectedBusiness;
 
 	public BusinessManagement(String businessName) throws IOException {
-		selectedBusiness = selectBusiness(businessName);
+		try {
+			selectedBusiness = selectBusiness(businessName);
+		} 
+		
+		// Captures the error if the business name cannot be found in the text file
+		catch (IOException e) {
+			System.out.println(e.getMessage());
+		}
+	}
 
-		int userInput;
+	// To run the main menu of business management
+	public void runMenu() throws IOException {
+		int userInput; // User's input
 
 		Scanner in = new Scanner(System.in);
 
@@ -85,7 +95,7 @@ public class BusinessManagement {
 	}
 
 	/*
-	 * Function to set operating time but appears to be extra
+	 * Function to set operating time (not a requirement for now)
 	 * 
 	 * public void setOperatingTime(Scanner in) {
 	 * 
@@ -138,6 +148,8 @@ public class BusinessManagement {
 	 * }
 	 */
 
+	// Function to add service that the business provide, wihich will be stored
+	// in a text file so it can be retrieved for the customer to view
 	public boolean addService(String serviceName, String serviceDuration, String serviceDescription)
 			throws IOException {
 
@@ -157,6 +169,8 @@ public class BusinessManagement {
 			return false;
 	}
 
+	// Function to retrieve bookings related to the business from the text file
+	// and present them in an array List
 	public List<Booking> retrieveBooking() {
 
 		StringTokenizer st = new StringTokenizer(selectedBusiness.getName(), " ");
@@ -195,9 +209,12 @@ public class BusinessManagement {
 		return bookingArray;
 	}
 
+	// Using the function retrieveBooking to get the arrayList of bookings, then
+	// present all the bookings in an orderly fashion
+	
 	public void viewSummariesOfBookings() {
 
-		List<Booking> bookingList = retrieveBooking();
+		List<Booking> bookingList = retrieveBooking();  //Bookings are retrieved and stored in an array list.
 
 		System.out.println("Summaries of Bookings for " + selectedBusiness.getName());
 		System.out.println("-------------------------------------------------------");
@@ -209,6 +226,11 @@ public class BusinessManagement {
 
 	}
 
+	// Using the function retrieveBooking to get the arrayList of bookings, then
+	// only present the bookings with "NEW" as their status, after bookings are
+	// displayed, the status are changed from "NEW" to "Active" and all status
+	// are updated in the text file.
+	
 	public void viewNewBookings() throws IOException {
 
 		List<Booking> bookingList = retrieveBooking();
@@ -277,9 +299,9 @@ public class BusinessManagement {
 				return null;
 			} else {
 
-				selectedBusiness = new Business(businessTokens[0], businessTokens[1], businessTokens[2],
+				setSelectedBusiness(new Business(businessTokens[0], businessTokens[1], businessTokens[2],
 						businessTokens[3], businessTokens[4], businessTokens[5], businessTokens[7], businessTokens[8],
-						businessTokens[9], businessTokens[10]);
+						businessTokens[9], businessTokens[10]));
 
 				StringTokenizer st = new StringTokenizer(businessTokens[6], ";");
 
@@ -299,20 +321,34 @@ public class BusinessManagement {
 
 	public void printMenu() {
 
-		System.out.printf("\nWelcome %s. \nPlease choose your option\n", selectedBusiness.getName());
-		System.out.println("----------------------------\n" + "1. Employee Management \n"
-				+ "2. View Booking Summaries \n" + "3. View New Bookings \n" + "4. Add service \n" + "5. Logout \n"
-				+ "----------------------------");
+		if (selectedBusiness != null) {
+
+			System.out.printf("\nWelcome %s. \nPlease choose your option\n", selectedBusiness.getName());
+			System.out.println("----------------------------\n" + "1. Employee Management \n"
+					+ "2. View Booking Summaries \n" + "3. View New Bookings \n" + "4. Add service \n" + "5. Logout \n"
+					+ "----------------------------");
+		}
 	}
 
 	public Business getSelectedBusiness() {
 		return this.selectedBusiness;
 	}
 
+	public void setSelectedBusiness(Business business) {
+		this.selectedBusiness = business;
+	}
+
+	public boolean isEmpty() {
+		if (selectedBusiness == null) {
+			return true;
+		}
+		return false;
+	}
+
 	public boolean isNumericAndPositive(String str) {
 		try {
 			int d = Integer.parseInt(str);
-			if (d < 0) {
+			if (d <= 0) {
 				return false;
 			}
 		} catch (NumberFormatException nfe) {

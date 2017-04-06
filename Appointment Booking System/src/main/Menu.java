@@ -26,10 +26,12 @@ public class Menu {
 					if(selection == 1)
 					{
 						CustomerManagement cManage = new CustomerManagement();
+						cManage.runMenu();
 					}
 					else if(selection == 2)
 					{
 						BusinessManagement bManage = new BusinessManagement("Suggar Haircut");
+						bManage.runMenu();
 					}
 				break;
 				case "2":
