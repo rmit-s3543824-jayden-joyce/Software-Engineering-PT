@@ -39,17 +39,7 @@ public class CustomerManagementTest {
 		
 	}
 	
-	@Test
-	public void testCheckSummaries() throws IOException{
-		CustomerManagement cManage = new CustomerManagement();
-		cManage.checkSummaries();
-	}
-	
-	@Test
-	public void testAddBooking() throws IOException{
-		CustomerManagement cManage = new CustomerManagement();
-		cManage.addBooking();
-	}
+
 	
 
 }
