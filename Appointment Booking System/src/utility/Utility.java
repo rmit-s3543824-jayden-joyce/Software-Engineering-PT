@@ -102,8 +102,6 @@ public class Utility {
 			//accounts for leap years
 			if (currentMonth == 2 && (currentYear % 4 == 0) && ((currentYear % 100 != 0) || (currentYear % 400 == 0))) {
 				
-				System.out.println("Here");
-				
 				if (currentDay > monthLength[currentMonth - 1] + 1) {
 					
 					currentDay -= 29;
