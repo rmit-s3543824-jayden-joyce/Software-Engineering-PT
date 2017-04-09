@@ -56,6 +56,70 @@ public class TestRunner {
 	      System.out.println("Successful Test:");
 	      System.out.println(resultUtility.wasSuccessful());
 	      
+	      //tests Booking
+
+		  System.out.println("Testing Booking");
+	      Result resultBooking = JUnitCore.runClasses(UtilityTest.class);
+			
+	      System.out.println("Failures:");
+	      
+	      for (Failure failureBooking : resultBooking.getFailures()) {
+	    	  
+	         System.out.println(failureBooking.toString());
+	         
+	      }
+
+	      System.out.println("Successful Test:");
+	      System.out.println(resultBooking.wasSuccessful());
+	      
+	      //tests Business Management
+
+		  System.out.println("Testing Business Management");
+	      Result resultBusinessManagement = JUnitCore.runClasses(UtilityTest.class);
+			
+	      System.out.println("Failures:");
+	      
+	      for (Failure failureBusinessManagement : resultBusinessManagement.getFailures()) {
+	    	  
+	         System.out.println(failureBusinessManagement.toString());
+	         
+	      }
+
+	      System.out.println("Successful Test:");
+	      System.out.println(resultBusinessManagement.wasSuccessful());
+	      
+	      //tests Business
+
+		  System.out.println("Testing Business");
+	      Result resultBusiness = JUnitCore.runClasses(UtilityTest.class);
+			
+	      System.out.println("Failures:");
+	      
+	      for (Failure failureBusiness : resultBusiness.getFailures()) {
+	    	  
+	         System.out.println(failureBusiness.toString());
+	         
+	      }
+
+	      System.out.println("Successful Test:");
+	      System.out.println(resultBusiness.wasSuccessful());
+	      
+	      //tests Customer Management
+
+		  System.out.println("Testing Customer Management");
+	      Result resultCustomerManagement = JUnitCore.runClasses(UtilityTest.class);
+			
+	      System.out.println("Failures:");
+	      
+	      for (Failure failureCustomerManagement : resultCustomerManagement.getFailures()) {
+	    	  
+	         System.out.println(failureCustomerManagement.toString());
+	         
+	      }
+
+	      System.out.println("Successful Test:");
+	      System.out.println(resultCustomerManagement.wasSuccessful());
+	      
 	   }
 	
 }
