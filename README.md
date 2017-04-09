@@ -7,7 +7,7 @@ Members:
 
 Contributions:
 
-  Jayden Joyce:
+  Jayden Joyce: 33%
   
     Menu.java
     
@@ -19,7 +19,7 @@ Contributions:
     
     CustomerManagementTest.java
     
-  Andrew Davey:
+  Andrew Davey: 33%
   
     ScheduleManagement.java
     
@@ -35,7 +35,7 @@ Contributions:
     
     UtilityTest.java
     
-  Jeremy Siaw:
+  Jeremy Siaw: 33%
   
     Booking.java
     
