@@ -53,15 +53,15 @@ public class EmployeeManagement {
 					listEmployees();
 				break;
 				case "3":
-					ScheduleManagement.interfaceShowSchedule();
+					ScheduleManagement2.interfaceShowSchedule();
 				break;
 				case "4":
 					//allows user to add a work schedule
-					ScheduleManagement.interfaceAddSchedule();
+					ScheduleManagement2.interfaceAddRecuringSchedule();
 				break;
 				case "5":
 					//allows user to remove a work schedule
-					ScheduleManagement.interfaceRemoveSchedule();
+					ScheduleManagement2.employeeRecuringScheduleRemove();
 				break;
 				case "6":
 					ScheduleManagement.interfaceShowAvailability();
@@ -137,13 +137,29 @@ public class EmployeeManagement {
 					{
 						if(selection.equals("1"))
 						{
-							//creates employee file
-							if(!Utility.createFile(employeeId)) {
+							//creates employee files
+							if(!Utility.createFile(employeeId + "Bookings")) {
 								
 								//ensures that the employee details are not saved if a file is not created
 								break;
 								
 							}
+							
+							if(!Utility.createFile(employeeId + "Schedule")) {
+								
+								//ensures that the employee details are not saved if a file is not created
+								break;
+								
+							}
+							
+							//adds a 'last update' date to Schedule, to ensure that it writes from the start
+							BufferedWriter scheduleBooter = new BufferedWriter(new FileWriter(employeeId + "Schedule.txt", true));
+
+							scheduleBooter.write("1|1|1");
+							scheduleBooter.newLine();
+							
+							scheduleBooter.close();
+							
 							//Writes employee details to file
 							bw.write(employeeDetails);
 							//Prints new line for when the next employee is to be added
