@@ -137,8 +137,15 @@ public class EmployeeManagement {
 					{
 						if(selection.equals("1"))
 						{
-							//creates employee file
-							if(!Utility.createFile(employeeId)) {
+							//creates employee files
+							if(!Utility.createFile(employeeId + "Bookings")) {
+								
+								//ensures that the employee details are not saved if a file is not created
+								break;
+								
+							}
+							
+							if(!Utility.createFile(employeeId + "Schedule")) {
 								
 								//ensures that the employee details are not saved if a file is not created
 								break;

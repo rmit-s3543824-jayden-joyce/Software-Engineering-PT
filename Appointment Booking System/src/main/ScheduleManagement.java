@@ -345,6 +345,90 @@ public class ScheduleManagement {
 		
 	}
 	
+	//
+	public static boolean scheduleUpdate(String employeeID) {
+		
+		List<String> schedule = new ArrayList<String>();
+		List<String> employees = getEmployees();
+		List<String> workSchedule = new ArrayList<String>();
+		String employeeString;
+		
+		String deliminator = "\\|";
+		String[] dataValues;
+		int[] dataValuesInt = new int[3];
+		String currentLine;
+		
+		int dayDifference;
+		
+		int[] minDate = new int[3];
+		int[] dateChange = {0,0,0};
+		
+		int[] targetDate;
+		int[] outputDate = new int[5];
+		
+		Calendar date = Calendar.getInstance();
+		minDate[0] = date.get(Calendar.YEAR);
+		minDate[1] = date.get(Calendar.MONTH);
+		minDate[2] = date.get(Calendar.DAY_OF_MONTH);
+		
+		int weekday = date.get(Calendar.DAY_OF_WEEK);
+		
+		int i, j, k;
+		
+		for (i = 0; i < employees.size(); i++) {
+			
+			currentLine = employees.get(i);
+			
+			dataValues = currentLine.split(deliminator);
+			
+			if (dataValues[0].equals(employeeID)) {
+				
+				employeeString = employees.get(i);
+				break;
+				
+			}
+			
+		}
+		
+	
+		for (j = 0; j < workSchedule.size(); j++) {
+					
+			currentLine = workSchedule.get(j);
+
+			dataValues = currentLine.split(deliminator);
+					
+			for (k = 0; k < 3; k++) {
+						
+				dataValuesInt[k] = Integer.parseInt(dataValues[k]);
+					
+			}
+			
+			dayDifference = dataValuesInt[0] - weekday;
+			
+			if (dayDifference <= 0) {
+				
+				dayDifference += 7;
+				
+			}
+			
+			dateChange[2] = dayDifference;
+			
+			targetDate = Utility.dateManipulator(minDate, dateChange);
+			
+			outputDate[0] = targetDate[0];
+			outputDate[1] = targetDate[1];
+			outputDate[2] = targetDate[2];
+			outputDate[3] = dataValuesInt[1];
+			outputDate[4] = dataValuesInt[2];
+			
+			employeeScheduleAdd(employeeID, outputDate);
+			
+		}
+		
+		return false;
+		
+	}
+	
 	public static List<String> getEmployees() {
 		
 		List<String> data = new ArrayList<String>();
@@ -652,6 +736,7 @@ public class ScheduleManagement {
 		
 	}
 	
+	//TODO Fix month passover
 	public static List<String> scheduleDateBoundaries(List<String> schedule, int[] dateMin, int[] dateMax) {
 		
 		int i;
