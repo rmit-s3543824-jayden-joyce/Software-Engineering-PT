@@ -43,21 +43,25 @@ public class BusinessManagement {
 
 			switch (userInput) {
 			case 1:
+				// To proceed to employee management menu
 				EmployeeManagement.employeeManagement();
 				break;
 			case 2:
+				// To display summaries of bookings
 				viewSummariesOfBookings();
 				System.out.println("\nPress any key to return.");
 				in.nextLine();
 				break;
 
 			case 3:
+				// To display only the new bookings
 				viewNewBookings();
 				System.out.println("\nPress any key to return.");
 				in.nextLine();
 				break;
 
 			case 4:
+				// To add a new service and store in text file
 				System.out.println("Please enter the name of the service\n" + "--------------------------------------");
 				String serviceName = in.nextLine();
 
@@ -83,6 +87,7 @@ public class BusinessManagement {
 				break;
 
 			case 5:
+				// Logout
 				return;
 
 			default:
@@ -148,11 +153,12 @@ public class BusinessManagement {
 	 * }
 	 */
 
-	// Function to add service that the business provide, wihich will be stored
+	// Function to add service that the business provide, which will be stored
 	// in a text file so it can be retrieved for the customer to view
 	public boolean addService(String serviceName, String serviceDuration, String serviceDescription)
 			throws IOException {
 
+		// To read the name of the text file in the correct format
 		StringTokenizer st = new StringTokenizer(selectedBusiness.getName(), " ");
 		String file_name = "";
 		while (st.hasMoreTokens()) {
@@ -162,6 +168,7 @@ public class BusinessManagement {
 
 		file_name += "Services.txt";
 
+		// Appending the selected text file
 		WriteFile writer = new WriteFile(file_name, true);
 		if (writer.writeToFile("\n" + serviceName + "|" + serviceDuration + "|" + serviceDescription)) {
 			return true;
@@ -173,6 +180,8 @@ public class BusinessManagement {
 	// and present them in an array List
 	public List<Booking> retrieveBooking() {
 
+		
+		// To read the name of the text file in the correct format
 		StringTokenizer st = new StringTokenizer(selectedBusiness.getName(), " ");
 		String file_name = "";
 		while (st.hasMoreTokens()) {
@@ -181,6 +190,8 @@ public class BusinessManagement {
 		}
 
 		file_name += "Bookings.txt";
+		
+		// Retrieve the bookings and store them in a list
 		List<Booking> bookingArray = new ArrayList<Booking>();
 		try {
 			ReadFile file = new ReadFile(file_name);
@@ -205,6 +216,7 @@ public class BusinessManagement {
 			System.out.println(e.getMessage());
 		}
 
+		// Sorting the bookings according to date and time
 		Collections.sort(bookingArray, new BookingComparator());
 		return bookingArray;
 	}
@@ -233,6 +245,8 @@ public class BusinessManagement {
 	
 	public void viewNewBookings() throws IOException {
 
+		
+		// To display the new bookings
 		List<Booking> bookingList = retrieveBooking();
 
 		System.out.println("New Bookings for " + selectedBusiness.getName());
@@ -258,6 +272,7 @@ public class BusinessManagement {
 			}
 		}
 
+		// To read the bookings text file in the correct format
 		StringTokenizer st = new StringTokenizer(selectedBusiness.getName(), " ");
 		String file_name = "";
 		while (st.hasMoreTokens()) {
@@ -267,6 +282,8 @@ public class BusinessManagement {
 
 		file_name += "Bookings.txt";
 
+		
+		// To change the status of the new bookings from "NEW" to "Active" 
 		WriteFile writer = new WriteFile(file_name, false);
 		writer.writeToFile("");
 
@@ -288,6 +305,7 @@ public class BusinessManagement {
 		}
 	}
 
+	// Function to select a business, useful if there is more than one business
 	public Business selectBusiness(String businessName) throws IOException {
 		String file_name = "Business.txt";
 
@@ -319,6 +337,7 @@ public class BusinessManagement {
 
 	}
 
+	// To display the main menu
 	public void printMenu() {
 
 		if (selectedBusiness != null) {
@@ -338,13 +357,16 @@ public class BusinessManagement {
 		this.selectedBusiness = business;
 	}
 
+	// To check if there is any business being selected
 	public boolean isEmpty() {
 		if (selectedBusiness == null) {
 			return true;
 		}
 		return false;
 	}
-
+	
+	
+	// To check if UserInput is valid for the menu
 	public boolean isNumericAndPositive(String str) {
 		try {
 			int d = Integer.parseInt(str);

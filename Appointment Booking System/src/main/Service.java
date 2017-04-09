@@ -2,9 +2,9 @@ package main;
 
 public class Service {
 	
-	private String name;
-	private int duration;
-	private String description;
+	private String name;			// Name of the service
+	private int duration;			// Duration of the service in minutes
+	private String description;		// Description of the service
 	
 	public Service(String name, String duration, String description){
 		this.name = name;

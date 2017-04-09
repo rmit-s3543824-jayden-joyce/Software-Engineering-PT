@@ -6,17 +6,18 @@ import java.time.*;
 
 public class Business {
 
-	private String name;
-	private String owner;
-	private String address;
-	private String phone;
-	private String username;
-	private String password;
-	private LocalTime openTime;
-	private LocalTime closeTime;
-	private ArrayList<DayOfWeek> openingDays = new ArrayList<DayOfWeek>();
-	private ArrayList<Integer> availableDays = new ArrayList<Integer>();
+	private String name;			// The name of the business
+	private String owner;			// Business's owner's name
+	private String address;			// Business's address
+	private String phone;			// Business's contact number
+	private String username;		// Business's username
+	private String password;		// Business's password
+	private LocalTime openTime;		// Business's opening Time
+	private LocalTime closeTime;	// Business's closing time
+	private ArrayList<DayOfWeek> openingDays = new ArrayList<DayOfWeek>(); // List to store the opening days of the business
+	private ArrayList<Integer> availableDays = new ArrayList<Integer>();	// List to store available days of the business depending on workers' availability
 
+	// Constructor of the business
 	public Business(String name, String owner, String address, String phone, String username, String password,
 			String openingHour, String openingMinute, String closingHour, String closingMinute) {
 		this.name = name;
@@ -25,8 +26,8 @@ public class Business {
 		this.phone = phone;
 		this.username = username;
 		this.password = password;
-		this.openTime = LocalTime.of(Integer.valueOf(openingHour), Integer.valueOf(openingMinute));
-		this.closeTime = LocalTime.of(Integer.valueOf(closingHour), Integer.valueOf(closingMinute));
+		this.openTime = LocalTime.of(Integer.valueOf(openingHour), Integer.valueOf(openingMinute));		// To convert input to opening time
+		this.closeTime = LocalTime.of(Integer.valueOf(closingHour), Integer.valueOf(closingMinute));	// To convert input to closing time
 	}
 
 	// Mutators
@@ -62,6 +63,7 @@ public class Business {
 		this.closeTime = LocalTime.of(hour, minute);
 	}
 
+	
 	public void addOpeningDays(int dayValue) {
 		
 		// To check if there is no duplicate of opening day
@@ -116,6 +118,7 @@ public class Business {
 		return this.openingDays;
 	}
 
+	// Function to add avaialble days for the next month, validate if the date is valid automatically
 	public void addAvailableDay(int day) {
 
 		LocalDate localDate = LocalDate.now();
