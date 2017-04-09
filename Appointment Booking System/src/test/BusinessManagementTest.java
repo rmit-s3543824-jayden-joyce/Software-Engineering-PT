@@ -47,12 +47,6 @@ public class BusinessManagementTest {
 		assertEquals(false,bookingList.isEmpty());
 	}
 	
-	/*
-	@Test
-	public void testViewSummariesOfBookings() {
-		bManage.viewSummariesOfBookings();
-	}
-	*/
 	
 	// Test if when new bookings are being viewed, all the status of the new bookings will be changed to Active
 	@Test
