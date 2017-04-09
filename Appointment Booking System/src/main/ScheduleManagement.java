@@ -16,6 +16,12 @@ import java.time.LocalDateTime;
 
 public class ScheduleManagement {
 	
+	public static void main(String[] args) {
+		
+		requestDay();
+		
+	}
+	
 	public static void interfaceShowSchedule() {
 		
 		List<String> schedule = new ArrayList<String>();
@@ -166,6 +172,36 @@ public class ScheduleManagement {
 		
 	}
 	
+	//allows for the booking of a recurring day work schedule
+	public static int[] requestDay() {
+		
+		Scanner consoleReader = new Scanner(System.in);
+		
+		String[] weekDays = {"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"};
+		
+		int[] dayTime = new int[3];
+		
+		System.out.println("Day:");
+		
+		//prints out the days of the week, numbered
+		for (int i = 0; i < 7; i++) {
+			
+			System.out.println((i+1) + ". " + weekDays[i]);
+			
+		}
+		
+		dayTime[0] = Integer.parseInt(consoleReader.nextLine());
+		System.out.println("Time From:");
+		dayTime[1] = Integer.parseInt(consoleReader.nextLine());
+		System.out.println("Time To:");
+		dayTime[2] = Integer.parseInt(consoleReader.nextLine());
+		
+		consoleReader.close();
+		
+		return dayTime;
+		
+	}
+	
 	//contains console code to request ID. TODO: Add return to main menu on blank input
 	private static String requestID() {
 		
@@ -212,6 +248,172 @@ public class ScheduleManagement {
 			
 		}
 			
+	}
+	
+	private static boolean employeeRecuringScheduleAdd(String employeeID, int[] dayTime) {
+		
+		List<String> employees = getEmployees();
+		List<String> workSchedule = new ArrayList<String>();
+		
+		String employeeString;
+
+		String deliminator = "\\|";
+		String[] dataValues = null;
+		int[] dataValuesInt =  new int[3];
+		String currentLine;
+		
+		int i, j, k;
+		
+		for (i = 0; i < employees.size(); i++) {
+			
+			currentLine = employees.get(i);
+			
+			dataValues = currentLine.split(deliminator);
+			
+			if (dataValues[0].equals(employeeID)) {
+				
+				employeeString = employees.get(i);
+				break;
+				
+			}
+			
+		}
+		
+		//splits the schedule into its component parts
+		for (j = 1; j < dataValues.length / 3; j++) {
+
+			workSchedule.add(dataValues[j*3] + "|" + dataValues[j*3 + 1] + "|" + dataValues[j*3 + 2]);
+			
+		}
+		
+		//determines if there is an overlap between the new element and existing ones
+		for (j = 0; j < workSchedule.size(); j++) {
+			
+			currentLine = workSchedule.get(j);
+
+			dataValues = currentLine.split(deliminator);
+			
+			for (k = 0; k < 3; k++) {
+				
+				dataValuesInt[k] = Integer.parseInt(dataValues[k]);
+			
+			}
+			
+			//checks if the day is the same
+			if (dayTime[0] == dataValuesInt[0]) {
+				
+				//checks if there is an overlap
+				if (dayTime[1] <= dataValuesInt[2] && dayTime[1] >= dataValuesInt[1] || 
+						dayTime[2] >= dataValuesInt[1] && dayTime[2] <= dataValuesInt[2]) {
+					
+					//merges them if so
+					if (dayTime[1] > dataValuesInt[1]) {
+						
+						dayTime[1] = dataValuesInt[1];
+						
+					}
+					
+					if (dayTime[2] < dataValuesInt[2]) {
+						
+						dayTime[2] = dataValuesInt[2];
+						
+					}
+					
+					//removes the current element so that dayTime can then be checked against other elements without producing duplicates
+					workSchedule.remove(j);
+					
+					//steps i back one to ensure that we don't skip elements
+					j--;
+				
+				}
+				
+			}
+			
+		}
+		
+		employeeString = dataValues[0] + "|" +  dataValues[1] + "|" +  dataValues[2];
+		
+		for (j = 0; j < dataValuesInt.length / 3; j++) {
+			
+			employeeString = employeeString + "|" + dataValuesInt[j*3] + "|" + dataValuesInt[j*3 + 1] + "|" + dataValuesInt[j*3 + 2];
+			
+		}
+		
+		employees.set(i, employeeString);
+		
+		return saveEmployees(employees);
+		
+	}
+	
+	public static List<String> getEmployees() {
+		
+		List<String> data = new ArrayList<String>();
+		
+		String currentLine;
+		
+		BufferedReader reader = null;
+		
+		try {
+			
+			reader = new BufferedReader(new FileReader(EmployeeManagement.employeeList));
+			
+			while ((currentLine = reader.readLine()) != null) {
+				
+				data.add(currentLine);
+				
+			}
+			
+			reader.close();
+			
+		} catch (IOException ioe1) {
+			
+		}
+		
+		return data;
+		
+	}
+	
+	//splits an employees file into either specific block schedules or the recurring schedule
+	public static List<String> splitSchedule(String employeeID, Boolean recurringSchedule) {
+		
+		List<String> combinedSchedule = new ArrayList<String>();
+		List<String> schedule = new ArrayList<String>();
+		String deliminator = "\\|";
+		String[] dataValues;
+		String currentLine;
+		
+		//states the number of items expected on each line; three if recurring, five if block
+		int elementCount;
+		
+		if (recurringSchedule) {
+			
+			elementCount = 3;
+			
+		} else {
+			
+			elementCount = 5;
+			
+		}
+		
+		combinedSchedule = scheduleGet(employeeID);
+		
+		//searches through full schedule for the relevent lines
+		for (int i = 0; i < combinedSchedule.size(); i++) {
+			
+			currentLine = combinedSchedule.get(i);
+			
+			dataValues = currentLine.split(deliminator);
+			
+			if (dataValues.length == elementCount) {
+				
+				schedule.add(currentLine);
+				
+			}
+			
+		}
+		
+		return schedule;
+		
 	}
 	
 	
@@ -506,56 +708,6 @@ public class ScheduleManagement {
 		
 	}
 	
-	
-	
-	/*public static void employeeScheduleShow(String employeeID, boolean availableOnly, int[] date) {
-		
-		String deliminator = "\\|";
-		String[] dataValues;
-		String currentLine;
-		
-		int isFree;
-		
-		BufferedReader reader = null;
-		
-		try {
-			
-			reader = new BufferedReader(new FileReader(employeeID + ".txt"));
-			
-			while ((currentLine = reader.readLine()) != null) {
-				
-				dataValues = currentLine.split(deliminator);
-				
-				isFree = dataValues[4].compareTo("Free");
-				
-				if (availableOnly && isFree != 0) {
-					
-					//do not display
-					
-				} else {
-					
-					if (date == null || date[0] == Integer.parseInt(dataValues[0]) && date[1] == Integer.parseInt(dataValues[1]) && date[2] == Integer.parseInt(dataValues[2])) {
-
-						System.out.print("Scheduled for ");
-						System.out.print(dataValues[0] + "/" + dataValues[1] + "/" + dataValues[2]);
-						System.out.print(" from ");
-						System.out.println(dataValues[3]);
-						//TODO: Display client if currently booked
-						
-					}
-					
-				}
-				
-			}
-			
-			reader.close();
-			
-		} catch (IOException ioe1) {
-			
-		}
-		
-	}*/
-	
 	//allows bookings to be made
 	public static void scheduleBooking(String employeeID, String customerID, int[] dateTime) {
 
@@ -605,191 +757,6 @@ public class ScheduleManagement {
 		
 	}
 	
-	/*//shows times that there is at least one worker available
-	public static void showGeneralAvailability() {
-		
-		int[][] data = new int[999][4];
-		int availableCount = 0;
-		
-		String deliminator = "\\|";
-		String[] dataValues;
-		String currentLine;
-		
-		int isFree;
-		int i;
-		
-		BufferedReader employeeListReader = null;
-		BufferedReader employeeScheduleReader = null;
-		
-		try {
-			
-			employeeListReader = new BufferedReader(new FileReader(Utility.employeeList));
-			
-			while ((currentLine = employeeListReader.readLine()) != null) {
-				
-				dataValues = currentLine.split(deliminator);
-				
-				try {
-					
-					employeeScheduleReader = new BufferedReader(new FileReader(dataValues[0] + ".txt"));
-					
-					while ((currentLine = employeeScheduleReader.readLine()) != null) {
-						
-						dataValues = currentLine.split(deliminator);
-						
-						isFree = dataValues[4].compareTo("Free");
-						
-						if (isFree == 0) {
-							
-							for (i = 0; i < dataValues.length; i++) {
-								
-								data[availableCount][i] = Integer.parseInt(dataValues[i]);
-								
-							}
-							
-							availableCount++;
-							
-						}
-						
-					}
-					
-					employeeScheduleReader.close();
-					
-				} catch (IOException ioe1) {
-					
-				}
-				
-			}
-			
-			employeeListReader.close();
-			
-		} catch (IOException ioe1) {
-			
-		}
-		
-		data = sortAvailability(data, availableCount);
-		data = removeDuplicates(data, availableCount);
-		
-	}
-	
-	private static int[][] sortAvailability(int[][] availabilityData, int dataPoints) {
-		
-		int i, j, k;
-		int[] holding = new int[4];
-		
-		for (i = 0; i < dataPoints - 1; i++) {
-			
-			for (j = i + 1; j < dataPoints; j++) {
-				
-				//checks if the positionally higher value is earlier
-				if (availabilityData[i][0] > availabilityData[j][0] ||
-						(availabilityData[i][0] == availabilityData[j][0] && availabilityData[i][1] > availabilityData[j][1]) ||
-						(availabilityData[i][0] == availabilityData[j][0] && availabilityData[i][1] == availabilityData[j][1] &&
-						availabilityData[i][2] > availabilityData[j][2]) || (availabilityData[i][0] == availabilityData[j][0] && 
-						availabilityData[i][1] == availabilityData[j][1] && availabilityData[i][2] == availabilityData[j][2] && 
-						availabilityData[i][3] > availabilityData[j][3])) {
-					
-					for (k = 0; k < holding.length; k++) {
-						
-						holding[k] = availabilityData[i][k];
-						availabilityData[i][k] = availabilityData[j][k];
-						availabilityData[j][k] = holding[k];
-						
-					}
-					
-				}
-				
-			}
-			
-		}
-		
-		return availabilityData;
-		
-	}
-	
-	// can only remove duplicates from sorted data
-	private static int[][] removeDuplicates(int[][] availabilityData, int dataPoints) {
-		
-		int i, j, k;
-		
-		i = 0;
-		
-		while (i < dataPoints - 1) {
-			
-			if ((availabilityData[i][0] == availabilityData[i + 1][0] && availabilityData[i][1] == availabilityData[i + 1][1] 
-						&& availabilityData[i][2] == availabilityData[i + 1][2] && availabilityData[i][3] == availabilityData[i + 1][3])) {
-					
-				for (j = i + 1; j < dataPoints - 1; j++) {
-					
-					for (k = 0; k < 4; k++) {
-						
-						availabilityData[j][k] = availabilityData[j + 1][k];
-						
-					}	
-					
-				}
-				
-				dataPoints--;
-					
-			} else {
-				
-				i++;
-				
-			}
-			
-		}
-
-		return availabilityData;
-		
-	}
-	
-	//shows workers and their available times
-	public static void showAvailability() {
-		
-		String deliminator = "\\|";
-		String[] dataValues;
-		String currentLine;
-		int[] viewDate = new int[3];
-		int[] modDate = {0,0,0};
-		int i, j;
-		
-		Calendar date = Calendar.getInstance();
-		viewDate[0] = date.get(Calendar.YEAR);
-		viewDate[1] = date.get(Calendar.MONTH);
-		viewDate[2] = date.get(Calendar.DAY_OF_MONTH);
-		
-		BufferedReader reader = null;
-				
-		try {
-			
-			reader = new BufferedReader(new FileReader(Utility.employeeList));
-			i = 0;
-			
-			while ((currentLine = reader.readLine()) != null) {
-				
-				dataValues = currentLine.split(deliminator);
-				
-				i++;
-				System.out.print(i + ". ");
-				System.out.println(dataValues[0] + " - " + dataValues[1] + " " + dataValues[2]);
-				
-				for (j = 0; j < 7; j++) {
-					
-					modDate[2] = j;
-					employeeScheduleShow(dataValues[0],true,Utility.dateManipulator(viewDate, modDate));
-					
-				}
-				
-			}
-			
-			reader.close();
-			
-		} catch (IOException ioe1) {
-			
-		}		
-		
-	}*/
-	
 	//returns true if success, false if failure
 	private static boolean saveEmployeeSchedule(String employeeID, String[] data, int size) {
 		
@@ -803,6 +770,45 @@ public class ScheduleManagement {
 			for (int j = 0; j < size; j++) {
 
 				writer.write(data[j]);
+				writer.newLine();
+				
+			}
+			
+		} catch (IOException ioe2) {
+			
+		} finally {
+			
+			if ( writer != null) {
+				try {
+					writer.close();
+				} catch (IOException ioe3) {
+					
+				}
+				
+			} else {
+				
+				return false;
+				
+			}
+			
+		}
+		
+		return true;
+		
+	}
+	
+	private static boolean saveEmployees(List<String> data) {
+		
+		BufferedWriter writer = null;
+		
+		try {
+			
+			//wraps FileWriter in BufferedWrite, in order to use newLine()
+			writer = new BufferedWriter(new FileWriter(EmployeeManagement.employeeList, false));
+			
+			for (int j = 0; j < data.size(); j++) {
+
+				writer.write(data.get(j));
 				writer.newLine();
 				
 			}
