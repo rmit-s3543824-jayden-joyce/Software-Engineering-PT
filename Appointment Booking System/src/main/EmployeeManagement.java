@@ -67,6 +67,9 @@ public class EmployeeManagement {
 					ScheduleManagement.interfaceShowAvailability();
 				break;
 				case "7":
+					ScheduleManagement2.updateAllSchedules();
+				break;
+				case "8":
 					employeeMenu = false;
 				break;
 				default:
@@ -268,7 +271,8 @@ public class EmployeeManagement {
 		System.out.println("4. Add Schedule");
 		System.out.println("5. Remove Schedule");
 		System.out.println("6. Show Employee Availability");
-		System.out.println("7. BACK");
+		System.out.println("7. Update Schedules");
+		System.out.println("8. BACK");
 		System.out.print(">>> ");
 		return;
 	}

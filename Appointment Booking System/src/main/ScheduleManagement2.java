@@ -16,7 +16,36 @@ public class ScheduleManagement2 {
 	
 	public static void main(String[] args) {
 		
-		printEmployeeSchedule("e003",false);
+		updateAllSchedules();
+		
+	}
+	
+	public static void updateAllSchedules() {
+		
+		BufferedReader reader = null;
+
+		String deliminator = "\\|";
+		
+		String currentLine;
+		String[] dataValues;
+		
+		try {
+			
+			reader = new BufferedReader(new FileReader(Utility.employeeList));
+			
+			while ((currentLine = reader.readLine()) != null) {
+				
+				dataValues = currentLine.split(deliminator);
+				
+				scheduleUpdate(dataValues[0]);
+				
+			}
+			
+			reader.close();
+			
+		} catch (IOException ioe1) {
+			
+		}		
 		
 	}
 	
@@ -209,11 +238,7 @@ public class ScheduleManagement2 {
 			
 			currentUpdateDate[i] = Integer.valueOf(dataValue[i]);
 			
-			System.out.print(currentUpdateDate[i]);
-			
 		}
-		
-		System.out.println(currentDate[0] + "/" + currentDate[1] + "/" + currentDate[2]);
 		
 		// I apologize for this crime
 		// Determines what days it needs to add to eXYZBookings.txt
@@ -221,8 +246,6 @@ public class ScheduleManagement2 {
 		for (i = 0; i <= 7; i++) {
 			
 			dateMod[2] = i;
-			
-			System.out.println(i);
 			
 			if (currentDate.equals(Utility.dateManipulator(currentUpdateDate, dateMod))) {
 				
