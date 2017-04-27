@@ -40,6 +40,28 @@ public class Service {
 		this.description = description;
 	}
 	
+	public void displayService(){
+		System.out.print(this.name);
+
+		int nameLength = this.name.length();
+
+		for (int i = nameLength; i < 16; i++) {
+			System.out.print(" ");
+		}
+		
+		System.out.print(this.duration);
+		
+		int durationLength = Integer.toString(duration).length();
+		
+		for(int i = durationLength; i < 10; i++){
+			System.out.print(" ");
+		}
+
+		System.out.print(this.description);
+
+		System.out.println();
+	}
+	
 	
 
 }

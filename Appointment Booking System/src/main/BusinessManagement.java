@@ -9,6 +9,7 @@ import java.util.StringTokenizer;
 
 import utility.BookingComparator;
 import utility.ReadFile;
+import utility.ServiceComparator;
 import utility.WriteFile;
 
 public class BusinessManagement {
@@ -64,13 +65,19 @@ public class BusinessManagement {
 				// To add a new service and store in text file
 				System.out.println("Please enter the name of the service\n" + "--------------------------------------");
 				String serviceName = in.nextLine();
+				
+				while(serviceName.isEmpty()){
+					System.out.println("Please enter the name of the service\n" + "--------------------------------------");
+					serviceName = in.nextLine();
+				}
+				
 
-				System.out.println("Please enter the duration of the service (minutes)\n"
+				System.out.println("Please enter the duration (minutes) of the service (only multiples of 30 mins are allowed)\n"
 						+ "--------------------------------------------------");
-
+				
 				String serviceDuration = in.nextLine();
 
-				while (!isNumericAndPositive(serviceDuration)) {
+				while (!isNumericAndPositive(serviceDuration) || !isMultiplesOf30(serviceDuration)) {
 					System.out.println("Please enter a valid duration\n" + "------------------------------");
 					serviceDuration = in.nextLine();
 				}
@@ -78,15 +85,29 @@ public class BusinessManagement {
 				System.out.println("Please enther the description of the service\n"
 						+ "----------------------------------------------");
 
+
 				String serviceDescription = in.nextLine();
+				
+				
+				while(serviceDescription.isEmpty()){
+					System.out.println("Please enter the description of the service\n" + "--------------------------------------");
+					serviceDescription = in.nextLine();
+				}
+				
 				if (serviceName != null && serviceDuration != null && serviceDescription != null) {
 					if (addService(serviceName, serviceDuration, serviceDescription))
 						System.out.println("The service has been added succesfully.");
 				}
 
 				break;
-
+				
 			case 5:
+				viewServices();
+				System.out.println("\nPress any key to return.");
+				in.nextLine();
+				break;
+
+			case 6:
 				// Logout
 				return;
 
@@ -99,59 +120,7 @@ public class BusinessManagement {
 
 	}
 
-	/*
-	 * Function to set operating time (not a requirement for now)
-	 * 
-	 * public void setOperatingTime(Scanner in) {
-	 * 
-	 * String msg = in.nextLine(); while (!isNumericAndPositive(msg)) {
-	 * System.out.println("Please enter a valid number\n" +
-	 * "-----------------------------"); msg = in.nextLine(); } do {
-	 * System.out.println("Opening Time");
-	 * 
-	 * System.out.println("Please specify the opening hour (24HR format)");
-	 * System.out.println("-----------------------------------------------");
-	 * msg = in.nextLine();
-	 * 
-	 * while (!isNumericAndPositive(msg)) {
-	 * System.out.println("Please enter a valid number\n" +
-	 * "-----------------------------"); msg = in.nextLine(); }
-	 * 
-	 * int hour = Integer.valueOf(msg);
-	 * 
-	 * System.out.println("Please specify the opening minute");
-	 * System.out.println("------------------------------------"); msg =
-	 * in.nextLine();
-	 * 
-	 * while (!isNumericAndPositive(msg)) {
-	 * System.out.println("Please enter a valid number\n" +
-	 * "-----------------------------"); msg = in.nextLine(); }
-	 * 
-	 * int minute = Integer.valueOf(msg); selectedBusiness.setOpenTime(hour,
-	 * minute); } while (selectedBusiness.getOpenTime() == null);
-	 * 
-	 * do { System.out.println("Closing Time");
-	 * System.out.println("Please specify the closing hour (24HR format)");
-	 * System.out.println("-----------------------------------------------");
-	 * msg = in.nextLine();
-	 * 
-	 * while (!isNumericAndPositive(msg)) {
-	 * System.out.println("Please enter a valid number\n" +
-	 * "-----------------------------"); msg = in.nextLine(); }
-	 * 
-	 * int hour = Integer.valueOf(msg);
-	 * 
-	 * System.out.println("Please specify the closing minute");
-	 * System.out.println("------------------------------------"); msg =
-	 * in.nextLine(); while (!isNumericAndPositive(msg)) {
-	 * System.out.println("Please enter a valid number\n" +
-	 * "-----------------------------"); msg = in.nextLine(); }
-	 * 
-	 * int minute = Integer.valueOf(msg); selectedBusiness.setCloseTime(hour,
-	 * minute); } while (selectedBusiness.getCloseTime() == null);
-	 * 
-	 * }
-	 */
+
 
 	// Function to add service that the business provide, which will be stored
 	// in a text file so it can be retrieved for the customer to view
@@ -174,6 +143,66 @@ public class BusinessManagement {
 			return true;
 		} else
 			return false;
+	}
+	
+	public void viewServices(){
+		
+		List<Service> servicesList = retrieveServices();
+		
+		System.out.println("Services for " + selectedBusiness.getName());
+		System.out.println("-------------------------------------------------------");
+		System.out.println("Name           |Duration |Description");
+		
+		for (int i = servicesList.size() - 1; i >= 0; i--) {
+			servicesList.get(i).displayService();
+		}
+
+
+	}
+
+	public List<Service> retrieveServices(){
+		
+		// To read the name of the text file in the correct format
+		StringTokenizer st = new StringTokenizer(selectedBusiness.getName(), " ");
+		String file_name = "";
+		while (st.hasMoreTokens()) {
+
+			file_name += st.nextToken();
+		}
+
+		file_name += "Services.txt";
+		
+		// Retrieve the bookings and store them in a list
+		List<Service> servicesArray = new ArrayList<Service>();
+		try {
+			ReadFile file = new ReadFile(file_name);
+			String servicesList[][] = file.retrieveBooking();
+			if (servicesList == null) {
+				System.out.println("\nThere is no bookings.");
+				return servicesArray;
+			}
+
+			else {
+				int numberOfServices = file.readLines();
+				System.out.println(numberOfServices);
+				for (int i = 0; i < numberOfServices; i++) {
+					System.out.println(servicesList[i][0]);
+					System.out.println(servicesList[i][1]);
+					servicesArray
+							.add(new Service(servicesList[i][0], servicesList[i][1], servicesList[i][2]));
+				}
+
+			}
+		}
+
+		catch (IOException e) {
+			System.out.println(e.getMessage());
+		}
+		
+		Collections.sort(servicesArray, new ServiceComparator());
+		
+		return servicesArray;
+		
 	}
 
 	// Function to retrieve bookings related to the business from the text file
@@ -344,7 +373,7 @@ public class BusinessManagement {
 
 			System.out.printf("\nWelcome %s. \nPlease choose your option\n", selectedBusiness.getName());
 			System.out.println("----------------------------\n" + "1. Employee Management \n"
-					+ "2. View Booking Summaries \n" + "3. View New Bookings \n" + "4. Add service \n" + "5. Logout \n"
+					+ "2. View Booking Summaries \n" + "3. View New Bookings \n" + "4. Add service \n" + "5. View Service \n" +"6. Logout \n"
 					+ "----------------------------");
 		}
 	}
@@ -378,5 +407,18 @@ public class BusinessManagement {
 		}
 		return true;
 	}
+	
+	public boolean isMultiplesOf30(String str) {
+		try {
+			int d = Integer.parseInt(str);
+			if (d % 30 == 0) {
+				return true;
+			}
+		} catch (NumberFormatException nfe) {
+			return false;
+		}
+		return false;
+	}
+
 
 }

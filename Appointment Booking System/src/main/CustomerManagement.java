@@ -3,16 +3,31 @@ package main;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Scanner;
 import java.util.StringTokenizer;
 
 import utility.ReadFile;
+import utility.ServiceComparator;
 
 import java.time.*;
 
 public class CustomerManagement {
 
 	static Business selectedBusiness;
+	
+	public CustomerManagement (String businessName){
+		try {
+			selectedBusiness = selectBusiness(businessName);
+		} 
+		
+		// Captures the error if the business name cannot be found in the text file
+		catch (IOException e) {
+			System.out.println(e.getMessage());
+		}
+	}
 
 	public void runMenu() throws IOException {
 
@@ -74,82 +89,13 @@ public class CustomerManagement {
 					break;
 
 				case 4:
-					System.out.println("Please choose the respective day of the Month (-1 to exit)\n");
-					int day = 0;
-					while (day != -1) {
-						day = Integer.valueOf(in.nextLine());
-						selectedBusiness.addAvailableDay(day);
-					}
+					viewServices();
+					System.out.println("\nPress any key to return.");
+					in.nextLine();
 					break;
-
+					
 				case 5:
-
-					do {
-						System.out.println("Opening Time");
-
-						System.out.println("Please specify the opening hour (24HR format)");
-						System.out.println("-----------------------------------------------");
-						msg = in.nextLine();
-
-						while (Integer.valueOf(msg) < 0 || Integer.valueOf(msg) > 24) {
-							System.out.println("Input Invalid.");
-							System.out.println("Please specify the opening hour (24HR format)");
-							System.out.println("-----------------------------------------------");
-							msg = in.nextLine();
-
-						}
-
-						int hour = Integer.valueOf(msg);
-
-						System.out.println("Please specify the opening minute");
-						System.out.println("------------------------------------");
-						msg = in.nextLine();
-
-						while (Integer.valueOf(msg) < 0 || Integer.valueOf(msg) > 60) {
-							System.out.println("Input Invalid.");
-							System.out.println("Please specify the opening minute");
-							System.out.println("------------------------------------");
-							msg = in.nextLine();
-
-						}
-						int minute = Integer.valueOf(msg);
-						selectedBusiness.setOpenTime(hour, minute);
-					} while (selectedBusiness.getOpenTime() == null);
-
-					do {
-						System.out.println("Closing Time");
-						System.out.println("Please specify the closing hour (24HR format)");
-						System.out.println("-----------------------------------------------");
-						msg = in.nextLine();
-
-						while (Integer.valueOf(msg) < 0 || Integer.valueOf(msg) > 24) {
-							System.out.println("Input Invalid.");
-							System.out.println("Please specify the closing hour (24HR format)");
-							System.out.println("-----------------------------------------------");
-							msg = in.nextLine();
-
-						}
-						int hour = Integer.valueOf(msg);
-
-						System.out.println("Please specify the closing minute");
-						System.out.println("------------------------------------");
-						msg = in.nextLine();
-						while (Integer.valueOf(msg) < 0 || Integer.valueOf(msg) > 60) {
-							System.out.println("Input Invalid.");
-							System.out.println("Please specify the closing minute");
-							System.out.println("------------------------------------");
-							msg = in.nextLine();
-
-						}
-						int minute = Integer.valueOf(msg);
-						selectedBusiness.setCloseTime(hour, minute);
-					} while (selectedBusiness.getCloseTime() == null);
-					break;
-
-				case 6:
-					selectedBusiness = null;
-					break;
-
+					return;
 				}
 			}
 		}
@@ -192,108 +138,67 @@ public class CustomerManagement {
 		ScheduleManagement.interfaceShowGeneralAvailability();
 		
 	}
-
-	/*public void viewAvailability() {
-
-		if (selectedBusiness.getAvailableDays().isEmpty()) {
-			System.out.println("The business has either no available days or has not given its availability yet");
-			return;
+	
+	public void viewServices(){
+		
+		List<Service> servicesList = retrieveServices();
+		
+		System.out.println("Services for " + selectedBusiness.getName());
+		System.out.println("-------------------------------------------------------");
+		System.out.println("Name           |Duration |Description");
+		
+		for (int i = servicesList.size() - 1; i >= 0; i--) {
+			servicesList.get(i).displayService();
 		}
-
-		LocalDate localDate = LocalDate.now();
-		LocalDate nextMonth = localDate.plusMonths(1);
-		int dayOfNextMonth = nextMonth.getDayOfMonth();
-		LocalDate startOfNextMonth = nextMonth.minusDays(dayOfNextMonth - 1);
-		int valueOfStartDay = startOfNextMonth.getDayOfWeek().getValue();
-		int dayCount = 0;
-		int availableDayIndex = 0;
-
+		
 		System.out.println();
-		System.out.println(nextMonth.getMonth());
-		System.out.println(" Su| Mo| Tu| We| Th| Fr| Sa|");
+		
+	}
 
-		if (valueOfStartDay == 7) {
-			
-			dayCount = 1;
-			
-		} else {
-			
-			dayCount = -(valueOfStartDay) + 1;
-			
+	public List<Service> retrieveServices(){
+		
+		// To read the name of the text file in the correct format
+		StringTokenizer st = new StringTokenizer(selectedBusiness.getName(), " ");
+		String file_name = "";
+		while (st.hasMoreTokens()) {
+
+			file_name += st.nextToken();
 		}
 
-		for (; dayCount <= nextMonth.lengthOfMonth(); dayCount++) {
-
-			if (dayCount <= 0) {
-				System.out.print("   |");
+		file_name += "Services.txt";
+		
+		// Retrieve the bookings and store them in a list
+		List<Service> servicesArray = new ArrayList<Service>();
+		try {
+			ReadFile file = new ReadFile(file_name);
+			String servicesList[][] = file.retrieveBooking();
+			if (servicesList == null) {
+				System.out.println("\nThere is no bookings.");
+				return servicesArray;
 			}
 
-			else if (dayCount < 10) {
-				if (selectedBusiness.getAvailableDays().get(availableDayIndex) == dayCount) {
-					System.out.printf(" *%d|", dayCount);
-					if (selectedBusiness.getAvailableDays().size() > availableDayIndex + 1)
-						availableDayIndex++;
-				} else
-					System.out.printf("  %d|", dayCount);
+			else {
+				int numberOfServices = file.readLines();
+				System.out.println(numberOfServices);
+				for (int i = 0; i < numberOfServices; i++) {
+					System.out.println(servicesList[i][0]);
+					System.out.println(servicesList[i][1]);
+					servicesArray
+							.add(new Service(servicesList[i][0], servicesList[i][1], servicesList[i][2]));
+				}
+
 			}
-
-			else if (dayCount >= 10) {
-				if (selectedBusiness.getAvailableDays().get(availableDayIndex) == dayCount) {
-					System.out.printf("*%d|", dayCount);
-					if (selectedBusiness.getAvailableDays().size() > availableDayIndex + 1)
-						availableDayIndex++;
-				} else
-					System.out.printf(" %d|", dayCount);
-			}
-
-			if (valueOfStartDay == 7)
-				if (dayCount == 7 || dayCount == 14 || dayCount == 21 || dayCount == 28) {
-					System.out.println();
-				}
-
-			if (valueOfStartDay == 1)
-				if (dayCount == 6 || dayCount == 13 || dayCount == 20 || dayCount == 27) {
-					System.out.println();
-				}
-
-			if (valueOfStartDay == 2)
-				if (dayCount == 5 || dayCount == 12 || dayCount == 19 || dayCount == 26) {
-					System.out.println();
-				}
-
-			if (valueOfStartDay == 3)
-				if (dayCount == 4 || dayCount == 11 || dayCount == 18 || dayCount == 25) {
-					System.out.println();
-				}
-
-			if (valueOfStartDay == 4)
-				if (dayCount == 3 || dayCount == 10 || dayCount == 17 || dayCount == 24 || dayCount == 31) {
-					System.out.println();
-				}
-
-			if (valueOfStartDay == 5)
-				if (dayCount == 2 || dayCount == 9 || dayCount == 16 || dayCount == 23 || dayCount == 30) {
-					System.out.println();
-				}
-
-			if (valueOfStartDay == 6)
-				if (dayCount == 1 || dayCount == 8 || dayCount == 15 || dayCount == 22 || dayCount == 29) {
-					System.out.println();
-				}
-
 		}
 
-		System.out.println();
-		System.out.println("Note: Date with * is available");
-
-		if (selectedBusiness.getOpenTime() == null || selectedBusiness.getCloseTime() == null) {
-			System.out.println("The selected business has not given its opening or closing time");
+		catch (IOException e) {
+			System.out.println(e.getMessage());
 		}
-
-		else
-			System.out.print("The business opens at " + selectedBusiness.getOpenTime() + " to "
-					+ selectedBusiness.getCloseTime() + "\n");
-	}*/
+		
+		Collections.sort(servicesArray, new ServiceComparator());
+		
+		return servicesArray;
+		
+	}
 
 	public void printMenu() {
 		if (selectedBusiness == null) {
@@ -307,9 +212,9 @@ public class CustomerManagement {
 
 		// Actions menu
 		if (selectedBusiness != null) {
-			System.out.printf("%s has been selected. Please choose your option\n", selectedBusiness.getName());
+			System.out.printf("Welcome to %s. Please choose your option\n", selectedBusiness.getName());
 			System.out.println("----------------------------\n" + "1. Change Business \n" + "2. View Availability \n"
-					+ "3. View Business Opening Days and Time \n" + "4. Return to Main Menu \n"
+					+ "3. View Business Opening Days and Time \n" + "4. View Services \n" + "5. Logout \n"
 					+ "----------------------------");
 		}
 	}

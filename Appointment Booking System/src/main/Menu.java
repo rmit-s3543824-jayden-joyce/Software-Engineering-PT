@@ -25,7 +25,7 @@ public class Menu {
 					selection = Login.login();
 					if(selection == 1)
 					{
-						CustomerManagement cManage = new CustomerManagement();
+						CustomerManagement cManage = new CustomerManagement("Suggar Haircut");
 						cManage.runMenu();
 					}
 					else if(selection == 2)
