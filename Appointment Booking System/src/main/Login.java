@@ -8,6 +8,7 @@ public class Login
 	static String delim = "\\|";
 	static String customerList = "customerList.txt";
 	static String businessOwnerList = "businessOwnerList.txt";
+	public static String currentUser;
 	
 	public static int login() throws IOException
 	{
@@ -62,6 +63,7 @@ public class Login
 			if(verifyLoginDetails(Username, Password, customerList) == true)
 			{
 				System.out.println("Login successful!\n");
+				currentUser = Username;
 				return 1;
 			}
 		}
@@ -70,6 +72,7 @@ public class Login
 			if(verifyLoginDetails(Username, Password, businessOwnerList) == true)
 			{
 				System.out.println("Login successful!\n");
+				currentUser = Username;
 				return 2;
 			}
 		}
