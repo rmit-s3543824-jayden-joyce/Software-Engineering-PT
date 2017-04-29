@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.StringTokenizer;
 
+import utility.BookingComparator;
 import utility.ReadFile;
 import utility.ServiceComparator;
 
@@ -20,6 +21,7 @@ public class CustomerManagement {
 	
 	public CustomerManagement (String businessName){
 		try {
+			System.out.println(Login.currentUser);
 			selectedBusiness = selectBusiness(businessName);
 		} 
 		
@@ -75,26 +77,32 @@ public class CustomerManagement {
 						selectBusiness(businessName);
 					}
 					break;
-
+					
 				case 2:
-					viewAvailability();
-					System.out.println("Press any key to return.");
+					viewMyBookings();
+					System.out.println("Press enter to return.");
 					in.nextLine();
 					break;
 
 				case 3:
-					selectedBusiness.displayOpeningDayAndTime();
-					System.out.println("Press any key to return.");
+					viewAvailability();
+					System.out.println("Press enter to return.");
 					in.nextLine();
 					break;
 
 				case 4:
+					selectedBusiness.displayOpeningDayAndTime();
+					System.out.println("Press enter to return.");
+					in.nextLine();
+					break;
+
+				case 5:
 					viewServices();
-					System.out.println("\nPress any key to return.");
+					System.out.println("\nPress enter to return.");
 					in.nextLine();
 					break;
 					
-				case 5:
+				case 6:
 					return;
 				}
 			}
@@ -147,13 +155,79 @@ public class CustomerManagement {
 		System.out.println("-------------------------------------------------------");
 		System.out.println("Name           |Duration |Description");
 		
-		for (int i = servicesList.size() - 1; i >= 0; i--) {
+		for (int i = 0; i <= servicesList.size()-1; i++) {
 			servicesList.get(i).displayService();
 		}
 		
 		System.out.println();
 		
 	}
+	
+	// Function to retrieve bookings related to the business from the text file
+	// and present them in an array List
+	public List<Booking> retrieveBooking() {
+
+		// To read the name of the text file in the correct format
+		StringTokenizer st = new StringTokenizer(selectedBusiness.getName(), " ");
+		String file_name = "";
+		while (st.hasMoreTokens()) {
+
+			file_name += st.nextToken();
+		}
+
+		file_name += "Bookings.txt";
+
+		// Retrieve the bookings and store them in a list
+		List<Booking> bookingArray = new ArrayList<Booking>();
+		try {
+			ReadFile file = new ReadFile(file_name);
+			String bookingList[][] = file.retrieveBooking();
+			if (bookingList == null) {
+				System.out.println("\nThere is no bookings.");
+				return bookingArray;
+			}
+
+			else {
+				int numberOfBookings = file.readLines();
+				for (int i = 0; i < numberOfBookings; i++) {
+					bookingArray
+							.add(new Booking(bookingList[i][0], bookingList[i][1], bookingList[i][2], bookingList[i][3],
+									bookingList[i][4], bookingList[i][5], bookingList[i][6], bookingList[i][7] , bookingList[i][8]));
+				}
+
+			}
+		}
+
+		catch (IOException e) {
+			System.out.println(e.getMessage());
+		}
+
+		// Sorting the bookings according to date and time
+		Collections.sort(bookingArray, new BookingComparator());
+		return bookingArray;
+	}
+
+	// Using the function retrieveBooking to get the arrayList of bookings, then
+	// present all the bookings in an orderly fashion
+
+	public void viewMyBookings() {
+
+		List<Booking> bookingList = retrieveBooking(); // Bookings are retrieved
+														// and stored in an
+														// array list.
+
+		System.out.println("Bookings for " + Login.currentUser);
+		System.out.println("-------------------------------------------------------");
+		System.out.println("Date      |Time |Status  |Customer   |Employee   |Service");
+
+		
+		for (int i = bookingList.size() - 1; i >= 0; i--) {
+			if(Login.currentUser.compareTo(bookingList.get(i).getCustomerName())==0)
+			bookingList.get(i).displayBooking();
+		}
+
+	}
+	
 
 	public List<Service> retrieveServices(){
 		
@@ -173,16 +247,13 @@ public class CustomerManagement {
 			ReadFile file = new ReadFile(file_name);
 			String servicesList[][] = file.retrieveBooking();
 			if (servicesList == null) {
-				System.out.println("\nThere is no bookings.");
+				System.out.println("\nThere is no services.");
 				return servicesArray;
 			}
 
 			else {
 				int numberOfServices = file.readLines();
-				System.out.println(numberOfServices);
 				for (int i = 0; i < numberOfServices; i++) {
-					System.out.println(servicesList[i][0]);
-					System.out.println(servicesList[i][1]);
 					servicesArray
 							.add(new Service(servicesList[i][0], servicesList[i][1], servicesList[i][2]));
 				}
@@ -213,8 +284,8 @@ public class CustomerManagement {
 		// Actions menu
 		if (selectedBusiness != null) {
 			System.out.printf("Welcome to %s. Please choose your option\n", selectedBusiness.getName());
-			System.out.println("----------------------------\n" + "1. Change Business \n" + "2. View Availability \n"
-					+ "3. View Business Opening Days and Time \n" + "4. View Services \n" + "5. Logout \n"
+			System.out.println("----------------------------\n" + "1. Change Business \n" + "2. View My Bookings \n" + "3. View Availability \n"
+					+ "4. View Business Opening Days and Time \n" + "5. View Services \n" + "6. Logout \n"
 					+ "----------------------------");
 		}
 	}
