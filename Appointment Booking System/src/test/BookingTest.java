@@ -18,8 +18,8 @@ public class BookingTest {
 	
 	@Before
 	public void setUp() throws Exception {
-		oldBooking = new Booking("Active","2017","3","20","11","30","Jenny","Lawrence");
-		newBooking = new Booking("2017","4","11","15","00","Alfred","Johannah");
+		oldBooking = new Booking("Active","2017","3","20","11","30","Jenny","Lawrence","Men's Haircut");
+		newBooking = new Booking("2017","4","11","15","00","Alfred","Johannah","Men's Haircut");
 	}
 
 	
@@ -41,7 +41,7 @@ public class BookingTest {
 	// To test if the system recognize new bookings when they are initialized with a new booking constructor
 	@Test
 	public void testNewBookingStatus(){
-		assertEquals(newBooking.getStatus(),"New");
+		assertEquals(newBooking.getStatus(),"NEW");
 	}
 	
 	// Manipulate the date of the booking to see if the function is udpating the status of the booking according to the time

@@ -34,7 +34,7 @@ public class CustomerManagementTest {
 
 	@Test
 	public void testViewAvailability() throws IOException {
-		CustomerManagement cManage = new CustomerManagement();
+		CustomerManagement cManage = new CustomerManagement("Suggar Haircut");
 		cManage.viewAvailability();
 		
 	}
