@@ -124,5 +124,34 @@ public class Booking {
 		System.out.println();
 
 	}
+	
+	
+	// To display the booking
+	public void displayBookingCustomer() {
+
+		System.out.print(this.date + " " + this.time + " ");
+
+
+
+		System.out.print(this.customerName);
+
+		int customerNameLength = this.customerName.length();
+
+		for (int i = customerNameLength; i < 12; i++) {
+			System.out.print(" ");
+		}
+
+		int employeeNameLength = this.employeeName.length();
+		System.out.print(this.employeeName);
+
+		for(int i = employeeNameLength; i < 12; i ++){
+			System.out.print(" ");
+		}
+		
+		System.out.print(this.serviceType);
+		
+		System.out.println();
+
+	}
 
 }

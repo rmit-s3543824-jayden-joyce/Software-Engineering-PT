@@ -12,6 +12,7 @@ import java.util.StringTokenizer;
 import utility.BookingComparator;
 import utility.ReadFile;
 import utility.ServiceComparator;
+import utility.WriteFile;
 
 import java.time.*;
 
@@ -58,7 +59,9 @@ public class CustomerManagement {
 					break;
 
 				case 2:
-					System.out.println("Function not implemented yet");
+					viewMyBookings();
+					System.out.println("Press enter to return.");
+					in.nextLine();
 					return;
 
 				case 3:
@@ -69,6 +72,8 @@ public class CustomerManagement {
 
 			else {
 				switch (userInput) {
+				
+				/*
 				case 1:
 					selectedBusiness = null;
 					while (selectedBusiness == null) {
@@ -77,11 +82,117 @@ public class CustomerManagement {
 						selectBusiness(businessName);
 					}
 					break;
-					
-				case 2:
+				*/
+				case 1:
 					viewMyBookings();
 					System.out.println("Press enter to return.");
 					in.nextLine();
+					break;
+					
+				case 2:
+					// To add new booking
+					List<Service> servicesList = retrieveServices();
+
+					for (int i = 1; i <= servicesList.size(); i++) {
+						System.out.println(i + ". " + servicesList.get(i - 1).getName() + " "
+								+ servicesList.get(i - 1).getDuration() + "minutes");
+					}
+
+					String serviceIndex = "";
+
+					while (!isNumericAndPositive(serviceIndex) || serviceIndex.isEmpty()) {
+						System.out
+								.println("Please choose the service required\n" + "--------------------------------------");
+						serviceIndex = in.nextLine();
+
+						if (isNumericAndPositive(serviceIndex)) {
+							if (Integer.parseInt(serviceIndex) > servicesList.size()) {
+								serviceIndex = "INVALID";
+							}
+						}
+					}
+					
+					String serviceType = servicesList.get(Integer.parseInt(serviceIndex)-1).getName();
+					
+					System.out.println(servicesList.get(Integer.parseInt(serviceIndex) - 1).getName() + " selected.");
+
+					LocalDate currentDate = LocalDate.now();
+					for (int i = 1; i <= 7; i++) {
+						System.out.println(i + ". " + currentDate.plusDays(i).toString());
+					}
+
+					System.out
+							.println("Please choose the date of the booking \n" + "--------------------------------------");
+					String date = in.nextLine();
+
+					if (isNumericAndPositive(date)) {
+						if (Integer.parseInt(date) > 7) {
+							date = "INVALID";
+						}
+					}
+
+					while (!isNumericAndPositive(date) || date.isEmpty()) {
+						System.out.println("Invalid input.");
+						date = in.nextLine();
+
+						if (isNumericAndPositive(date)) {
+							if (Integer.parseInt(date) > 7) {
+								date = "INVALID";
+							}
+						}
+
+					}
+
+					LocalDate bookingDate = currentDate.plusDays(Integer.parseInt(date));
+					System.out.println(bookingDate.toString() + " selected.");
+
+					String hour = "";
+					String minute = "";
+					LocalTime bookingTime = null;
+
+					while (bookingTime == null) {
+						System.out.println(
+								"Please enter the hour of the booking time \n" + "---------------------------------");
+						hour = in.nextLine();
+						System.out.println("Please enter the minute of the booking time (00 or 30) \n"
+								+ "---------------------------------");
+						minute = in.nextLine();
+
+						if (isNumericAndNeutral(minute)) {
+							while (Integer.parseInt(minute) % 30 != 0 || Integer.parseInt(minute) >= 60) {
+								System.out.println("Please enter the minute of the booking time (00 or 30) \n"
+										+ "---------------------------------");
+								minute = in.nextLine();
+							}
+
+							if (isNumericAndPositive(hour)) {
+								bookingTime = LocalTime.of(Integer.valueOf(hour), Integer.valueOf(minute));
+
+								if (bookingTime.isBefore(selectedBusiness.getOpenTime())
+										|| bookingTime.isAfter(selectedBusiness.getCloseTime())) {
+									System.out.println("The selected time is not within the business time.");
+									bookingTime = null;
+								}
+							}
+
+						}
+					}
+
+					EmployeeManagement.listEmployees();
+
+					String employeeID = ScheduleManagement.requestID();
+
+					while (employeeID.isEmpty()) {
+						System.out.println("Please enter the employee ID\n" + "--------------------------------------");
+						employeeID = in.nextLine();
+					}
+
+					String customerName = "";
+					
+					customerName = Login.currentUser;
+					
+					addBooking(bookingDate.getYear(),bookingDate.getMonthValue(),bookingDate.getDayOfMonth(),bookingTime.getHour(),bookingTime.getMinute(),customerName,employeeID,serviceType);
+
 					break;
 
 				case 3:
@@ -218,12 +329,12 @@ public class CustomerManagement {
 
 		System.out.println("Bookings for " + Login.currentUser);
 		System.out.println("-------------------------------------------------------");
-		System.out.println("Date      |Time |Status  |Customer   |Employee   |Service");
+		System.out.println("Date      |Time |Customer   |Employee   |Service");
 
 		
 		for (int i = bookingList.size() - 1; i >= 0; i--) {
 			if(Login.currentUser.compareTo(bookingList.get(i).getCustomerName())==0)
-			bookingList.get(i).displayBooking();
+			bookingList.get(i).displayBookingCustomer();
 		}
 
 	}
@@ -270,6 +381,28 @@ public class CustomerManagement {
 		return servicesArray;
 		
 	}
+	
+	// Function to add new bookings to be stored in the text file.
+	public boolean addBooking(int year, int month, int date, int hour, int minute, String customerName,
+			String employeeName, String serviceType) throws IOException {
+
+		StringTokenizer st = new StringTokenizer(selectedBusiness.getName(), " ");
+		String file_name = "";
+		while (st.hasMoreTokens()) {
+			file_name += st.nextToken();
+		}
+
+		file_name += "Bookings.txt";
+
+		WriteFile writer = new WriteFile(file_name, true);
+		if (writer.writeToFile("\n" + "NEW" + "|" + year + "|" + month + "|" + date + "|" + hour + "|" + minute + "|"
+				+ customerName + "|" + employeeName + "|" + serviceType)) {
+			System.out.println("Booking added successfully");
+			return true;
+		} else
+			return false;
+
+	}
 
 	public void printMenu() {
 		if (selectedBusiness == null) {
@@ -284,7 +417,7 @@ public class CustomerManagement {
 		// Actions menu
 		if (selectedBusiness != null) {
 			System.out.printf("Welcome to %s. Please choose your option\n", selectedBusiness.getName());
-			System.out.println("----------------------------\n" + "1. Change Business \n" + "2. View My Bookings \n" + "3. View Availability \n"
+			System.out.println("----------------------------\n" + "1. View My Bookings \n" + "2. Add Booking \n" + "3. View Availability \n"
 					+ "4. View Business Opening Days and Time \n" + "5. View Services \n" + "6. Logout \n"
 					+ "----------------------------");
 		}
@@ -298,6 +431,18 @@ public class CustomerManagement {
 			}
 		}
 		catch(NumberFormatException nfe){
+			return false;
+		}
+		return true;
+	}
+	
+	public boolean isNumericAndNeutral(String str) {
+		try {
+			int d = Integer.parseInt(str);
+			if (d < 0) {
+				return false;
+			}
+		} catch (NumberFormatException nfe) {
 			return false;
 		}
 		return true;
