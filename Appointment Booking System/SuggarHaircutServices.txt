@@ -1,5 +1,5 @@
-Hair Washing|30|Keeping your hair clean by washing it with our top-notch shampoo
-
-Men's Haircut|45|Cutting your hair HAHAHA
-
-
+Men's Haircut|60|Style cut for men
+Hair Dying|120|Dye your hair with any option from our huge range of available colours
+Hair Washing|30|To wash your hair with our top-notch shampoo
+Consultation|30|To seek advice or consult our professionals on hair queries
+Hair Treatment|120|Treament for damaged hair with our top-notch hair treatment package

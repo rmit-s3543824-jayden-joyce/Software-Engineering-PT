@@ -150,7 +150,7 @@ public class Registration {
 	}
 	
 	/* ensures that the user has actually entered a data value */
-	private static boolean isNotBlank(String value) {
+	public static boolean isNotBlank(String value) {
 		
 		if (value.isEmpty()) {
 
@@ -167,7 +167,7 @@ public class Registration {
 	}
 	
 	/* checks that the password matches the requirements */
-	private static boolean passwordRequirementsTest(String password) {
+	public static boolean passwordRequirementsTest(String password) {
 		
 		if (password.matches("(.*)\\|(.*)")) {
 			
@@ -189,7 +189,7 @@ public class Registration {
 	
 	/* checks that the two passwords enter match each other and thus that 
 	 * the user has not accidentally entered an undesired password */
-	private static boolean doPasswordsMatch(String password, String passwordVerification) {
+	public static boolean doPasswordsMatch(String password, String passwordVerification) {
 		
 		int strcmp = password.compareTo(passwordVerification);
 		
@@ -208,7 +208,7 @@ public class Registration {
 	}
 
 	/* checks that the phone number is a phone number */
-	private static boolean isPhoneNumber(String number) {
+	public static boolean isPhoneNumber(String number) {
 		
 		if (number.matches("(\\+?614)\\d{8}|(04)\\d{8}")) {
 
@@ -225,7 +225,7 @@ public class Registration {
 	}
 	
 	/* checks that the username is unique */
-	private static boolean isUniqueUser(String username) {
+	public static boolean isUniqueUser(String username) {
 		
 		String deliminator = "\\|";
 		String[] dataValues;
@@ -260,7 +260,7 @@ public class Registration {
 	}
 	
 	/* checks that the username meets requirements */
-	private static boolean usernameRequirementsTest(String username) {
+	public static boolean usernameRequirementsTest(String username) {
 		
 		if (username.matches("(.*)\\|(.*)")) {
 			

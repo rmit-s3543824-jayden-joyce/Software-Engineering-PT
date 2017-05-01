@@ -53,7 +53,7 @@ public class Service {
 		
 		int durationLength = Integer.toString(duration).length();
 		
-		for(int i = durationLength; i < 10; i++){
+		for(int i = durationLength; i < 20; i++){
 			System.out.print(" ");
 		}
 

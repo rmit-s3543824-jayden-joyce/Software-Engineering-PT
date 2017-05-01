@@ -196,7 +196,7 @@ public class ScheduleManagement {
 	}
 	
 	//contains console code to request ID. TODO: Add return to main menu on blank input
-	private static String requestID() {
+	public static String requestID() {
 		
 		String employeeID = null;
 

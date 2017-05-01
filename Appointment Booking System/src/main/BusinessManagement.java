@@ -53,11 +53,12 @@ public class BusinessManagement {
 
 			case 2:
 				// To add new booking
+				System.out.println("Adding new booking\n" + "-----------------------------");
 				List<Service> servicesList = retrieveServices();
 
 				for (int i = 1; i <= servicesList.size(); i++) {
 					System.out.println(i + ". " + servicesList.get(i - 1).getName() + " "
-							+ servicesList.get(i - 1).getDuration() + "minutes");
+							+ servicesList.get(i - 1).getDuration() + " minutes");
 				}
 
 				String serviceIndex = "";
@@ -113,41 +114,35 @@ public class BusinessManagement {
 				LocalTime bookingTime = null;
 
 				while (bookingTime == null) {
-					System.out.println(
-							"Please enter the hour of the booking time \n" + "---------------------------------");
-					hour = in.nextLine();
-					System.out.println("Please enter the minute of the booking time (00 or 30) \n"
-							+ "---------------------------------");
-					minute = in.nextLine();
 
-					if (isNumericAndNeutral(minute)) {
-						while (Integer.parseInt(minute) % 30 != 0 || Integer.parseInt(minute) >= 60) {
-							System.out.println("Please enter the minute of the booking time (00 or 30) \n"
-									+ "---------------------------------");
-							minute = in.nextLine();
-						}
+					while (!isNumericAndPositive(hour)) {
+						System.out.println("Please enter the hour of the booking time \n"
+								+ "---------------------------------");
+						hour = in.nextLine();
+					}
+					while (!isNumericAndNeutral(minute) || Integer.parseInt(minute) % 30 != 0
+							|| Integer.parseInt(minute) >= 60) {
+						System.out.println("Please enter the minute of the booking time (00 or 30) \n"
+								+ "---------------------------------");
+						minute = in.nextLine();
+					}
 
-						if (isNumericAndPositive(hour)) {
-							bookingTime = LocalTime.of(Integer.valueOf(hour), Integer.valueOf(minute));
+					bookingTime = LocalTime.of(Integer.valueOf(hour), Integer.valueOf(minute));
 
-							if (bookingTime.isBefore(selectedBusiness.getOpenTime())
-									|| bookingTime.isAfter(selectedBusiness.getCloseTime())) {
-								System.out.println("The selected time is not within the business time.");
-								bookingTime = null;
-							}
-						}
+					if (bookingTime.isBefore(selectedBusiness.getOpenTime())
+							|| bookingTime.isAfter(selectedBusiness.getCloseTime())) {
+						System.out.println("The selected time is not within the business time.");
+						bookingTime = null;
+						hour = "INVALID";
+						minute = "INVALID";
 
 					}
 				}
 
 				EmployeeManagement.listEmployees();
-
+				System.out.println("Please enter the employee's ID\n" + "--------------------------------------");
 				String employeeID = ScheduleManagement.requestID();
 
-				while (employeeID.isEmpty()) {
-					System.out.println("Please enter the employee ID\n" + "--------------------------------------");
-					employeeID = in.nextLine();
-				}
 
 				String customerName = "";
 
@@ -262,7 +257,7 @@ public class BusinessManagement {
 
 		System.out.println("Services for " + selectedBusiness.getName());
 		System.out.println("-------------------------------------------------------");
-		System.out.println("Name           |Duration |Description");
+		System.out.println("Name           |Duration (Minutes) |Description");
 
 		for (int i = 0; i <= servicesList.size() - 1; i++) {
 			servicesList.get(i).displayService();

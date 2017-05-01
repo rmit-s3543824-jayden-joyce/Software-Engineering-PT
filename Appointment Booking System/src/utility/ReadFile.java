@@ -87,7 +87,7 @@ public class ReadFile {
 		
 		
 		int numberOfLines = readLines();
-		String[][] bookingList = new String[numberOfLines][8];
+		String[][] bookingList = new String[numberOfLines][9];
 
 		int i;
 		for (i = 0; i < numberOfLines; i++) {
@@ -103,6 +103,31 @@ public class ReadFile {
 			
 		}
 		return bookingList;
+	}
+	
+	public String[][] retrieveServices() throws IOException{
+		
+		FileReader fr = new FileReader(this.path);
+		BufferedReader textReader = new BufferedReader(fr);
+		
+		
+		int numberOfLines = readLines();
+		String[][] servicesList = new String[numberOfLines][3];
+
+		int i;
+		for (i = 0; i < numberOfLines; i++) {
+			String currentLine = textReader.readLine();
+			StringTokenizer st = new StringTokenizer(currentLine, "|");
+
+
+			int j = 0;
+			while (st.hasMoreTokens()) {
+				servicesList[i][j] = st.nextToken();
+				j++;
+			}
+			
+		}
+		return servicesList;
 	}
 	
 }
