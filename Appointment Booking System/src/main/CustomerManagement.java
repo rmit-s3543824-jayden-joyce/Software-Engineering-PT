@@ -95,7 +95,7 @@ public class CustomerManagement {
 
 					for (int i = 1; i <= servicesList.size(); i++) {
 						System.out.println(i + ". " + servicesList.get(i - 1).getName() + " "
-								+ servicesList.get(i - 1).getDuration() + " minutes");
+								+ servicesList.get(i - 1).getDuration() + "minutes");
 					}
 
 					String serviceIndex = "";
@@ -179,10 +179,13 @@ public class CustomerManagement {
 					}
 
 					EmployeeManagement.listEmployees();
-					System.out.println("Please enter the employee's ID\n" + "--------------------------------------");
+
 					String employeeID = ScheduleManagement.requestID();
 
-
+					while (employeeID.isEmpty()) {
+						System.out.println("Please enter the employee ID\n" + "--------------------------------------");
+						employeeID = in.nextLine();
+					}
 
 					String customerName = "";
 					
