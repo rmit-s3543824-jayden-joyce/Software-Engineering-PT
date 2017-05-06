@@ -16,8 +16,8 @@ public class BusinessTest {
 
 	@Before
 	public void setUp() throws Exception {
-		business = new Business("Sui Haircut", "Sui", "15 Lonsdale Street", "0412345678", "suilogin", "suipassword",
-				"9", "00", "18", "00");
+		business = new Business("Suggar Haircut", "Suggar", "15 Lonsdale Street", "0412345678", "1;2;3;4;5",
+				"10;0;9;0;9;0;9;0;10;30", "18;0;18;30;18;30;18;30;17;30");
 	}
 
 	// To test the constructors if they are constructing the bookings correctly,
@@ -28,8 +28,6 @@ public class BusinessTest {
 		assertEquals(business.getOwner(), "Sui");
 		assertEquals(business.getAddress(), "15 Lonsdale Street");
 		assertEquals(business.getPhone(), "0412345678");
-		assertEquals(business.getUsername(), "suilogin");
-		assertEquals(business.getPassword(), "suipassword");
 		assertEquals(business.getOpenTime(), LocalTime.of(9, 00));
 		assertEquals(business.getCloseTime(), LocalTime.of(18, 00));
 	}

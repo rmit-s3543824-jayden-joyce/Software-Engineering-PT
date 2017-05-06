@@ -32,8 +32,6 @@ public class ReadFile {
 		textReader.close();
 		return textData;
 	}
-	
-
 
 	public String[] FindBusiness(String businessName) throws IOException {
 
@@ -79,13 +77,12 @@ public class ReadFile {
 
 		return numberOfLines;
 	}
-	
-	public String[][] retrieveBooking() throws IOException{
-		
+
+	public String[][] retrieveBooking() throws IOException {
+
 		FileReader fr = new FileReader(this.path);
 		BufferedReader textReader = new BufferedReader(fr);
-		
-		
+
 		int numberOfLines = readLines();
 		String[][] bookingList = new String[numberOfLines][9];
 
@@ -94,23 +91,21 @@ public class ReadFile {
 			String currentLine = textReader.readLine();
 			StringTokenizer st = new StringTokenizer(currentLine, "|");
 
-
 			int j = 0;
 			while (st.hasMoreTokens()) {
 				bookingList[i][j] = st.nextToken();
 				j++;
 			}
-			
+
 		}
 		return bookingList;
 	}
-	
-	public String[][] retrieveServices() throws IOException{
-		
+
+	public String[][] retrieveServices() throws IOException {
+
 		FileReader fr = new FileReader(this.path);
 		BufferedReader textReader = new BufferedReader(fr);
-		
-		
+
 		int numberOfLines = readLines();
 		String[][] servicesList = new String[numberOfLines][3];
 
@@ -119,15 +114,37 @@ public class ReadFile {
 			String currentLine = textReader.readLine();
 			StringTokenizer st = new StringTokenizer(currentLine, "|");
 
-
 			int j = 0;
 			while (st.hasMoreTokens()) {
 				servicesList[i][j] = st.nextToken();
 				j++;
 			}
-			
+
 		}
 		return servicesList;
 	}
-	
+
+	public String[][] retrieveBusiness() throws IOException {
+
+		FileReader fr = new FileReader(this.path);
+		BufferedReader textReader = new BufferedReader(fr);
+
+		int numberOfLines = readLines();
+		String[][] businessList = new String[numberOfLines][9];
+
+		int i;
+		for (i = 0; i < numberOfLines; i++) {
+			String currentLine = textReader.readLine();
+			StringTokenizer st = new StringTokenizer(currentLine, "|");
+
+			int j = 0;
+			while (st.hasMoreTokens()) {
+				businessList[i][j] = st.nextToken();
+				j++;
+			}
+
+		}
+		return businessList;
+	}
+
 }
