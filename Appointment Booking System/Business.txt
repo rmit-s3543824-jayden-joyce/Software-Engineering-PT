@@ -1,2 +1,2 @@
-Suggar Haircut|Jeremy|123 Pacific Road|0412345678|SuggarUserName|SuggarPassword|1;2;3;4;5|9|0|17|0|
-
+Suggar Haircut|Jimmy|21 Swanston Street|0479798686|1;2;3;4;5|10;0;9;0;9;0;9;0;10;30|18;0;18;30;18;30;18;30;17;30
+Relaxing Massaging|Alex|456 Oceanic Road|0424689999|1;2;3;4;5|9;30;9;30;9;30;9;30;9;30|18;0;18;0;18;0;18;0;18;0
