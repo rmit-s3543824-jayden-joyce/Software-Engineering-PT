@@ -141,6 +141,14 @@ public class CustomerManagement {
 
 					LocalDate bookingDate = currentDate.plusDays(Integer.parseInt(date));
 					System.out.println(bookingDate.toString() + " selected.");
+					
+					int dayOfWeek = bookingDate.getDayOfWeek().getValue();
+					int dayIndex = selectedBusiness.getIndexOfSelectedDay(dayOfWeek);
+					
+					if(dayIndex == 0){
+						System.out.println("The business is not operating on the selected day.");
+						break;
+					}
 
 					String hour = "";
 					String minute = "";
@@ -149,8 +157,8 @@ public class CustomerManagement {
 					while (bookingTime == null) {
 
 						while (!isNumericAndPositive(hour)) {
-							System.out.println("Please enter the hour of the booking time \n"
-									+ "---------------------------------");
+							System.out.println(
+									"Please enter the hour of the booking time \n" + "---------------------------------");
 							hour = in.nextLine();
 						}
 						while (!isNumericAndNeutral(minute) || Integer.parseInt(minute) % 30 != 0
@@ -161,9 +169,9 @@ public class CustomerManagement {
 						}
 
 						bookingTime = LocalTime.of(Integer.valueOf(hour), Integer.valueOf(minute));
-
-						if (bookingTime.isBefore(selectedBusiness.getOpenTime())
-								|| bookingTime.isAfter(selectedBusiness.getCloseTime())) {
+						
+						if (bookingTime.isBefore(selectedBusiness.getOpenTime().get(dayIndex))
+								|| bookingTime.isAfter(selectedBusiness.getCloseTime().get(dayIndex))) {
 							System.out.println("The selected time is not within the business time.");
 							bookingTime = null;
 							hour = "INVALID";
@@ -211,35 +219,58 @@ public class CustomerManagement {
 	}
 
 	public Business selectBusiness(String businessName) throws IOException {
+
+		Business selectedBusiness = null;
+		List<Business> businessList = retrieveBusiness();
+
+		for (int i = 0; i < businessList.size(); i++) {
+			if (businessList.get(i).getName().compareTo(businessName) == 0) {
+				selectedBusiness = businessList.get(i);
+			}
+		}
+
+		if (selectedBusiness == null) {
+			System.out.println("The business does not exist.");
+		}
+		return selectedBusiness;
+
+	}
+	
+	public List<Business> retrieveBusiness() {
+
+		// To read the name of the text file in the correct format
 		String file_name = "Business.txt";
 
+		// Retrieve the bookings and store them in a list
+		List<Business> businessArray = new ArrayList<Business>();
 		try {
 			ReadFile file = new ReadFile(file_name);
-			String businessTokens[] = file.FindBusiness(businessName);
-			if (businessTokens == null) {
-				System.out.println("\nThe input business does not exist.");
-				return null;
-			} else {
-
-				selectedBusiness = new Business(businessTokens[0], businessTokens[1], businessTokens[2],
-						businessTokens[3], businessTokens[4], businessTokens[5], businessTokens[7], businessTokens[8],
-						businessTokens[9], businessTokens[10]);
-
-				StringTokenizer st = new StringTokenizer(businessTokens[6], ";");
-
-				while (st.hasMoreTokens()) {
-					int dayValue = Integer.valueOf(st.nextToken());
-					selectedBusiness.addOpeningDays(dayValue);
-				}
+			String businessList[][] = file.retrieveBusiness();
+			if (businessList == null) {
+				System.out.println("\nThere is no bookings.");
+				return businessArray;
 			}
+
+			else {
+				int numberOfBookings = file.readLines();
+				for (int i = 0; i < numberOfBookings; i++) {
+					businessArray.add(
+							new Business(businessList[i][0], businessList[i][1], businessList[i][2], businessList[i][3],
+									businessList[i][4], businessList[i][5], businessList[i][6]));
+					}
+				}
+
+			
 		}
 
 		catch (IOException e) {
 			System.out.println(e.getMessage());
 		}
-		return selectedBusiness;
 
+		// Sorting the bookings according to date and time
+		return businessArray;
 	}
+	
 
 	public void viewAvailability() {
 

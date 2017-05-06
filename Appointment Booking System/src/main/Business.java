@@ -2,32 +2,47 @@ package main;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.StringTokenizer;
+import java.sql.Array;
 import java.time.*;
 
 public class Business {
 
-	private String name;			// The name of the business
-	private String owner;			// Business's owner's name
-	private String address;			// Business's address
-	private String phone;			// Business's contact number
-	private String username;		// Business's username
-	private String password;		// Business's password
-	private LocalTime openTime;		// Business's opening Time
-	private LocalTime closeTime;	// Business's closing time
-	private ArrayList<DayOfWeek> openingDays = new ArrayList<DayOfWeek>(); // List to store the opening days of the business
-	private ArrayList<Integer> availableDays = new ArrayList<Integer>();	// List to store available days of the business depending on workers' availability
+	private String name; // The name of the business
+	private String owner; // Business's owner's name
+	private String address; // Business's address
+	private String phone; // Business's contact number
+	private ArrayList<LocalTime> openTime = new ArrayList<LocalTime>(); // List to store the opening time
+	private ArrayList<LocalTime> closeTime = new ArrayList<LocalTime>(); // List to store the closing time
+	private ArrayList<DayOfWeek> openingDays = new ArrayList<DayOfWeek>(); // List to store the opening days
 
 	// Constructor of the business
-	public Business(String name, String owner, String address, String phone, String username, String password,
-			String openingHour, String openingMinute, String closingHour, String closingMinute) {
+	public Business(String name, String owner, String address, String phone, String openingDays, String openingTime,
+			String closingTime) {
 		this.name = name;
 		this.owner = owner;
 		this.address = address;
 		this.phone = phone;
-		this.username = username;
-		this.password = password;
-		this.openTime = LocalTime.of(Integer.valueOf(openingHour), Integer.valueOf(openingMinute));		// To convert input to opening time
-		this.closeTime = LocalTime.of(Integer.valueOf(closingHour), Integer.valueOf(closingMinute));	// To convert input to closing time
+
+		StringTokenizer stDays = new StringTokenizer(openingDays, ";");
+		while (stDays.hasMoreTokens()) {
+			this.addOpeningDays(Integer.valueOf(stDays.nextToken()));
+		}
+
+		StringTokenizer stOpenTime = new StringTokenizer(openingTime, ";");
+		while (stOpenTime.hasMoreTokens()) {
+			int hour = Integer.valueOf(stOpenTime.nextToken());
+			int minute = Integer.valueOf(stOpenTime.nextToken());
+			this.openTime.add(LocalTime.of(hour, minute));
+		}
+
+		StringTokenizer stCloseTime = new StringTokenizer(closingTime, ";");
+		while (stCloseTime.hasMoreTokens()) {
+			int hour = Integer.valueOf(stCloseTime.nextToken());
+			int minute = Integer.valueOf(stCloseTime.nextToken());
+			this.closeTime.add(LocalTime.of(hour, minute));
+		}
+
 	}
 
 	// Mutators
@@ -47,28 +62,11 @@ public class Business {
 		this.phone = phone;
 	}
 
-	public void setUsername(String username) {
-		this.username = username;
-	}
-
-	public void setPassword(String password) {
-		this.password = password;
-	}
-
-	public void setOpenTime(int hour, int minute) {
-		this.openTime = LocalTime.of(hour, minute);
-	}
-
-	public void setCloseTime(int hour, int minute) {
-		this.closeTime = LocalTime.of(hour, minute);
-	}
-
-	
 	public void addOpeningDays(int dayValue) {
-		
+
 		// To check if there is no duplicate of opening day
-		for(int i = 0; i < openingDays.size(); i++){
-			if(openingDays.get(i).getValue() == dayValue){
+		for (int i = 0; i < openingDays.size(); i++) {
+			if (openingDays.get(i).getValue() == dayValue) {
 				return;
 			}
 		}
@@ -94,23 +92,23 @@ public class Business {
 		return this.phone;
 	}
 
-	public String getUsername() {
-		return this.username;
+
+
+	public void setOpenTime(int index, int hour, int minute) {
+		this.openTime.remove(index);
+		this.openTime.add(index, LocalTime.of(hour, minute));
 	}
 
-	public String getPassword() {
-		return this.password;
+	public void setCloseTime(int index, int hour, int minute) {
+		closeTime.remove(index);
+		closeTime.add(index, LocalTime.of(hour, minute));
 	}
 
-	public ArrayList<Integer> getAvailableDays() {
-		return this.availableDays;
-	}
-
-	public LocalTime getOpenTime() {
+	public ArrayList<LocalTime> getOpenTime() {
 		return this.openTime;
 	}
 
-	public LocalTime getCloseTime() {
+	public ArrayList<LocalTime> getCloseTime() {
 		return this.closeTime;
 	}
 
@@ -118,24 +116,28 @@ public class Business {
 		return this.openingDays;
 	}
 
-	// Function to add avaialble days for the next month, validate if the date is valid automatically
-	public void addAvailableDay(int day) {
+	public int getIndexOfSelectedDay(int IntegerOfDay) {
+		for (int i = 0; i < openingDays.size(); i++) {
+			if (openingDays.get(i).getValue() == IntegerOfDay) {
+				return i;
+			}
+		}
+		return 0;
+	}
 
-		LocalDate localDate = LocalDate.now();
-		LocalDate nextMonth = localDate.plusMonths(1);
 
-		int lastDayOfNextMonth = nextMonth.lengthOfMonth();
+	public void displayOpeningDay() {
 
-		if (day > 0 && day <= lastDayOfNextMonth)
-			availableDays.add(day);
+		for (int i = 1; i <= this.openingDays.size(); i++) {
+			System.out.println(i + ". " + this.openingDays.get(i - 1));
+		}
 
-		else
-			System.out.println("The selected day is not valid");
+	}
 
-		Collections.sort(availableDays);
+	public void displayBusinessDetails() {
 
-		System.out.println(availableDays);
-
+		System.out.println("Business name: " + this.getName() + "\n" + "Business owner: " + this.getOwner() + "\n"
+				+ "Business address: " + this.getAddress() + "\n" + "Business phone: " + this.getPhone());
 	}
 
 	public void displayOpeningDayAndTime() {
@@ -146,11 +148,11 @@ public class Business {
 		}
 
 		else {
-			System.out.print(this.name + " opens on ");
-			for (int i = 0; i < openingDays.size(); i++) {
-				System.out.print(openingDays.get(i) + ", ");
+			System.out.print(this.name + " opens on \n");
+			for (int i = 0; i < this.openingDays.size(); i++) {
+				System.out.println(
+						this.openingDays.get(i) + " FROM " + this.openTime.get(i) + " TO " + this.closeTime.get(i));
 			}
-			System.out.println("\nFrom " + this.openTime + " to " + this.closeTime);
 		}
 	}
 }

@@ -17,10 +17,13 @@ import utility.WriteFile;
 public class BusinessManagement {
 
 	private Business selectedBusiness;
+	private List<Business> businessList;
 
 	public BusinessManagement(String businessName) throws IOException {
 		try {
+			businessList = retrieveBusiness();
 			selectedBusiness = selectBusiness(businessName);
+
 		}
 
 		// Captures the error if the business name cannot be found in the text
@@ -74,9 +77,9 @@ public class BusinessManagement {
 						}
 					}
 				}
-				
-				String serviceType = servicesList.get(Integer.parseInt(serviceIndex)-1).getName();
-				
+
+				String serviceType = servicesList.get(Integer.parseInt(serviceIndex) - 1).getName();
+
 				System.out.println(servicesList.get(Integer.parseInt(serviceIndex) - 1).getName() + " selected.");
 
 				LocalDate currentDate = LocalDate.now();
@@ -109,6 +112,14 @@ public class BusinessManagement {
 				LocalDate bookingDate = currentDate.plusDays(Integer.parseInt(date));
 				System.out.println(bookingDate.toString() + " selected.");
 
+				int dayOfWeek = bookingDate.getDayOfWeek().getValue();
+				int dayIndex = selectedBusiness.getIndexOfSelectedDay(dayOfWeek);
+
+				if (dayIndex == 0) {
+					System.out.println("The business is not operating on the selected day.");
+					break;
+				}
+
 				String hour = "";
 				String minute = "";
 				LocalTime bookingTime = null;
@@ -116,8 +127,8 @@ public class BusinessManagement {
 				while (bookingTime == null) {
 
 					while (!isNumericAndPositive(hour)) {
-						System.out.println("Please enter the hour of the booking time \n"
-								+ "---------------------------------");
+						System.out.println(
+								"Please enter the hour of the booking time \n" + "---------------------------------");
 						hour = in.nextLine();
 					}
 					while (!isNumericAndNeutral(minute) || Integer.parseInt(minute) % 30 != 0
@@ -129,8 +140,8 @@ public class BusinessManagement {
 
 					bookingTime = LocalTime.of(Integer.valueOf(hour), Integer.valueOf(minute));
 
-					if (bookingTime.isBefore(selectedBusiness.getOpenTime())
-							|| bookingTime.isAfter(selectedBusiness.getCloseTime())) {
+					if (bookingTime.isBefore(selectedBusiness.getOpenTime().get(dayIndex))
+							|| bookingTime.isAfter(selectedBusiness.getCloseTime().get(dayIndex))) {
 						System.out.println("The selected time is not within the business time.");
 						bookingTime = null;
 						hour = "INVALID";
@@ -143,15 +154,15 @@ public class BusinessManagement {
 				System.out.println("Please enter the employee's ID\n" + "--------------------------------------");
 				String employeeID = ScheduleManagement.requestID();
 
-
 				String customerName = "";
 
 				while (customerName.isEmpty()) {
 					System.out.println("Please enter the customer name\n" + "--------------------------------------");
 					customerName = in.nextLine();
 				}
-				
-				addBooking(bookingDate.getYear(),bookingDate.getMonthValue(),bookingDate.getDayOfMonth(),bookingTime.getHour(),bookingTime.getMinute(),customerName,employeeID,serviceType);
+
+				addBooking(bookingDate.getYear(), bookingDate.getMonthValue(), bookingDate.getDayOfMonth(),
+						bookingTime.getHour(), bookingTime.getMinute(), customerName, employeeID, serviceType);
 
 				break;
 
@@ -216,6 +227,21 @@ public class BusinessManagement {
 				break;
 
 			case 7:
+				setOperatingTime(in);
+				break;
+
+			case 8:
+				editBusinessDetails(in);
+				break;
+
+			case 9:
+				selectedBusiness.displayBusinessDetails();
+				selectedBusiness.displayOpeningDayAndTime();
+				System.out.println("\nPress enter to return.");
+				in.nextLine();
+				break;
+
+			case 10:
 				// Logout
 				return;
 
@@ -416,7 +442,7 @@ public class BusinessManagement {
 			return;
 		}
 
-		System.out.println("Date      |Time |Status  |Customer   |Employee  ");
+		System.out.println("Date      |Time |Status  |Customer   |Employee   |Service");
 
 		for (int i = bookingList.size() - 1; i >= 0; i--) {
 			if (bookingList.get(i).getStatus().compareTo("NEW") == 0) {
@@ -445,44 +471,219 @@ public class BusinessManagement {
 						+ bookingList.get(i).getDate().getMonthValue() + "|"
 						+ bookingList.get(i).getDate().getDayOfMonth() + "|" + bookingList.get(i).getTime().getHour()
 						+ "|" + bookingList.get(i).getTime().getMinute() + "|" + bookingList.get(i).getCustomerName()
-						+ "|" + bookingList.get(i).getEmployeeName() + "|\n");
+						+ "|" + bookingList.get(i).getEmployeeName() + "|" + bookingList.get(i).getType() + "\n");
 			} else {
 				writer.writeToFile(bookingList.get(i).getStatus() + "|" + bookingList.get(i).getDate().getYear() + "|"
 						+ bookingList.get(i).getDate().getMonthValue() + "|"
 						+ bookingList.get(i).getDate().getDayOfMonth() + "|" + bookingList.get(i).getTime().getHour()
 						+ "|" + bookingList.get(i).getTime().getMinute() + "|" + bookingList.get(i).getCustomerName()
-						+ "|" + bookingList.get(i).getEmployeeName() + "|\n");
+						+ "|" + bookingList.get(i).getEmployeeName() + "|" + bookingList.get(i).getType() + "\n");
 			}
 		}
 	}
 
-	// Function to select a business, useful if there is more than one business
-	public Business selectBusiness(String businessName) throws IOException {
+	// Function to retrieve businesses from the text file
+	// and present them in an array List
+	public List<Business> retrieveBusiness() {
+
+		// To read the name of the text file in the correct format
 		String file_name = "Business.txt";
 
+		// Retrieve the bookings and store them in a list
+		List<Business> businessArray = new ArrayList<Business>();
 		try {
 			ReadFile file = new ReadFile(file_name);
-			String businessTokens[] = file.FindBusiness(businessName);
-			if (businessTokens == null) {
-				System.out.println("\nThe input business does not exist.");
-				return null;
-			} else {
+			String businessList[][] = file.retrieveBusiness();
+			if (businessList == null) {
+				System.out.println("\nThere is no bookings.");
+				return businessArray;
+			}
 
-				setSelectedBusiness(new Business(businessTokens[0], businessTokens[1], businessTokens[2],
-						businessTokens[3], businessTokens[4], businessTokens[5], businessTokens[7], businessTokens[8],
-						businessTokens[9], businessTokens[10]));
-
-				StringTokenizer st = new StringTokenizer(businessTokens[6], ";");
-
-				while (st.hasMoreTokens()) {
-					int dayValue = Integer.valueOf(st.nextToken());
-					selectedBusiness.addOpeningDays(dayValue);
+			else {
+				int numberOfBookings = file.readLines();
+				for (int i = 0; i < numberOfBookings; i++) {
+					businessArray.add(new Business(businessList[i][0], businessList[i][1], businessList[i][2],
+							businessList[i][3], businessList[i][4], businessList[i][5], businessList[i][6]));
 				}
 			}
+
 		}
 
 		catch (IOException e) {
 			System.out.println(e.getMessage());
+		}
+
+		// Sorting the bookings according to date and time
+		return businessArray;
+	}
+
+	public void editBusinessDetails(Scanner in) throws IOException {
+		String msg = "";
+
+		while (!isStringAcceptable(msg)) {
+			System.out.println(
+					"Please enter the new name for the business\n" + "---------------------------------------");
+			msg = in.nextLine();
+		}
+		selectedBusiness.setName(msg);
+		msg = "";
+
+		while (!isStringAcceptable(msg)) {
+			System.out.println(
+					"Please enter the new owner's name for the business\n" + "---------------------------------------");
+			msg = in.nextLine();
+		}
+		selectedBusiness.setOwner(msg);
+		msg = "";
+
+		while (!isStringAcceptable(msg)) {
+			System.out.println(
+					"Please enter the new address for the business\n" + "---------------------------------------");
+			msg = in.nextLine();
+		}
+		selectedBusiness.setAddress(msg);
+		msg = "";
+
+		while (!isPhoneNumber(msg)) {
+			System.out.println(
+					"Please enter the new phone number for the business\n" + "---------------------------------------");
+			msg = in.nextLine();
+		}
+		selectedBusiness.setPhone(msg);
+
+		saveBusiness();
+
+	}
+
+	// Function to set operating time for a specific operating day
+	public void setOperatingTime(Scanner in) throws IOException {
+
+		String msg = null;
+
+		selectedBusiness.displayOpeningDay();
+		int dayIndex = 0;
+		while (!isNumericAndPositive(msg)) {
+
+			System.out.println("Which day would you like to change the operating time of ?");
+			msg = in.nextLine();
+		}
+
+		dayIndex = Integer.valueOf(msg) - 1;
+
+		do {
+			System.out.println("Opening Time");
+
+			System.out.println("Please specify the opening hour (24HR format)");
+			System.out.println("-----------------------------------------------");
+			msg = in.nextLine();
+
+			while (!isNumericAndPositive(msg)) {
+				System.out.println("Please enter a valid number\n" + "-----------------------------");
+				msg = in.nextLine();
+			}
+
+			int hour = Integer.valueOf(msg);
+
+			System.out.println("Please specify the opening minute");
+			System.out.println("------------------------------------");
+			msg = in.nextLine();
+
+			while (!isNumericAndNeutral(msg)) {
+				System.out.println("Please enter a valid number\n" + "-----------------------------");
+				msg = in.nextLine();
+			}
+
+			int minute = Integer.valueOf(msg);
+			selectedBusiness.setOpenTime(dayIndex, hour, minute);
+		} while (selectedBusiness.getOpenTime() == null);
+
+		do {
+			System.out.println("Closing Time");
+			System.out.println("Please specify the closing hour (24HR format)");
+			System.out.println("-----------------------------------------------");
+			msg = in.nextLine();
+
+			while (!isNumericAndPositive(msg)) {
+				System.out.println("Please enter a valid number\n" + "-----------------------------");
+				msg = in.nextLine();
+			}
+
+			int hour = Integer.valueOf(msg);
+
+			System.out.println("Please specify the closing minute");
+			System.out.println("------------------------------------");
+			msg = in.nextLine();
+			while (!isNumericAndNeutral(msg)) {
+				System.out.println("Please enter a valid number\n" + "-----------------------------");
+				msg = in.nextLine();
+			}
+
+			int minute = Integer.valueOf(msg);
+			selectedBusiness.setCloseTime(dayIndex, hour, minute);
+		} while (selectedBusiness.getCloseTime() == null);
+
+		saveBusiness();
+
+	}
+
+	public void saveBusiness() throws IOException {
+
+		String file_name = "Business.txt";
+
+		WriteFile writer = new WriteFile(file_name, false);
+		writer.writeToFile("");
+
+		writer = new WriteFile(file_name, true);
+		for (int i = 0; i < businessList.size(); i++) {
+			writer.writeToFile(businessList.get(i).getName() + "|" + businessList.get(i).getOwner() + "|"
+					+ businessList.get(i).getAddress() + "|" + businessList.get(i).getPhone() + "|");
+
+			Collections.sort(businessList.get(i).getOpeningDays());
+
+			for (int j = 0; j < businessList.get(i).getOpeningDays().size() - 1; j++) {
+				writer.writeToFile(businessList.get(i).getOpeningDays().get(j).getValue() + ";");
+			}
+			writer.writeToFile(
+					businessList.get(i).getOpeningDays().get(businessList.get(i).getOpeningDays().size() - 1).getValue()
+							+ "|");
+
+			for (int k = 0; k < businessList.get(i).getOpenTime().size() - 1; k++) {
+				writer.writeToFile(Integer.toString(businessList.get(i).getOpenTime().get(k).getHour()) + ";"
+						+ Integer.toString(businessList.get(i).getOpenTime().get(k).getMinute()) + ";");
+			}
+			writer.writeToFile(Integer.toString(
+					businessList.get(i).getOpenTime().get(businessList.get(i).getOpenTime().size() - 1).getHour()) + ";"
+					+ Integer.toString(businessList.get(i).getOpenTime()
+							.get(businessList.get(i).getOpenTime().size() - 1).getMinute())
+					+ "|");
+
+			for (int l = 0; l < businessList.get(i).getCloseTime().size() - 1; l++) {
+				writer.writeToFile(Integer.toString(businessList.get(i).getCloseTime().get(l).getHour()) + ";"
+						+ Integer.toString(businessList.get(i).getCloseTime().get(l).getMinute()) + ";");
+			}
+			writer.writeToFile(Integer.toString(
+					businessList.get(i).getCloseTime().get(businessList.get(i).getCloseTime().size() - 1).getHour())
+					+ ";" + Integer.toString(businessList.get(i).getCloseTime()
+							.get(businessList.get(i).getCloseTime().size() - 1).getMinute())
+					+ "\n");
+
+		}
+
+	}
+
+	// Function to select a business, useful if there is more than one business
+	public Business selectBusiness(String businessName) throws IOException {
+
+		Business selectedBusiness = null;
+
+		for (int i = 0; i < businessList.size(); i++) {
+			if (businessList.get(i).getName().compareTo(businessName) == 0) {
+				selectedBusiness = businessList.get(i);
+			}
+		}
+
+		if (selectedBusiness == null) {
+			System.out.println("The business does not exist.");
 		}
 		return selectedBusiness;
 
@@ -496,7 +697,8 @@ public class BusinessManagement {
 			System.out.printf("\nWelcome %s. \nPlease choose your option\n", selectedBusiness.getName());
 			System.out.println("----------------------------\n" + "1. Employee Management \n" + "2. Add New Booking \n"
 					+ "3. View Booking Summaries \n" + "4. View New Bookings \n" + "5. Add service \n"
-					+ "6. View Service \n" + "7. Logout \n" + "----------------------------");
+					+ "6. View Service \n" + "7. Set Operating Time \n" + "8. Edit Business Details \n"
+					+ "9. View Business Details \n" + "10. Logout \n" + "----------------------------");
 		}
 	}
 
@@ -540,7 +742,7 @@ public class BusinessManagement {
 		}
 		return false;
 	}
-	
+
 	public boolean isNumericAndNeutral(String str) {
 		try {
 			int d = Integer.parseInt(str);
@@ -550,6 +752,24 @@ public class BusinessManagement {
 		} catch (NumberFormatException nfe) {
 			return false;
 		}
+		return true;
+	}
+
+	public boolean isStringAcceptable(String str) {
+		if (str.isEmpty())
+			return false;
+
+		return true;
+	}
+
+	public boolean isPhoneNumber(String str) {
+
+		if (str.isEmpty())
+			return false;
+
+		if (!Registration.isPhoneNumber(str))
+			return false;
+
 		return true;
 	}
 

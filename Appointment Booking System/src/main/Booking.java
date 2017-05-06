@@ -57,8 +57,8 @@ public class Booking {
 	public String getEmployeeName() {
 		return this.employeeName;
 	}
-	
-	public String getType(){
+
+	public String getType() {
 		return this.serviceType;
 	}
 
@@ -74,8 +74,8 @@ public class Booking {
 	public void setCustomerName(String customerName) {
 		this.customerName = customerName;
 	}
-	
-	public void setType(String type){
+
+	public void setType(String type) {
 		this.serviceType = type;
 	}
 
@@ -115,23 +115,20 @@ public class Booking {
 		int employeeNameLength = this.employeeName.length();
 		System.out.print(this.employeeName);
 
-		for(int i = employeeNameLength; i < 12; i ++){
+		for (int i = employeeNameLength; i < 12; i++) {
 			System.out.print(" ");
 		}
-		
+
 		System.out.print(this.serviceType);
-		
+
 		System.out.println();
 
 	}
-	
-	
+
 	// To display the booking
 	public void displayBookingCustomer() {
 
 		System.out.print(this.date + " " + this.time + " ");
-
-
 
 		System.out.print(this.customerName);
 
@@ -144,12 +141,12 @@ public class Booking {
 		int employeeNameLength = this.employeeName.length();
 		System.out.print(this.employeeName);
 
-		for(int i = employeeNameLength; i < 12; i ++){
+		for (int i = employeeNameLength; i < 12; i++) {
 			System.out.print(" ");
 		}
-		
+
 		System.out.print(this.serviceType);
-		
+
 		System.out.println();
 
 	}
