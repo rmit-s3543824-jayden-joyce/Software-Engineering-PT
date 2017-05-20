@@ -12,26 +12,16 @@ public class Login
 	
 	public static int login() throws IOException
 	{
-		String userType, Username, Password;
+		String Username, Password;
 		//char passwordArray[];
 		boolean loginOption = true;
+		int userType;
 		Console console = System.console();	
 		Scanner consoleReader = new Scanner(System.in);
 		
-		//Establishes whether user is a Customer or Business Owner
-		userTypeSelection();
-		userType = consoleReader.next();
-		
-		//Checks for invalid entries
-		if(!userType.equals("1") && !userType.equals("2"))
-		{
-			System.out.println("Invalid input.");
-			return 0;
-		}
-		
 		do
 		{
-			heading(userType);
+			heading();
 			
 			System.out.println("Username:");
 			System.out.print(">>> ");
@@ -58,24 +48,21 @@ public class Login
 		}while(loginOption);
 		
 		//Depending on user type, decides which file to read from
-		if(userType.equals("1"))
+		
+		userType = verifyLoginDetails(Username, Password);
+		if(userType == 1)
 		{
-			if(verifyLoginDetails(Username, Password, customerList) == true)
-			{
-				System.out.println("Login successful!\n");
-				currentUser = Username;
-				return 1;
-			}
+			System.out.println("Login successful!\n");
+			currentUser = Username;
+			return 1;
 		}
-		else
+		else if(userType == 2)
 		{
-			if(verifyLoginDetails(Username, Password, businessOwnerList) == true)
-			{
-				System.out.println("Login successful!\n");
-				currentUser = Username;
-				return 2;
-			}
+			System.out.println("Login successful!\n");
+			currentUser = Username;
+			return 2;
 		}
+		
 		return 0;
 	}
 	
@@ -87,44 +74,70 @@ public class Login
 		System.out.print(">>> ");
 	}
 	
-	public static void heading(String x)
+	public static void heading()
 	{
-		if(x.equals("1"))
-		{
-			System.out.println("\nLogin (Customer)");
-		}
-		else
-		{
-			System.out.println("\nLogin (Business Owner)");
-		}
+		System.out.println("\nLogin");
 		System.out.println("------------------------");
 	}
 
-	public static boolean verifyLoginDetails(String username, String password, String userType) throws IOException
+	public static int verifyLoginDetails(String username, String password) throws IOException
 	{
-		String[] words;
-		String line = "";
-		FileReader fr = new FileReader(userType);
-		BufferedReader reader = new BufferedReader(fr);
-		
-		//Reads each line from respective text file
-		while((line = reader.readLine()) != null)
+		if(password.isEmpty() || username.isEmpty())
 		{
-			//Splits up words in the line using delim
-			words = line.split(delim);
+			System.out.println("Username or password are invalid.\n");
+			return 0;
+		}
+		
+		if(username.matches("(bo[0-9]{4})"))
+		{
+			String[] words;
+			String line = "";
+			FileReader fr = new FileReader(businessOwnerList);
+			BufferedReader reader = new BufferedReader(fr);
 			
-			if((words[0]).equals(username))
+			//Reads each line from respective text file
+			while((line = reader.readLine()) != null)
 			{
-				if((words[1]).equals(password))
+				//Splits up words in the line using delim
+				words = line.split(delim);
+				
+				if((words[0]).equals(username))
 				{
-					reader.close();
-					return true;
+					if((words[1]).equals(password))
+					{
+						reader.close();
+						return 2;
+					}
 				}
 			}
+			reader.close();
+		}
+		else
+		{
+			String[] words;
+			String line = "";
+			FileReader fr = new FileReader(customerList);
+			BufferedReader reader = new BufferedReader(fr);
+			
+			//Reads each line from respective text file
+			while((line = reader.readLine()) != null)
+			{
+				//Splits up words in the line using delim
+				words = line.split(delim);
+				
+				if((words[0]).equals(username))
+				{
+					if((words[1]).equals(password))
+					{
+						reader.close();
+						return 1;
+					}
+				}
+			}
+			reader.close();
 		}
 		
 		System.out.println("Username or password not found\n");
-		reader.close();
-		return false;
+		return 0;
 	}
 }

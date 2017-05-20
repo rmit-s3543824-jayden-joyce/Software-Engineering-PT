@@ -150,7 +150,7 @@ public class Registration {
 	}
 	
 	/* ensures that the user has actually entered a data value */
-	public static boolean isNotBlank(String value) {
+	static boolean isNotBlank(String value) {
 		
 		if (value.isEmpty()) {
 
@@ -205,6 +205,19 @@ public class Registration {
 			
 		}
 		
+	}
+	
+	public static boolean isPostcode(String postcode)
+	{
+		if(postcode.matches("([3][0-9]{3}|[8][0-9]{3})"))
+		{
+			return true;	
+		}
+		else
+		{
+			System.out.println("Please enter a valid Victorian postcode.");
+			return false;
+		}
 	}
 
 	/* checks that the phone number is a phone number */
@@ -273,8 +286,19 @@ public class Registration {
 		return true;
 	}
 	
+	public static boolean streetCheck(String street)
+	{
+		if(street.matches("(\\d+)((\\s|\\w)+)"))
+		{
+			return true;
+		}
+		
+		System.out.println("Street name invalid");
+		return false;
+	}
+	
 	/* saves the new user to file. Returns true if successful*/
-	private static boolean saveRegistration(String username, String password, String[] address, String number) {
+	public static boolean saveRegistration(String username, String password, String[] address, String number) {
 		
 		BufferedWriter writer = null;
 		
@@ -291,7 +315,7 @@ public class Registration {
 			writer.write(password);
 			writer.write("|");
 			
-			for (i = 0; i < 5; i++) {
+			for (i = 0; i < 3; i++) {
 				
 				writer.write(address[i]);
 				writer.write("|");
