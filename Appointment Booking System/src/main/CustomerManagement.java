@@ -16,7 +16,7 @@ import utility.WriteFile;
 
 import java.time.*;
 
-public class CustomerManagement {
+public class CustomerManagement implements ManagementInterface{
 
 	static Business selectedBusiness;
 
@@ -32,7 +32,8 @@ public class CustomerManagement {
 			System.out.println(e.getMessage());
 		}
 	}
-
+	
+	@Override
 	public void runMenu() throws IOException {
 
 		int userInput;
@@ -465,6 +466,10 @@ public class CustomerManagement {
 			return false;
 		}
 		return true;
+	}
+	
+	public Business getSelectedBusiness() {
+		return this.selectedBusiness;
 	}
 
 }

@@ -7,50 +7,43 @@ import main.BusinessManagement;
 import main.CustomerManagement;
 
 public class Menu {
-	
-	public static void main(String[] args) throws IOException
-	{
+
+	public static void main(String[] args) throws IOException {
 		int selection;
 		Scanner sc = new Scanner(System.in);
 		boolean menu = true;
-		
-		do
-		{
-			menuScreen();		
+
+		do {
+			menuScreen();
 			String input = sc.next();
-			
-			switch(input)
-			{
-				case "1":
-					selection = Login.login();
-					if(selection == 1)
-					{
-						CustomerManagement cManage = new CustomerManagement("Suggar Haircut");
-						cManage.runMenu();
-					}
-					else if(selection == 2)
-					{
-						BusinessManagement bManage = new BusinessManagement("Suggar Haircut");
-						bManage.runMenu();
-					}
+
+			switch (input) {
+			case "1":
+				selection = Login.login();
+				if (selection == 1) {
+					UserManagement userManagement = new UserManagement("Suggar Haircut");
+					userManagement.runCustomerMenu();
+				} else if (selection == 2) {
+					UserManagement userManagement = new UserManagement("Suggar Haircut");
+					userManagement.runBusinessMenu();
+				}
 				break;
-				case "2":
-					Registration.register();
+			case "2":
+				Registration.register();
 				break;
-				case "3":
-					System.out.println("Exiting...");
-					sc.close();
-					menu = false;
+			case "3":
+				System.out.println("Exiting...");
+				sc.close();
+				menu = false;
 				break;
-				default:
-					System.out.println("Invalid input.\n");
+			default:
+				System.out.println("Invalid input.\n");
 				break;
 			}
-		}while(menu);
+		} while (menu);
 	}
 
-	public static void menuScreen()
-	{
+	public static void menuScreen() {
 		System.out.println("-------------------");
 		System.out.println("     MAIN MENU     ");
 		System.out.println("-------------------");

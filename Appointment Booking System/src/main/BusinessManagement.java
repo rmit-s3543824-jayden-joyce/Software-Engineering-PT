@@ -14,7 +14,7 @@ import utility.ReadFile;
 import utility.ServiceComparator;
 import utility.WriteFile;
 
-public class BusinessManagement {
+public class BusinessManagement implements ManagementInterface {
 
 	private Business selectedBusiness;
 	private List<Business> businessList;
@@ -34,6 +34,7 @@ public class BusinessManagement {
 	}
 
 	// To run the main menu of business management
+	@Override
 	public void runMenu() throws IOException {
 		int userInput; // User's input
 
@@ -675,7 +676,7 @@ public class BusinessManagement {
 	public Business selectBusiness(String businessName) throws IOException {
 
 		Business selectedBusiness = null;
-
+		
 		for (int i = 0; i < businessList.size(); i++) {
 			if (businessList.get(i).getName().compareTo(businessName) == 0) {
 				selectedBusiness = businessList.get(i);

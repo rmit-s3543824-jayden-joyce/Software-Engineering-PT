@@ -3,43 +3,48 @@ package test;
 import static org.junit.Assert.*;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
-import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
-import main.CustomerManagement;
+import main.*;
 
 public class CustomerManagementTest {
 
-	@BeforeClass
-	public static void setUpBeforeClass() throws Exception {
-
-	}
-
-	@AfterClass
-	public static void tearDownAfterClass() throws Exception {
-	}
+	private CustomerManagement cManage;
 
 	@Before
 	public void setUp() throws Exception {
-		
-	}
-
-	@After
-	public void tearDown() throws Exception {
+		cManage = new CustomerManagement("Suggar Haircut");
 	}
 
 	@Test
-	public void testViewAvailability() throws IOException {
-		CustomerManagement cManage = new CustomerManagement("Suggar Haircut");
-		cManage.viewAvailability();
-		
+	public void testSelectBusiness() throws IOException {
+		cManage.selectBusiness("Suggar Haircut");
+		assertNotNull(cManage.getSelectedBusiness());
 	}
-	
 
-	
+	@Test
+	public void testRetrieveBusiness() {
+		List<Business> businessArray = new ArrayList<Business>();
+		businessArray = cManage.retrieveBusiness();
+		assertNotNull(businessArray);
+	}
+
+	@Test
+	public void testRetrieveBookings() {
+		List<Booking> bookingArray = new ArrayList<Booking>();
+		bookingArray = cManage.retrieveBooking();
+		assertNotNull(bookingArray);
+	}
+
+	@Test
+	public void testRetrieveServices() {
+		List<Service> serviceArray = new ArrayList<Service>();
+		serviceArray = cManage.retrieveServices();
+		assertNotNull(serviceArray);
+	}
 
 }

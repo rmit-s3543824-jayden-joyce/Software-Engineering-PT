@@ -26,7 +26,7 @@ public class BusinessManagementTest {
 	// Test if the business is not found in the business.txt, an IOException
 	// will be thrown
 	@Test
-	public void testFileNotFound() throws IOException {
+	public void testBusinessNotFound() throws IOException {
 		bManage = new BusinessManagement("Domino's Pizza");
 	}
 
@@ -34,9 +34,8 @@ public class BusinessManagementTest {
 	// business.txt
 	@Test
 	public void testSelectBusiness() throws IOException {
-		bManage.setSelectedBusiness(null);
 		bManage.selectBusiness("Suggar Haircut");
-		assertEquals(false, bManage.isEmpty());
+		assertNotNull(bManage.getSelectedBusiness());
 	}
 
 	// Test if retreiveBooking is able to obtain bookings from the text file and
@@ -45,7 +44,7 @@ public class BusinessManagementTest {
 	public void testRetrieveBooking() {
 		List<Booking> bookingList;
 		bookingList = bManage.retrieveBooking();
-		assertEquals(false, bookingList.isEmpty());
+		assertFalse(bookingList.isEmpty());
 	}
 
 	// Test if when new bookings are being viewed, all the status of the new
@@ -65,7 +64,7 @@ public class BusinessManagementTest {
 		}
 
 		// Initially there will be new bookings with the status "New"
-		assertEquals(true, thereAreNewBookings);
+		assertTrue(thereAreNewBookings);
 
 		bManage.viewNewBookings();
 		bookingList = bManage.retrieveBooking();
