@@ -80,6 +80,58 @@ public class EmployeeManagement {
 
 	}
 	
+	public static Boolean addEmployeeGUI(String firstName, String lastName) throws IOException
+	{
+		String employeeDetails, employeeId;
+		BufferedWriter bw = new BufferedWriter(new FileWriter(employeeList, true));
+		
+		employeeId = generateId();
+		employeeDetails = employeeId + delimWrite + firstName + delimWrite + lastName;
+		
+		if(isNotBlank(firstName) && isNotBlank(lastName))
+		{
+			//Checks if the input contains only letters
+			if(isString(firstName) && isString(lastName))
+			{
+				if(!Utility.createFile(employeeId + "Bookings"))
+				{
+					//ensures that the employee details are not saved if a file is not created
+					return false;
+				}
+				
+				if(!Utility.createFile(employeeId + "Schedule"))
+				{
+					//ensures that the employee details are not saved if a file is not created
+					return false;	
+				}
+				
+				BufferedWriter scheduleBooter = new BufferedWriter(new FileWriter(employeeId + "Schedule.txt", true));
+
+				scheduleBooter.write("1|1|1");
+				scheduleBooter.newLine();
+				
+				scheduleBooter.close();
+				//Writes new employee to employee list file
+				bw.write(employeeDetails);
+				//Prints new line for when the next employee is to be added
+				bw.newLine();
+			}
+			else
+			{
+				bw.close();
+				return false;
+			}
+		}
+		else
+		{
+			bw.close();
+			return false;
+		}
+		
+		bw.close();
+		return true;
+	}
+	
 	public static void addEmployee(String employeeId) throws IOException
 	{
 		String employeeDetails = employeeId + delimWrite, firstName = null, lastName = null, selection;

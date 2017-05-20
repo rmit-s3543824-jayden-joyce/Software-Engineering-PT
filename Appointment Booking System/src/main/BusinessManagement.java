@@ -16,7 +16,7 @@ import utility.WriteFile;
 
 public class BusinessManagement implements ManagementInterface {
 
-	private Business selectedBusiness;
+	private static Business selectedBusiness;
 	private List<Business> businessList;
 
 	public BusinessManagement(String businessName) throws IOException {
@@ -257,7 +257,7 @@ public class BusinessManagement implements ManagementInterface {
 
 	// Function to add service that the business provide, which will be stored
 	// in a text file so it can be retrieved for the customer to view
-	public boolean addService(String serviceName, String serviceDuration, String serviceDescription)
+	public static boolean addService(String serviceName, String serviceDuration, String serviceDescription)
 			throws IOException {
 
 		// To read the name of the text file in the correct format
@@ -720,7 +720,7 @@ public class BusinessManagement implements ManagementInterface {
 	}
 
 	// To check if UserInput is valid for the menu
-	public boolean isNumericAndPositive(String str) {
+	public static boolean isNumericAndPositive(String str) {
 		try {
 			int d = Integer.parseInt(str);
 			if (d <= 0) {
