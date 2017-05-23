@@ -16,7 +16,7 @@ import utility.WriteFile;
 
 public class BusinessManagement implements ManagementInterface {
 
-	private static Business selectedBusiness;
+	static Business selectedBusiness;
 	private List<Business> businessList;
 
 	public BusinessManagement(String businessName) throws IOException {

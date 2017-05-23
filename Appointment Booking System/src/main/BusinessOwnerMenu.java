@@ -3,6 +3,7 @@ package main;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.StringTokenizer;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -38,6 +39,7 @@ public class BusinessOwnerMenu {
 		b1.setOnAction(e -> MenuGUI.window.setScene(displayMenu2()));
 		b1.setMaxWidth(Double.MAX_VALUE);
 		Button b2 = new Button("View Booking Summaries");
+		b2.setOnAction(e -> MenuGUI.window.setScene(bookingsMenu()));
 		b2.setMaxWidth(Double.MAX_VALUE);
 		Button b3 = new Button("View New Bookings");
 		b3.setMaxWidth(Double.MAX_VALUE);
@@ -80,7 +82,7 @@ public class BusinessOwnerMenu {
 	public static Scene displayMenu2()
 	{
 		BorderPane borderPane = new BorderPane();
-		String[] buttonNames = {"Add employee", "List employee", "Show Schedule", "Add Schedule", "Remove Schedule", "Show Employee Availability", "Update Schedules"};
+		String[] buttonNames = {"Add employee", "List employees", "Show Schedule", "Add Schedule", "Remove Schedule", "Show Employee Availability", "Update Schedules"};
 		Button[] buttons = new Button[7];
 		Label heading = new Label("Business Owner Menu");
 		
@@ -264,6 +266,7 @@ public class BusinessOwnerMenu {
 		TableColumn<Employee, String> lastNameColumn = new TableColumn<>("Last Name");
 		lastNameColumn.setMinWidth(50);
 		lastNameColumn.setCellValueFactory(new PropertyValueFactory<>("lastName"));
+		
 		table = new TableView<>();
 		table.setItems(getEmployee());
 		table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
@@ -298,6 +301,118 @@ public class BusinessOwnerMenu {
 		borderPane.setBottom(bottomBox);
 		
 		Scene scene = new Scene(borderPane, 350, 300);
+		return scene;
+	}
+	
+	public static ObservableList<Booking> getBookings()
+	{
+		ObservableList<Booking> Booking = FXCollections.observableArrayList();
+		String deliminator = "\\|";
+		String[] dataValues;
+		String currentLine;
+		
+		BufferedReader reader = null;
+		
+		StringTokenizer st = new StringTokenizer(BusinessManagement.selectedBusiness.getName(), " ");
+		String file_name = "";
+		while (st.hasMoreTokens())
+		{
+			file_name += st.nextToken();
+		}
+
+		file_name += "Bookings.txt";
+		
+		try 
+		{	
+			reader = new BufferedReader(new FileReader(file_name));
+			
+			while ((currentLine = reader.readLine()) != null)
+			{
+				dataValues = currentLine.split(deliminator);
+				
+				Booking.add(new Booking(dataValues[0], dataValues[1], dataValues[2], dataValues[3], dataValues[4], dataValues[5], dataValues[6], dataValues[7], dataValues[8]));	
+			}
+			
+			reader.close();	
+		}
+		catch (IOException ioe1)
+		{
+			ioe1.printStackTrace();
+		}
+		
+		return Booking;
+	}
+	
+	public static Scene bookingsMenu()
+	{
+		BorderPane borderPane = new BorderPane();
+		Label heading = new Label("Add Employee");
+		
+		GridPane grid = new GridPane();
+		grid.setPadding(new Insets(25, 25, 25, 25));
+		grid.setAlignment(Pos.CENTER);
+		grid.setVgap(8);
+		grid.setHgap(10);
+		
+		TableView<Booking> table;
+		TableColumn<Booking, String> dateColumn = new TableColumn<>("Date");
+		dateColumn.setMinWidth(50);
+		dateColumn.setCellValueFactory(new PropertyValueFactory<>("date"));
+		
+		TableColumn<Booking, String> timeColumn = new TableColumn<>("Time");
+		timeColumn.setMinWidth(50);
+		timeColumn.setCellValueFactory(new PropertyValueFactory<>("time"));
+		
+		TableColumn<Booking, String> statusColumn = new TableColumn<>("Status");
+		statusColumn.setMinWidth(50);
+		statusColumn.setCellValueFactory(new PropertyValueFactory<>("status"));
+		
+		TableColumn<Booking, String> cusomterColumn = new TableColumn<>("Customer");
+		cusomterColumn.setMinWidth(50);
+		cusomterColumn.setCellValueFactory(new PropertyValueFactory<>("customerName"));
+
+		TableColumn<Booking, String> employeeColumn = new TableColumn<>("Employee");
+		employeeColumn.setMinWidth(50);
+		employeeColumn.setCellValueFactory(new PropertyValueFactory<>("employeeName"));
+		
+		TableColumn<Booking, String> serviceColumn = new TableColumn<>("Service");
+		serviceColumn.setMinWidth(80);
+		serviceColumn.setCellValueFactory(new PropertyValueFactory<>("serviceType"));
+		
+		table = new TableView<>();
+		table.setItems(getBookings());
+		table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+		table.getColumns().addAll(dateColumn, timeColumn, statusColumn, cusomterColumn, employeeColumn, serviceColumn);
+		
+		Button backButton = new Button("BACK");
+		backButton.setOnAction(e -> 
+		{
+			MenuGUI.window.setScene(displayMenu());
+		});
+		Button logoutButton = new Button("LOGOUT");
+		logoutButton.setStyle("-fx-base: red;");
+		logoutButton.setOnAction(e -> 
+		{
+			MenuGUI.window.setScene(MenuGUI.loginScene);
+		});
+		
+		HBox topBox = new HBox();
+		topBox.setStyle("-fx-font: 24 arial; -fx-background-color: #1976D2;");
+		topBox.setPadding(new Insets(15, 15, 15, 15));
+		topBox.setAlignment(Pos.CENTER);
+		topBox.getChildren().add(heading);
+		
+		HBox bottomBox = new HBox();
+		bottomBox.setPadding(new Insets(10, 15, 10, 15));
+		bottomBox.setAlignment(Pos.CENTER_RIGHT);
+		bottomBox.setStyle("-fx-background-color: grey;");
+		bottomBox.getChildren().addAll(backButton, logoutButton);
+		
+		borderPane.setTop(topBox);
+		borderPane.setCenter(table);
+		borderPane.setBottom(bottomBox);
+		
+		Scene scene = new Scene(borderPane, 600, 300);
 		return scene;
 	}
 	

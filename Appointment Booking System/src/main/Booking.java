@@ -58,7 +58,7 @@ public class Booking {
 		return this.employeeName;
 	}
 
-	public String getType() {
+	public String getServiceType() {
 		return this.serviceType;
 	}
 
@@ -75,7 +75,7 @@ public class Booking {
 		this.customerName = customerName;
 	}
 
-	public void setType(String type) {
+	public void setServiceType(String type) {
 		this.serviceType = type;
 	}
 

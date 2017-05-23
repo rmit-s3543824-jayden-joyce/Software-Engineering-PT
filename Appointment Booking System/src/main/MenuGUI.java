@@ -85,6 +85,7 @@ public class MenuGUI extends Application
 					message.setText("");
 					usernameField.clear();
 					passwordField.clear();
+					new UserManagement("Suggar Haircut");
 				}
 				else if(userType == 2)
 				{
@@ -92,7 +93,7 @@ public class MenuGUI extends Application
 					message.setText("");
 					usernameField.clear();
 					passwordField.clear();
-					//window.close();
+					new UserManagement("Suggar Haircut");
 				}
 				else
 				{
@@ -132,7 +133,7 @@ public class MenuGUI extends Application
 	
 	public static Scene displayRegistration()
 	{
-		String[] labelName = {"Name:", "Username:", "Password:", "Confirm Password:", "Street:", "Suburb:", "Postcode:", "Phone Number:"};
+		String[] labelName = {"Username:", "Password:", "Confirm Password:", "Street:", "Suburb:", "Postcode:", "Phone Number:"};
 				
 		GridPane grid = new GridPane();
 		grid.setPadding(new Insets(25, 25, 25, 25));
@@ -141,7 +142,7 @@ public class MenuGUI extends Application
 		grid.setVgap(5);
 		grid.setHgap(10);
 		
-		for(int i = 0; i < 8; i++)
+		for(int i = 0; i < 7; i++)
 		{
 			regLabel[i] = new Label(labelName[i]);
 			GridPane.setConstraints(regLabel[i], 0, i*3);
@@ -161,53 +162,34 @@ public class MenuGUI extends Application
 			String errors;
 			Boolean blankField = false;
 			
-			for(int i = 0; i < 8; i++)
+			for(int i = 0; i < 7; i++)
 			{ 
-				if(Registration.isNotBlank(regTextField[i].getText()) == false)
-				{
-					blankField = true;
-					regBlankIndicator[i].setText("Field cannot be left blank!.");
-				}
-				else
-				{
-					regBlankIndicator[i].setText("");
-				}
+				regBlankIndicator[i].setText("");
 			}
 			
-			if(blankField == false)
+			errors = Menu.checker(regTextField[0].getText(), regTextField[1].getText(), regTextField[2].getText(), regTextField[3].getText(),
+				regTextField[4].getText(), regTextField[5].getText(), regTextField[6].getText());
+			
+			if(errors != null)
 			{
-				errors = Menu.checker(regTextField[0].getText(), regTextField[1].getText(), regTextField[2].getText(), regTextField[3].getText(),
-					regTextField[4].getText(), regTextField[5].getText(), regTextField[6].getText(), regTextField[7].getText());
-				
-				if(errors != null)
+				for(int i = 0; i < errors.length(); i++)
 				{
-					for(int i = 0; i < errors.length(); i++)
+					for(int j = 0; j < 7; j++)
 					{
-						for(int j = 0; j < 8; j++)
+						//int num = Character.getNumericValue(errors.charAt(i));
+						if(j == Character.getNumericValue(errors.charAt(i)))
 						{
-							//int num = Character.getNumericValue(errors.charAt(i));
-							if(j == Character.getNumericValue(errors.charAt(i)))
-							{
-								int num = Character.getNumericValue(errors.charAt(i));
-								System.out.println(num);
-								if(j == 0 ||j == 1)
-								{
-									regBlankIndicator[1].setText(Menu.messageGenerator(errors.charAt(i)));
-								}
-								else
-								{
-									regBlankIndicator[num].setText(Menu.messageGenerator(errors.charAt(i)));
-								}								
-							}
+							int num = Character.getNumericValue(errors.charAt(i));
+							regBlankIndicator[num].setText(Menu.messageGenerator(errors.charAt(i)));		
 						}
-					}					
-				}
-				else
-				{
-					window.setScene(loginScene);
-					window.setTitle("Appointment Booking System - Log In");
-				}
-			}			
+					}
+				}					
+			}
+			else
+			{
+				window.setScene(loginScene);
+				window.setTitle("Appointment Booking System - Log In");
+			}					
 		});
 
 		Button cancelButton = new Button("Cancel");
@@ -222,14 +204,14 @@ public class MenuGUI extends Application
 		hBtns.getChildren().addAll(confirmButton, cancelButton);
 		GridPane.setConstraints(hBtns, 0, 24);
 		
-		for(int i = 0; i < 8; i++)
+		for(int i = 0; i < 7; i++)
 		{
 			grid.getChildren().add(regTextField[i]);
 			grid.getChildren().add(regBlankIndicator[i]);
 			grid.getChildren().add(regLabel[i]);
 		}
 		grid.getChildren().addAll(hBtns);
-		Scene registrationScene = new Scene(grid, 400, 650);
+		Scene registrationScene = new Scene(grid, 350, 600);
 		
 		return registrationScene;
 	}

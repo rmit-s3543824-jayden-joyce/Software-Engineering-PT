@@ -207,6 +207,19 @@ public class Registration {
 		
 	}
 	
+	public static boolean isSuburb(String suburb)
+	{
+		if(suburb.matches("([a-zA-Z]+)"))
+		{
+			return true;	
+		}
+		else
+		{
+			System.out.println("Please enter a valid Suburb.");
+			return false;
+		}
+	}
+	
 	public static boolean isPostcode(String postcode)
 	{
 		if(postcode.matches("([3][0-9]{3}|[8][0-9]{3})"))
@@ -281,7 +294,12 @@ public class Registration {
 			
 			return false;
 			
-		} 
+		}
+		else if(username.matches("(^$)"))
+		{
+			return false;
+		}
+			
 		
 		return true;
 	}

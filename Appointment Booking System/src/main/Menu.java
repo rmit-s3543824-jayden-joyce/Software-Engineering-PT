@@ -50,50 +50,42 @@ public class Menu {
 		}
 	}
 	
-	public static String checker(String name, String username, String password, String confirmPassword, String street, String suburb, String postcode, String phoneNumber)
+	public static String checker(String username, String password, String confirmPassword, String street, String suburb, String postcode, String phoneNumber)
 	{
 		String errors = "";
 		String[] address = {street, suburb, postcode};
 				
-		if(Registration.isUniqueUser(username) == false)
+		if(Registration.isUniqueUser(username) == false || Registration.usernameRequirementsTest(username) == false)
 		{
-			System.out.println("TEST1");
 			errors += "0";
-		}
-		if(Registration.usernameRequirementsTest(username) == false)
-		{
-			System.out.println("TEST2");
-			errors += "1";
 		}
 		if(Registration.passwordRequirementsTest(password) == false)
 		{
-			System.out.println("TEST3");
-			errors += "2";
+			errors += "1";
 		}
 		if(Registration.doPasswordsMatch(password, confirmPassword) == false)
 		{
-			System.out.println("TEST4");
-			errors += "3";
+			errors += "2";
 		}
 		if(Registration.streetCheck(street) == false)
 		{
-			System.out.println("TEST5");
+			errors += "3";
+		}
+		if(Registration.isSuburb(suburb) == false)
+		{
 			errors += "4";
 		}
 		if(Registration.isPostcode(postcode) == false)
 		{
-			System.out.println("TEST6");
-			errors += "6";
+			errors += "5";
 		}
 		if(Registration.isPhoneNumber(phoneNumber) == false)
 		{
-			System.out.println("TEST7");
-			errors += "7";
+			errors += "6";
 		}
 		
 		if(!errors.isEmpty())
 		{
-			System.out.println(errors);
 			return errors;
 		}
 		
@@ -105,33 +97,29 @@ public class Menu {
 	{
 		if(field == '0')
 		{
-			return "*Invalid name";
+			return "*Username is invalid or already taken";
 		}
 		else if(field == '1')
 		{
-			return "*Username already taken";
+			return "*Invalid password";
 		}
 		else if(field == '2')
 		{
-			return "*Invalid username";
+			return "*Passwords don't match";
 		}
 		else if(field == '3')
 		{
-			return "*Passwords don't match";
+			return "*Invalid street name";
 		}
 		else if(field == '4')
 		{
-			return "*Invalid street name";
+			return "*Invalid suburb";
 		}
 		else if(field == '5')
 		{
-			return "*Invalid suburb";
-		}
-		else if(field == '6')
-		{
 			return "*Invalid postcode";
 		}
-		else if(field == '7')
+		else if(field == '6')
 		{
 			return "*Invalid phone number";
 		}
