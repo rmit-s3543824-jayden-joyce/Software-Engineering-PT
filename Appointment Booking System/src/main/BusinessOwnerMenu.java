@@ -31,6 +31,7 @@ public class BusinessOwnerMenu {
 	
 	static Scene mainScene;
 	
+	//Displays main business owner scene
 	public static Scene displayMenu()
 	{		
 		MenuGUI.window.setTitle("ABS - Busniess Menu");
@@ -48,28 +49,33 @@ public class BusinessOwnerMenu {
 		Button b4 = new Button("Add service");
 		b4.setOnAction(e ->	MenuGUI.window.setScene(addServiceMenu()));
 		b4.setMaxWidth(Double.MAX_VALUE);
+		//Logout button
 		Button logoutButton = new Button("LOGOUT");
 		logoutButton.setStyle("-fx-base: red;");
 		logoutButton.setOnAction(e -> MenuGUI.window.setScene(MenuGUI.loginScene));
 		
+		//Center box will display the main scene functions
 		VBox centerBox = new VBox();
 		centerBox.getChildren().addAll(b1, b2, b3, b4);
 		centerBox.setSpacing(10);
 		centerBox.setPadding(new Insets(15, 15, 15, 15));
 		centerBox.setAlignment(Pos.CENTER);
 		
+		//Top box will display the scenes name and business name when necessary
 		HBox topBox = new HBox();
 		topBox.setStyle("-fx-font-size: 24; -fx-background-color: #1976D2;");
 		topBox.setPadding(new Insets(10, 10, 10, 10));
 		topBox.setAlignment(Pos.CENTER);
 		topBox.getChildren().add(heading);
 		
+		//Left box contains navigational buttons
 		VBox leftBox = new VBox();
 		leftBox.setStyle("-fx-background-color: grey;");
 		leftBox.setPadding(new Insets(10, 10, 10, 10));
 		leftBox.setAlignment(Pos.TOP_CENTER);
 		leftBox.getChildren().add(logoutButton);
 		
+		//Assign nodes to layout
 		borderPane.setTop(topBox);
 		borderPane.setCenter(centerBox);
 		borderPane.setLeft(leftBox);
@@ -78,19 +84,21 @@ public class BusinessOwnerMenu {
 		return mainScene;		
 	}
 	
+	//Displays employee management functions
 	public static Scene displayEmployeeManagement()
 	{
 		MenuGUI.window.setTitle("ABS - Employee Management");
 		BorderPane borderPane = new BorderPane();
 		String[] buttonNames = {"Add employee", "List employees", "Show Schedule", "Add Schedule", "Remove Schedule", "Show Employee Availability", "Update Schedules"};
 		Button[] buttons = new Button[7];		
-		Label heading = new Label("--Business Name--");
+		Label heading = new Label("Employee Management");
 		
 		VBox centerBox = new VBox();
 		centerBox.setSpacing(10);
 		centerBox.setPadding(new Insets(15, 15, 15, 15));
 		centerBox.setAlignment(Pos.CENTER);
 		
+		//Created loop for creating and naming buttons
 		for(int i = 0; i < 7; i++)
 		{
 			buttons[i] = new Button(buttonNames[i]);
@@ -129,11 +137,12 @@ public class BusinessOwnerMenu {
 		return scene;
 	}
 	
+	//Displays function to add employee
 	public static Scene addEmployeeMenu()
 	{
 		MenuGUI.window.setTitle("ABS - Add Employee");
 		BorderPane borderPane = new BorderPane();
-		Label heading = new Label("--Business Name--");
+		Label heading = new Label("Add Employee");
 		
 		GridPane grid = new GridPane();
 		grid.setPadding(new Insets(25, 25, 25, 25));
@@ -161,9 +170,12 @@ public class BusinessOwnerMenu {
 		{
 			try
 			{
+				//If inputs are valid
 				if(EmployeeManagement.addEmployeeGUI(firstNameField.getText(), lastNameField.getText()))
 				{
+					//Employee is added to system and scene is set back
 					MenuGUI.window.setScene(displayEmployeeManagement());
+					//Alert box display success
 					MenuGUI.alertBox("ALERT!", "Employee has been successfully added!");
 					message.setText("");
 				}
@@ -216,6 +228,7 @@ public class BusinessOwnerMenu {
 		return scene;
 	}
 	
+	//Creates list of employees
 	public static ObservableList<Employee> getEmployee()
 	{
 		ObservableList<Employee> employees = FXCollections.observableArrayList();
@@ -227,12 +240,16 @@ public class BusinessOwnerMenu {
 				
 		try 
 		{	
+			//Read in employees from list
 			reader = new BufferedReader(new FileReader("employeeList.txt"));
 			
+			//While there are employees
 			while ((currentLine = reader.readLine()) != null)
 			{
+				//Grab employee details
 				dataValues = currentLine.split(deliminator);
 				
+				//Create new employee and add the list
 				employees.add(new Employee(dataValues[0], dataValues[1], dataValues[2]));	
 			}
 			
@@ -246,29 +263,43 @@ public class BusinessOwnerMenu {
 		return employees;
 	}
 	
+	//Display list of employees
 	public static Scene employeeListMenu()
 	{
 		BorderPane borderPane = new BorderPane();
 		Label heading = new Label("--Business Name--");
 		
+		//Create table
 		TableView<Employee> table;
+		//Create column for employee id
 		TableColumn<Employee, String> employeeIdColumn = new TableColumn<>("Employee ID");
+		//Set width of column
 		employeeIdColumn.setMinWidth(50);
+		//Set the type of value which the cell is taking
 		employeeIdColumn.setCellValueFactory(new PropertyValueFactory<>("employeeId"));
 		
+		//Create column for employee first name
 		TableColumn<Employee, String> firstNameColumn = new TableColumn<>("First Name");
 		firstNameColumn.setMinWidth(50);
 		firstNameColumn.setCellValueFactory(new PropertyValueFactory<>("firstName"));
 		
+		//Create column for employee last name
 		TableColumn<Employee, String> lastNameColumn = new TableColumn<>("Last Name");
 		lastNameColumn.setMinWidth(50);
 		lastNameColumn.setCellValueFactory(new PropertyValueFactory<>("lastName"));
 		
+		//Initialize table
 		table = new TableView<>();
+		//Display message if table is empty
+		table.setPlaceholder(new Label("No employees currently in the system"));
+		//Gets the items from employee list to display
 		table.setItems(getEmployee());
+		//Restrict the number of column shown
 		table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+		//Add columns to table
 		table.getColumns().addAll(employeeIdColumn, firstNameColumn, lastNameColumn);
 		
+		//Home button
 		Button homeButton = new Button("HOME");
 		homeButton.setOnAction(e -> MenuGUI.window.setScene(displayMenu()));
 		homeButton.setMaxWidth(100);
@@ -298,6 +329,7 @@ public class BusinessOwnerMenu {
 		return scene;
 	}
 	
+	//Create list of bookings
 	public static ObservableList<Booking> getBookings()
 	{
 		ObservableList<Booking> Booking = FXCollections.observableArrayList();
@@ -337,6 +369,7 @@ public class BusinessOwnerMenu {
 		return Booking;
 	}
 	
+	//Displays list of bookings by customers
 	public static Scene bookingsMenu()
 	{
 		MenuGUI.window.setTitle("ABS - View Booking Summaries");
@@ -375,6 +408,7 @@ public class BusinessOwnerMenu {
 		serviceColumn.setCellValueFactory(new PropertyValueFactory<>("serviceType"));
 		
 		table = new TableView<>();
+		table.setPlaceholder(new Label("No bookings have been made"));
 		table.setItems(getBookings());
 		table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 		table.getColumns().addAll(dateColumn, timeColumn, statusColumn, cusomterColumn, employeeColumn, serviceColumn);
@@ -407,11 +441,12 @@ public class BusinessOwnerMenu {
 		return scene;
 	}
 	
+	//Displays add service function
 	public static Scene addServiceMenu()
 	{
 		MenuGUI.window.setTitle("ABS - Add Service");
 		BorderPane borderPane = new BorderPane();
-		Label heading = new Label("--Busniess Name--");
+		Label heading = new Label("Add Service");
 		
 		GridPane grid = new GridPane();
 		grid.setPadding(new Insets(25, 25, 25, 25));
@@ -434,7 +469,9 @@ public class BusinessOwnerMenu {
 		serviceDescriptionField.setPrefRowCount(3);
 		GridPane.setConstraints(serviceDescriptionField, 1, 2);
 		
+		//Drop down box
 		ChoiceBox<String> durationBox = new ChoiceBox<>();
+		//Sets the items in the drop down box
 		durationBox.getItems().addAll(
 				"15",
 				"30",
@@ -454,14 +491,20 @@ public class BusinessOwnerMenu {
 		Button addButton = new Button("Add Service");
 		addButton.setOnAction(e -> 
 		{
+			//Validates input
 			if(BusinessManagement.isNumericAndPositive(durationBox.getValue()) && !Utility.isBlank(durationBox.getValue()))
 			{
+				//Checks if input is not blank
 				if(!Utility.isBlank(addServiceField.getText()) && !Utility.isBlank(serviceDescriptionField.getText()))
 				{
 					try
 					{
+						//Addes service to system
 						BusinessManagement.addService(addServiceField.getText(), durationBox.getValue(), serviceDescriptionField.getText());
+						//Displays success alert
 						MenuGUI.alertBox("ALERT!", "Service has been successfully added!");
+						//Return to main page
+						MenuGUI.window.setScene(mainScene);
 					}
 					catch (IOException e1)
 					{

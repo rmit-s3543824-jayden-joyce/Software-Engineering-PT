@@ -28,7 +28,7 @@ public class Login
 			Username = consoleReader.next();
 
 			//sets username for global user
-			Menu.username = username;
+			Menu.username = Username;
 					
 			System.out.println("Password:");
 			System.out.print(">>> ");

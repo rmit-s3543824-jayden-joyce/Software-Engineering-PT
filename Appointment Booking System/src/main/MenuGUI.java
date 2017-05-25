@@ -36,15 +36,19 @@ public class MenuGUI extends Application
 	@Override
 	public void start(Stage primaryStage) throws Exception
 	{
+		//Creates window
 		window = primaryStage;
+		//Creates the scene which hosts the 'Log in' scene
 		Scene scene = displayLoginScene();
 		window.setTitle("ABS - Log In");
+		//Sets and displays the 'Log in' scene
 		window.setScene(scene);
 		window.show();
 	}
 	
 	public Scene displayLoginScene()
 	{
+		//Create a grid to hold the necessary items in a clean layout
 		GridPane grid = new GridPane();
 		grid.setPadding(new Insets(25, 25, 25, 25));
 		grid.setAlignment(Pos.CENTER);
@@ -75,9 +79,11 @@ public class MenuGUI extends Application
 		{ 
 			try
 			{
+				//Taking the data from the username and password textfields and validating them
 				userType = Login.verifyLoginDetails(usernameField.getText(), passwordField.getText());
 				if(userType == 1)
 				{
+					//If customer details are found
 					window.setScene(CustomerMenu.displayMenu());
 					message.setText("");
 					usernameField.clear();
@@ -86,6 +92,7 @@ public class MenuGUI extends Application
 				}
 				else if(userType == 2)
 				{
+					//If Business Owner details are found
 					window.setScene(BusinessOwnerMenu.displayMenu());					
 					message.setText("");
 					usernameField.clear();
@@ -94,6 +101,7 @@ public class MenuGUI extends Application
 				}
 				else
 				{
+					//If no users are found
 					message.setText("Your username or password is incorrect!");
 					passwordField.clear();
 				}
@@ -112,7 +120,9 @@ public class MenuGUI extends Application
 			usernameField.clear();
 			passwordField.clear();
 			message.setText("");
+			//Setting scene for registration
 			registrationScene = displayRegistration();
+			//Changes scene to 'Sign Up' scene
 			window.setScene(registrationScene);
 		});
 
@@ -122,7 +132,9 @@ public class MenuGUI extends Application
 		hBtns.getChildren().addAll(loginButton, registerButton);
 		GridPane.setConstraints(hBtns, 1, 3);
 		
+		//Add all items/nodes to grid pane
 		grid.getChildren().addAll(usernameLabel, usernameField, passwordLabel, passwordField, hBtns, message);
+		//Set grid pane to scene
 		loginScene = new Scene(grid, 400, 275);
 		return loginScene;
 	}
@@ -140,6 +152,7 @@ public class MenuGUI extends Application
 		grid.setVgap(5);
 		grid.setHgap(10);
 		
+		//Creating the labels, textfields and error messages and initializing them
 		for(int i = 0; i < 7; i++)
 		{
 			regLabel[i] = new Label(labelName[i]);
@@ -160,23 +173,29 @@ public class MenuGUI extends Application
 		{
 			String errors;
 			
+			//Resets fields and messages 
 			for(int i = 0; i < 7; i++)
 			{ 
 				regBlankIndicator[i].setText("");
 				regTextField[i].setStyle(null);
 			}
 			
+			//Validating the inputs of the fields
 			errors = Menu.checker(regTextField[0].getText(), regTextField[1].getText(), regTextField[2].getText(), regTextField[3].getText(),
 				regTextField[4].getText(), regTextField[5].getText(), regTextField[6].getText());
 			
+			//If errors are detected
 			if(errors != null)
 			{
+				//Loop for the number of errors
 				for(int i = 0; i < errors.length(); i++)
 				{
 					for(int j = 0; j < 7; j++)
 					{
+						//if the field matches the associated error
 						if(j == Character.getNumericValue(errors.charAt(i)))
 						{
+							//Display respective message and highlight textfield
 							int num = Character.getNumericValue(errors.charAt(i));
 							regBlankIndicator[num].setText(Menu.messageGenerator(errors.charAt(i)));
 							regTextField[j].setStyle("-fx-border-color: red;");
@@ -186,10 +205,12 @@ public class MenuGUI extends Application
 			}
 			else
 			{
+				//If no errors
 				window.setScene(loginScene);
 			}					
 		});
-
+		
+		//Button to go back to previous window
 		Button cancelButton = new Button("Cancel");
 		cancelButton.setOnAction(e -> window.setScene(loginScene));		
 		
@@ -210,6 +231,7 @@ public class MenuGUI extends Application
 		return registrationScene;
 	}
 	
+	//Alert box for displaying messages
 	public static void alertBox(String title, String message)
 	{
 		Stage window = new Stage();
@@ -231,20 +253,5 @@ public class MenuGUI extends Application
 		Scene scene = new Scene(layout);
 		window.setScene(scene);
 		window.showAndWait();
-	}
-	
-	public static String getFieldValue(String fieldName)
-	{
-		String value = "";
-		
-		for(int i = 0; i < 8; i++)
-		{
-			if(regLabel[i].getText().equals(fieldName))
-			{
-				value = regTextField[i].getText();
-			}
-		}
-		
-		return value;
 	}
 }
