@@ -26,6 +26,9 @@ public class Login
 			System.out.println("Username:");
 			System.out.print(">>> ");
 			Username = consoleReader.next();
+
+			//sets username for global user
+			Menu.username = username;
 					
 			System.out.println("Password:");
 			System.out.print(">>> ");
@@ -82,6 +85,9 @@ public class Login
 
 	public static int verifyLoginDetails(String username, String password) throws IOException
 	{
+		//sets username for global user
+		Menu.username = username;
+		
 		if(password.isEmpty() || username.isEmpty())
 		{
 			System.out.println("Username or password are invalid.\n");
