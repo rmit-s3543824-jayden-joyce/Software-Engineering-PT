@@ -11,6 +11,8 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -22,36 +24,33 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.text.TextAlignment;
 import utility.Utility;
 
 public class BusinessOwnerMenu {
 	
-	//static Stage window;
 	static Scene mainScene;
 	
 	public static Scene displayMenu()
 	{		
+		MenuGUI.window.setTitle("ABS - Busniess Menu");
 		BorderPane borderPane = new BorderPane();
-		
-		Label heading = new Label("Business Owner Menu");
+		Label heading = new Label("--Business Name--");
 		
 		Button b1 = new Button("Employee Management");
-		b1.setOnAction(e -> MenuGUI.window.setScene(displayMenu2()));
+		b1.setOnAction(e -> MenuGUI.window.setScene(displayEmployeeManagement()));
 		b1.setMaxWidth(Double.MAX_VALUE);
 		Button b2 = new Button("View Booking Summaries");
-		b2.setOnAction(e -> MenuGUI.window.setScene(bookingsMenu()));
+		b2.setOnAction(e ->	MenuGUI.window.setScene(bookingsMenu()));
 		b2.setMaxWidth(Double.MAX_VALUE);
 		Button b3 = new Button("View New Bookings");
 		b3.setMaxWidth(Double.MAX_VALUE);
 		Button b4 = new Button("Add service");
-		b4.setOnAction(e -> MenuGUI.window.setScene(addServiceMenu()));
+		b4.setOnAction(e ->	MenuGUI.window.setScene(addServiceMenu()));
 		b4.setMaxWidth(Double.MAX_VALUE);
 		Button logoutButton = new Button("LOGOUT");
 		logoutButton.setStyle("-fx-base: red;");
-		logoutButton.setOnAction(e -> 
-		{
-			MenuGUI.window.setScene(MenuGUI.loginScene);
-		});
+		logoutButton.setOnAction(e -> MenuGUI.window.setScene(MenuGUI.loginScene));
 		
 		VBox centerBox = new VBox();
 		centerBox.getChildren().addAll(b1, b2, b3, b4);
@@ -60,31 +59,32 @@ public class BusinessOwnerMenu {
 		centerBox.setAlignment(Pos.CENTER);
 		
 		HBox topBox = new HBox();
-		topBox.setStyle("-fx-font: 24 arial; -fx-background-color: #1976D2;");
-		topBox.setPadding(new Insets(15, 15, 15, 15));
+		topBox.setStyle("-fx-font-size: 24; -fx-background-color: #1976D2;");
+		topBox.setPadding(new Insets(10, 10, 10, 10));
 		topBox.setAlignment(Pos.CENTER);
 		topBox.getChildren().add(heading);
 		
-		HBox bottomBox = new HBox();
-		bottomBox.setPadding(new Insets(10, 15, 10, 15));
-		bottomBox.setAlignment(Pos.CENTER_RIGHT);
-		bottomBox.setStyle("-fx-background-color: grey;");
-		bottomBox.getChildren().add(logoutButton);
+		VBox leftBox = new VBox();
+		leftBox.setStyle("-fx-background-color: grey;");
+		leftBox.setPadding(new Insets(10, 10, 10, 10));
+		leftBox.setAlignment(Pos.TOP_CENTER);
+		leftBox.getChildren().add(logoutButton);
 		
 		borderPane.setTop(topBox);
 		borderPane.setCenter(centerBox);
-		borderPane.setBottom(bottomBox);
+		borderPane.setLeft(leftBox);
 		
-		mainScene = new Scene(borderPane, 300, 300);
+		mainScene = new Scene(borderPane, 400, 250);
 		return mainScene;		
 	}
 	
-	public static Scene displayMenu2()
+	public static Scene displayEmployeeManagement()
 	{
+		MenuGUI.window.setTitle("ABS - Employee Management");
 		BorderPane borderPane = new BorderPane();
 		String[] buttonNames = {"Add employee", "List employees", "Show Schedule", "Add Schedule", "Remove Schedule", "Show Employee Availability", "Update Schedules"};
-		Button[] buttons = new Button[7];
-		Label heading = new Label("Business Owner Menu");
+		Button[] buttons = new Button[7];		
+		Label heading = new Label("--Business Name--");
 		
 		VBox centerBox = new VBox();
 		centerBox.setSpacing(10);
@@ -94,46 +94,46 @@ public class BusinessOwnerMenu {
 		for(int i = 0; i < 7; i++)
 		{
 			buttons[i] = new Button(buttonNames[i]);
-			buttons[i].setMaxWidth(Double.MAX_VALUE);
+			buttons[i].setMaxWidth(300);
 			centerBox.getChildren().add(buttons[i]);
 		}
 		
 		buttons[0].setOnAction(e -> MenuGUI.window.setScene(addEmployeeMenu()));
 		buttons[1].setOnAction(e -> MenuGUI.window.setScene(employeeListMenu()));
 		buttons[6].setStyle("-fx-base: #03A9F4;");
-		Button backButton = new Button("BACK");
-		backButton.setOnAction(e -> MenuGUI.window.setScene(mainScene));
+		Button homeButton = new Button("HOME");
+		homeButton.setOnAction(e -> MenuGUI.window.setScene(mainScene));
+		homeButton.setMaxWidth(100);
 		Button logoutButton = new Button("LOGOUT");
 		logoutButton.setStyle("-fx-base: red;");
-		logoutButton.setOnAction(e -> 
-		{
-			MenuGUI.window.setScene(MenuGUI.loginScene);
-		});
+		logoutButton.setOnAction(e -> MenuGUI.window.setScene(MenuGUI.loginScene));
 				
 		HBox topBox = new HBox();
-		topBox.setStyle("-fx-font: 24 arial; -fx-background-color: #1976D2;");
-		topBox.setPadding(new Insets(15, 15, 15, 15));
+		topBox.setStyle("-fx-font-size: 24; -fx-background-color: #1976D2;");
+		topBox.setPadding(new Insets(10, 10, 10, 10));
 		topBox.setAlignment(Pos.CENTER);
 		topBox.getChildren().add(heading);
 		
-		HBox bottomBox = new HBox();
-		bottomBox.setPadding(new Insets(10, 15, 10, 15));
-		bottomBox.setAlignment(Pos.CENTER_RIGHT);
-		bottomBox.setStyle("-fx-background-color: grey;");
-		bottomBox.getChildren().addAll(backButton, logoutButton);
+		VBox leftBox = new VBox();
+		leftBox.setStyle("-fx-background-color: grey;");
+		leftBox.setSpacing(10);
+		leftBox.setPadding(new Insets(10, 10, 10, 10));
+		leftBox.setAlignment(Pos.TOP_CENTER);
+		leftBox.getChildren().addAll(homeButton, logoutButton);
 		
 		borderPane.setTop(topBox);
 		borderPane.setCenter(centerBox);
-		borderPane.setBottom(bottomBox);
+		borderPane.setLeft(leftBox);
 		
-		Scene scene = new Scene(borderPane);
+		Scene scene = new Scene(borderPane, 400, 350);
 		return scene;
 	}
 	
 	public static Scene addEmployeeMenu()
 	{
+		MenuGUI.window.setTitle("ABS - Add Employee");
 		BorderPane borderPane = new BorderPane();
-		Label heading = new Label("Add Employee");
+		Label heading = new Label("--Business Name--");
 		
 		GridPane grid = new GridPane();
 		grid.setPadding(new Insets(25, 25, 25, 25));
@@ -163,7 +163,8 @@ public class BusinessOwnerMenu {
 			{
 				if(EmployeeManagement.addEmployeeGUI(firstNameField.getText(), lastNameField.getText()))
 				{
-					MenuGUI.window.setScene(displayMenu2());
+					MenuGUI.window.setScene(displayEmployeeManagement());
+					MenuGUI.alertBox("ALERT!", "Employee has been successfully added!");
 					message.setText("");
 				}
 				else
@@ -177,39 +178,41 @@ public class BusinessOwnerMenu {
 			}
 		});
 		GridPane.setConstraints(confirmButton, 1, 3);
-		Button backButton = new Button("BACK");
-		backButton.setOnAction(e -> 
-		{
-			MenuGUI.window.setScene(displayMenu2());
-			message.setText("");
-		});
+		Button cancelButton = new Button("Cancel");
+		cancelButton.setOnAction(e -> MenuGUI.window.setScene(displayEmployeeManagement()));
+		GridPane.setConstraints(cancelButton, 2, 3);
 		Button logoutButton = new Button("LOGOUT");
 		logoutButton.setStyle("-fx-base: red;");
-		logoutButton.setOnAction(e -> 
-		{
-			MenuGUI.window.setScene(MenuGUI.loginScene);
-			message.setText("");
-		});
+		logoutButton.setOnAction(e -> MenuGUI.window.setScene(MenuGUI.loginScene));
+		Button homeButton = new Button("HOME");
+		homeButton.setOnAction(e -> MenuGUI.window.setScene(mainScene));
+		homeButton.setMaxWidth(100);
+				
+		HBox hBtns = new HBox(10);
+		hBtns.setAlignment(Pos.BOTTOM_RIGHT);
+		hBtns.getChildren().addAll(confirmButton, cancelButton);
+		GridPane.setConstraints(hBtns, 1, 3);
 		
-		grid.getChildren().addAll(firstNameLabel, lastNameLabel, firstNameField, lastNameField, message, confirmButton);
+		grid.getChildren().addAll(firstNameLabel, lastNameLabel, firstNameField, lastNameField, message, hBtns);
 		
 		HBox topBox = new HBox();
-		topBox.setStyle("-fx-font: 24 arial; -fx-background-color: #1976D2;");
-		topBox.setPadding(new Insets(15, 15, 15, 15));
+		topBox.setStyle("-fx-font-size: 24; -fx-background-color: #1976D2;");
+		topBox.setPadding(new Insets(10, 10, 10, 10));
 		topBox.setAlignment(Pos.CENTER);
 		topBox.getChildren().add(heading);
 		
-		HBox bottomBox = new HBox();
-		bottomBox.setPadding(new Insets(10, 15, 10, 15));
-		bottomBox.setAlignment(Pos.CENTER_RIGHT);
-		bottomBox.setStyle("-fx-background-color: grey;");
-		bottomBox.getChildren().addAll(backButton, logoutButton);
+		VBox leftBox = new VBox();
+		leftBox.setStyle("-fx-background-color: grey;");
+		leftBox.setSpacing(10);
+		leftBox.setPadding(new Insets(10, 10, 10, 10));
+		leftBox.setAlignment(Pos.TOP_CENTER);
+		leftBox.getChildren().addAll(homeButton, logoutButton);
 		
 		borderPane.setTop(topBox);
 		borderPane.setCenter(grid);
-		borderPane.setBottom(bottomBox);
+		borderPane.setLeft(leftBox);
 		
-		Scene scene = new Scene(borderPane, 350, 300);
+		Scene scene = new Scene(borderPane, 410, 300);
 		return scene;
 	}
 	
@@ -246,13 +249,7 @@ public class BusinessOwnerMenu {
 	public static Scene employeeListMenu()
 	{
 		BorderPane borderPane = new BorderPane();
-		Label heading = new Label("Add Employee");
-		
-		GridPane grid = new GridPane();
-		grid.setPadding(new Insets(25, 25, 25, 25));
-		grid.setAlignment(Pos.CENTER);
-		grid.setVgap(8);
-		grid.setHgap(10);
+		Label heading = new Label("--Business Name--");
 		
 		TableView<Employee> table;
 		TableColumn<Employee, String> employeeIdColumn = new TableColumn<>("Employee ID");
@@ -272,35 +269,32 @@ public class BusinessOwnerMenu {
 		table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 		table.getColumns().addAll(employeeIdColumn, firstNameColumn, lastNameColumn);
 		
-		Button backButton = new Button("BACK");
-		backButton.setOnAction(e -> 
-		{
-			MenuGUI.window.setScene(displayMenu2());
-		});
+		Button homeButton = new Button("HOME");
+		homeButton.setOnAction(e -> MenuGUI.window.setScene(displayMenu()));
+		homeButton.setMaxWidth(100);
+		
 		Button logoutButton = new Button("LOGOUT");
 		logoutButton.setStyle("-fx-base: red;");
-		logoutButton.setOnAction(e -> 
-		{
-			MenuGUI.window.setScene(MenuGUI.loginScene);
-		});
+		logoutButton.setOnAction(e -> MenuGUI.window.setScene(MenuGUI.loginScene));
 		
 		HBox topBox = new HBox();
-		topBox.setStyle("-fx-font: 24 arial; -fx-background-color: #1976D2;");
-		topBox.setPadding(new Insets(15, 15, 15, 15));
+		topBox.setStyle("-fx-font-size: 24; -fx-background-color: #1976D2;");
+		topBox.setPadding(new Insets(10, 10, 10, 10));
 		topBox.setAlignment(Pos.CENTER);
 		topBox.getChildren().add(heading);
 		
-		HBox bottomBox = new HBox();
-		bottomBox.setPadding(new Insets(10, 15, 10, 15));
-		bottomBox.setAlignment(Pos.CENTER_RIGHT);
-		bottomBox.setStyle("-fx-background-color: grey;");
-		bottomBox.getChildren().addAll(backButton, logoutButton);
-		
+		VBox leftBox = new VBox();
+		leftBox.setStyle("-fx-background-color: grey;");
+		leftBox.setSpacing(10);
+		leftBox.setPadding(new Insets(10, 10, 10, 10));
+		leftBox.setAlignment(Pos.TOP_CENTER);
+		leftBox.getChildren().addAll(homeButton, logoutButton);
+				
 		borderPane.setTop(topBox);
 		borderPane.setCenter(table);
-		borderPane.setBottom(bottomBox);
+		borderPane.setLeft(leftBox);
 		
-		Scene scene = new Scene(borderPane, 350, 300);
+		Scene scene = new Scene(borderPane, 400, 300);
 		return scene;
 	}
 	
@@ -345,8 +339,9 @@ public class BusinessOwnerMenu {
 	
 	public static Scene bookingsMenu()
 	{
+		MenuGUI.window.setTitle("ABS - View Booking Summaries");
 		BorderPane borderPane = new BorderPane();
-		Label heading = new Label("Add Employee");
+		Label heading = new Label("--Business Name--");
 		
 		GridPane grid = new GridPane();
 		grid.setPadding(new Insets(25, 25, 25, 25));
@@ -384,33 +379,29 @@ public class BusinessOwnerMenu {
 		table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 		table.getColumns().addAll(dateColumn, timeColumn, statusColumn, cusomterColumn, employeeColumn, serviceColumn);
 		
-		Button backButton = new Button("BACK");
-		backButton.setOnAction(e -> 
-		{
-			MenuGUI.window.setScene(displayMenu());
-		});
+		Button homeButton = new Button("HOME");
+		homeButton.setOnAction(e ->	MenuGUI.window.setScene(displayMenu()));
+		homeButton.setMaxWidth(100);
 		Button logoutButton = new Button("LOGOUT");
 		logoutButton.setStyle("-fx-base: red;");
-		logoutButton.setOnAction(e -> 
-		{
-			MenuGUI.window.setScene(MenuGUI.loginScene);
-		});
+		logoutButton.setOnAction(e -> MenuGUI.window.setScene(MenuGUI.loginScene));
 		
 		HBox topBox = new HBox();
-		topBox.setStyle("-fx-font: 24 arial; -fx-background-color: #1976D2;");
-		topBox.setPadding(new Insets(15, 15, 15, 15));
+		topBox.setStyle("-fx-font-size: 24; -fx-background-color: #1976D2;");
+		topBox.setPadding(new Insets(10, 10, 10, 10));
 		topBox.setAlignment(Pos.CENTER);
 		topBox.getChildren().add(heading);
 		
-		HBox bottomBox = new HBox();
-		bottomBox.setPadding(new Insets(10, 15, 10, 15));
-		bottomBox.setAlignment(Pos.CENTER_RIGHT);
-		bottomBox.setStyle("-fx-background-color: grey;");
-		bottomBox.getChildren().addAll(backButton, logoutButton);
+		VBox leftBox = new VBox();
+		leftBox.setStyle("-fx-background-color: grey;");
+		leftBox.setSpacing(10);
+		leftBox.setPadding(new Insets(10, 10, 10, 10));
+		leftBox.setAlignment(Pos.TOP_CENTER);
+		leftBox.getChildren().addAll(homeButton, logoutButton);
 		
 		borderPane.setTop(topBox);
 		borderPane.setCenter(table);
-		borderPane.setBottom(bottomBox);
+		borderPane.setLeft(leftBox);
 		
 		Scene scene = new Scene(borderPane, 600, 300);
 		return scene;
@@ -418,8 +409,9 @@ public class BusinessOwnerMenu {
 	
 	public static Scene addServiceMenu()
 	{
+		MenuGUI.window.setTitle("ABS - Add Service");
 		BorderPane borderPane = new BorderPane();
-		Label heading = new Label("Add Service");
+		Label heading = new Label("--Busniess Name--");
 		
 		GridPane grid = new GridPane();
 		grid.setPadding(new Insets(25, 25, 25, 25));
@@ -431,18 +423,29 @@ public class BusinessOwnerMenu {
 		GridPane.setConstraints(addServiceLabel, 0, 0);
 		TextField addServiceField = new TextField();
 		GridPane.setConstraints(addServiceField, 1, 0);
-		Label serviceDurationLabel = new Label("Service Duration (minutes):");
+		Label serviceDurationLabel = new Label("Duration (min):");
 		GridPane.setConstraints(serviceDurationLabel, 0, 1);
-		TextField serviceDurationField = new TextField();
-		GridPane.setConstraints(serviceDurationField, 1, 1);
-		Label serviceDescriptionLabel = new Label("Service Description:");
+		Label serviceDescriptionLabel = new Label("Description:");
 		serviceDescriptionLabel.setAlignment(Pos.TOP_CENTER);
 		GridPane.setConstraints(serviceDescriptionLabel, 0, 2);
 		TextArea serviceDescriptionField = new TextArea();
-		serviceDescriptionField.setPrefWidth(350);
+		serviceDescriptionField.setPrefWidth(330);
 		serviceDescriptionField.setWrapText(true);
 		serviceDescriptionField.setPrefRowCount(3);
 		GridPane.setConstraints(serviceDescriptionField, 1, 2);
+		
+		ChoiceBox<String> durationBox = new ChoiceBox<>();
+		durationBox.getItems().addAll(
+				"15",
+				"30",
+				"45",
+				"60",
+				"75",
+				"90",
+				"105",
+				"120"
+		);
+		GridPane.setConstraints(durationBox, 1, 1);
 		
 		final Label message = new Label("");
 		message.setTextFill(Color.rgb(210, 39, 30));
@@ -451,13 +454,14 @@ public class BusinessOwnerMenu {
 		Button addButton = new Button("Add Service");
 		addButton.setOnAction(e -> 
 		{
-			if(BusinessManagement.isNumericAndPositive(serviceDurationField.getText()) && !Utility.isBlank(serviceDurationField.getText()))
+			if(BusinessManagement.isNumericAndPositive(durationBox.getValue()) && !Utility.isBlank(durationBox.getValue()))
 			{
 				if(!Utility.isBlank(addServiceField.getText()) && !Utility.isBlank(serviceDescriptionField.getText()))
 				{
 					try
 					{
-						BusinessManagement.addService(addServiceField.getText(), serviceDurationField.getText(), serviceDescriptionField.getText());
+						BusinessManagement.addService(addServiceField.getText(), durationBox.getValue(), serviceDescriptionField.getText());
+						MenuGUI.alertBox("ALERT!", "Service has been successfully added!");
 					}
 					catch (IOException e1)
 					{
@@ -476,31 +480,33 @@ public class BusinessOwnerMenu {
 		});
 		GridPane.setConstraints(addButton, 1, 4);
 		
-		grid.getChildren().addAll(addServiceLabel, addServiceField, serviceDurationLabel, serviceDurationField, serviceDescriptionLabel, serviceDescriptionField, addButton, message);
+		grid.getChildren().addAll(addServiceLabel, addServiceField, serviceDurationLabel, durationBox, serviceDescriptionLabel, serviceDescriptionField, addButton, message);
 		
-		Button backButton = new Button("BACK");
-		backButton.setOnAction(e -> MenuGUI.window.setScene(displayMenu()));
+		Button homeButton = new Button("HOME");
+		homeButton.setOnAction(e -> MenuGUI.window.setScene(displayMenu()));
+		homeButton.setMaxWidth(100);
 		Button logoutButton = new Button("LOGOUT");
 		logoutButton.setStyle("-fx-base: red;");
 		logoutButton.setOnAction(e -> MenuGUI.window.setScene(MenuGUI.loginScene));
 		
 		HBox topBox = new HBox();
-		topBox.setStyle("-fx-font: 24 arial; -fx-background-color: #1976D2;");
-		topBox.setPadding(new Insets(15, 15, 15, 15));
+		topBox.setStyle("-fx-font-size: 24; -fx-background-color: #1976D2;");
+		topBox.setPadding(new Insets(10, 10, 10, 10));
 		topBox.setAlignment(Pos.CENTER);
 		topBox.getChildren().add(heading);
 		
-		HBox bottomBox = new HBox();
-		bottomBox.setPadding(new Insets(10, 15, 10, 15));
-		bottomBox.setAlignment(Pos.CENTER_RIGHT);
-		bottomBox.setStyle("-fx-background-color: grey;");
-		bottomBox.getChildren().addAll(backButton, logoutButton);
+		VBox leftBox = new VBox();
+		leftBox.setStyle("-fx-background-color: grey;");
+		leftBox.setSpacing(10);
+		leftBox.setPadding(new Insets(10, 10, 10, 10));
+		leftBox.setAlignment(Pos.TOP_CENTER);
+		leftBox.getChildren().addAll(homeButton, logoutButton);
 		
 		borderPane.setTop(topBox);
 		borderPane.setCenter(grid);
-		borderPane.setBottom(bottomBox);
+		borderPane.setLeft(leftBox);
 		
-		Scene scene = new Scene(borderPane, 550, 350);
+		Scene scene = new Scene(borderPane, 555, 300);
 		return scene;
 	}
 }

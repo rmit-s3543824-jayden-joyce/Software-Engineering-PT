@@ -3,8 +3,6 @@ package main;
 import java.io.IOException;
 
 import javafx.application.Application;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -14,10 +12,9 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 public class MenuGUI extends Application
@@ -41,7 +38,7 @@ public class MenuGUI extends Application
 	{
 		window = primaryStage;
 		Scene scene = displayLoginScene();
-		window.setTitle("Appointment Booking System - Log In");
+		window.setTitle("ABS - Log In");
 		window.setScene(scene);
 		window.show();
 	}
@@ -81,7 +78,7 @@ public class MenuGUI extends Application
 				userType = Login.verifyLoginDetails(usernameField.getText(), passwordField.getText());
 				if(userType == 1)
 				{
-					System.out.println("It worked! (Customer)");
+					window.setScene(CustomerMenu.displayMenu());
 					message.setText("");
 					usernameField.clear();
 					passwordField.clear();
@@ -117,7 +114,6 @@ public class MenuGUI extends Application
 			message.setText("");
 			registrationScene = displayRegistration();
 			window.setScene(registrationScene);
-			window.setTitle("Appointment Booking System - Sign Up");
 		});
 
 		//Horizontally align buttons
@@ -133,8 +129,10 @@ public class MenuGUI extends Application
 	
 	public static Scene displayRegistration()
 	{
+		window.setTitle("ABS - Sign Up");
 		String[] labelName = {"Username:", "Password:", "Confirm Password:", "Street:", "Suburb:", "Postcode:", "Phone Number:"};
-				
+		String[] textFieldValues = {"Username", "Password", "", "Street", "Suburb", "Postcode", "Phone Number"};
+		
 		GridPane grid = new GridPane();
 		grid.setPadding(new Insets(25, 25, 25, 25));
 		grid.setAlignment(Pos.CENTER);
@@ -148,6 +146,7 @@ public class MenuGUI extends Application
 			GridPane.setConstraints(regLabel[i], 0, i*3);
 			
 			regTextField[i] = new TextField();
+			regTextField[i].setPromptText(textFieldValues[i]);
 			regTextField[i].setPrefWidth(250);
 			GridPane.setConstraints(regTextField[i], 0, i*3+1);
 			
@@ -160,11 +159,11 @@ public class MenuGUI extends Application
 		confirmButton.setOnAction(e ->
 		{
 			String errors;
-			Boolean blankField = false;
 			
 			for(int i = 0; i < 7; i++)
 			{ 
 				regBlankIndicator[i].setText("");
+				regTextField[i].setStyle(null);
 			}
 			
 			errors = Menu.checker(regTextField[0].getText(), regTextField[1].getText(), regTextField[2].getText(), regTextField[3].getText(),
@@ -176,11 +175,11 @@ public class MenuGUI extends Application
 				{
 					for(int j = 0; j < 7; j++)
 					{
-						//int num = Character.getNumericValue(errors.charAt(i));
 						if(j == Character.getNumericValue(errors.charAt(i)))
 						{
 							int num = Character.getNumericValue(errors.charAt(i));
-							regBlankIndicator[num].setText(Menu.messageGenerator(errors.charAt(i)));		
+							regBlankIndicator[num].setText(Menu.messageGenerator(errors.charAt(i)));
+							regTextField[j].setStyle("-fx-border-color: red;");
 						}
 					}
 				}					
@@ -188,16 +187,11 @@ public class MenuGUI extends Application
 			else
 			{
 				window.setScene(loginScene);
-				window.setTitle("Appointment Booking System - Log In");
 			}					
 		});
 
 		Button cancelButton = new Button("Cancel");
-		cancelButton.setOnAction(e -> 
-		{
-			window.setScene(loginScene);
-			window.setTitle("Appointment Booking System - Log In");
-		});		
+		cancelButton.setOnAction(e -> window.setScene(loginScene));		
 		
 		HBox hBtns = new HBox(10);
 		hBtns.setAlignment(Pos.BOTTOM_RIGHT);
@@ -214,6 +208,29 @@ public class MenuGUI extends Application
 		Scene registrationScene = new Scene(grid, 350, 600);
 		
 		return registrationScene;
+	}
+	
+	public static void alertBox(String title, String message)
+	{
+		Stage window = new Stage();
+		
+		window.initModality(Modality.APPLICATION_MODAL);
+		window.setTitle(title);
+		window.setMinWidth(250);
+		
+		Label label = new Label();
+		label.setText(message);
+		Button closeButton = new Button("Close");
+		closeButton.setOnAction(e -> window.close());
+		
+		VBox layout = new VBox();
+		layout.setPadding(new Insets(10, 10, 10, 10));
+		layout.getChildren().addAll(label, closeButton);
+		layout.setAlignment(Pos.CENTER);
+		
+		Scene scene = new Scene(layout);
+		window.setScene(scene);
+		window.showAndWait();
 	}
 	
 	public static String getFieldValue(String fieldName)

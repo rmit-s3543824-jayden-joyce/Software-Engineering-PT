@@ -472,13 +472,13 @@ public class BusinessManagement implements ManagementInterface {
 						+ bookingList.get(i).getDate().getMonthValue() + "|"
 						+ bookingList.get(i).getDate().getDayOfMonth() + "|" + bookingList.get(i).getTime().getHour()
 						+ "|" + bookingList.get(i).getTime().getMinute() + "|" + bookingList.get(i).getCustomerName()
-						+ "|" + bookingList.get(i).getEmployeeName() + "|" + bookingList.get(i).getType() + "\n");
+						+ "|" + bookingList.get(i).getEmployeeName() + "|" + bookingList.get(i).getServiceType() + "\n");
 			} else {
 				writer.writeToFile(bookingList.get(i).getStatus() + "|" + bookingList.get(i).getDate().getYear() + "|"
 						+ bookingList.get(i).getDate().getMonthValue() + "|"
 						+ bookingList.get(i).getDate().getDayOfMonth() + "|" + bookingList.get(i).getTime().getHour()
 						+ "|" + bookingList.get(i).getTime().getMinute() + "|" + bookingList.get(i).getCustomerName()
-						+ "|" + bookingList.get(i).getEmployeeName() + "|" + bookingList.get(i).getType() + "\n");
+						+ "|" + bookingList.get(i).getEmployeeName() + "|" + bookingList.get(i).getServiceType() + "\n");
 			}
 		}
 	}
