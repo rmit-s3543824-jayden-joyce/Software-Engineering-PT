@@ -28,7 +28,7 @@ public class CustomerMenu
 	{		
 		MenuGUI.window.setTitle("ABS - Customer Menu");
 		BorderPane borderPane = new BorderPane();
-		Label heading = new Label("Welcome --customer name--");
+		Label heading = new Label("Welcome " + Menu.username);
 		
 		Button b1 = new Button("Make a Booking");
 		//b1.setOnAction(e -> MenuGUI.window.setScene(displayEmployeeManagement()));
@@ -109,7 +109,7 @@ public class CustomerMenu
 	{
 		MenuGUI.window.setTitle("ABS - Service List");
 		BorderPane borderPane = new BorderPane();
-		Label heading = new Label("Welcome --customer name--");
+		Label heading = new Label("Welcome " + Menu.username);
 		
 		TableView<Service> table;
 		TableColumn<Service, String> serviceNameColumn = new TableColumn<>("Name");
@@ -176,53 +176,6 @@ public class CustomerMenu
 		grid.setAlignment(Pos.CENTER);
 		grid.setVgap(8);
 		grid.setHgap(10);
-		
-//		for(int i = 0; i < days.length ; i++)
-//		{
-//			dayLabel[i] = new Label(days[i]);
-//			GridPane.setConstraints(dayLabel[i], 0, i);
-//		}
-//		
-//		for(int i = 0; i < days.length ; i++)
-//		{
-//			if(i < numberOfDays.size())
-//			{
-//				if(i == numberOfDays.get(i).getValue())
-//				{
-//					openingTimeLabel[i-1] = new Label(openingTimes.get(i).toString());
-//					GridPane.setConstraints(openingTimeLabel[i-1], 1, i-1);
-//				}
-//				else
-//				{
-//					openingTimeLabel[i-1] = new Label("CLOSED");
-//					GridPane.setConstraints(openingTimeLabel[i-1], 1, i-1);
-//				}
-//			}
-//		}
-//		
-//		for(int i = 0; i < days.length ; i++)
-//		{
-//			if(i < numberOfDays.size())
-//			{
-//				if(i == numberOfDays.get(i).getValue())
-//				{
-//					closingTimeLabel[i-1] = new Label(closingTimes.get(i).toString());
-//					GridPane.setConstraints(closingTimeLabel[i-1], 2, i-1);
-//				}
-//				else
-//				{
-//					closingTimeLabel[i-1] = new Label();
-//					GridPane.setConstraints(closingTimeLabel[i-1], 2, i-1);
-//				}
-//			}
-//		}
-//		
-//		for(int i = 0; i < 7; i++)
-//		{
-//			grid.getChildren().add(dayLabel[i]);
-//			grid.getChildren().add(openingTimeLabel[i]);
-//			grid.getChildren().add(closingTimeLabel[i]);
-//		}
 		
 		Button logoutButton = new Button("LOGOUT");
 		logoutButton.setStyle("-fx-base: red;");
