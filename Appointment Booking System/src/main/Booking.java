@@ -92,6 +92,14 @@ public class Booking {
 		}
 
 	}
+	
+	public void refreshNew() {
+
+		if (this.status.compareTo("NEW") == 0) {
+			this.status = "Active";
+		}
+
+	}
 
 	// To display the booking
 	public void displayBooking() {

@@ -121,6 +121,59 @@ public class ScheduleManagement {
 		
 	}
 	
+	public static List<String> returnGeneralAvailability() {
+
+		List<String> schedule = new ArrayList<String>();
+		
+		String deliminator = "\\|";
+		String[] dataValues;
+		String currentLine;
+		
+		int[] minDate = new int[3];
+		int[] dateChange = {0,0,7};
+		
+		Calendar date = Calendar.getInstance();
+		minDate[0] = date.get(Calendar.YEAR);
+		minDate[1] = date.get(Calendar.MONTH) + 1;
+		minDate[2] = date.get(Calendar.DAY_OF_MONTH);
+		
+		int[] maxDate = Utility.dateManipulator(minDate, dateChange);
+		
+		BufferedReader reader = null;
+				
+		try {
+			
+			reader = new BufferedReader(new FileReader(Utility.employeeList));
+			
+			while ((currentLine = reader.readLine()) != null) {
+				
+				dataValues = currentLine.split(deliminator);
+				
+				schedule.addAll(scheduleGet(dataValues[0]));
+				
+			}
+			
+			reader.close();
+			
+		} catch (IOException ioe1) {
+			
+		}
+		
+		System.out.println(schedule.size());
+		
+		schedule = scheduleRemoveNonFree(schedule);
+		System.out.println(schedule.size());
+		schedule = scheduleDateBoundaries(schedule, minDate, maxDate);
+		System.out.println(schedule.size());
+		schedule = scheduleSort(schedule);
+		System.out.println(schedule.size());
+		schedule = scheduleRemoveDuplicates(schedule);
+		System.out.println(schedule.size());
+		
+		return schedule;
+		
+	}
+	
 	
 	public static void interfaceAddSchedule() {
 
@@ -560,7 +613,7 @@ public class ScheduleManagement {
 		//reads employee detail file into memory
 		try {
 			
-			reader = new BufferedReader(new FileReader(employeeID + ".txt"));
+			reader = new BufferedReader(new FileReader(employeeID + "Bookings.txt"));
 			
 			while ((currentLine = reader.readLine()) != null) {
 
@@ -729,21 +782,47 @@ public class ScheduleManagement {
 		
 	}
 	
-	//TODO Fix month passover
 	public static List<String> scheduleDateBoundaries(List<String> schedule, int[] dateMin, int[] dateMax) {
 		
-		int i;
+		int i, j;
 		String deliminator = "\\|";
 		String currentLine;
 		String[] currentValues;
+		
+		int[] mod = {0,0,0};
+		int[] output = new int[3];
+		
+		boolean dateInBounds;
 		
 		for (i = 0; i < schedule.size() - 1; i++) {
 			
 			currentLine = schedule.get(i);
 			currentValues = currentLine.split(deliminator);
 			
-			if (dateMin[0] <= Integer.parseInt(currentValues[0]) && dateMin[1] <= Integer.parseInt(currentValues[1]) && dateMin[2] <= Integer.parseInt(currentValues[2]) &&
-					dateMax[0] >= Integer.parseInt(currentValues[0]) && dateMax[1] >= Integer.parseInt(currentValues[1]) && dateMax[2] >= Integer.parseInt(currentValues[2])) {
+			j = 0;
+			mod[2] = 0;
+			dateInBounds = false;
+			
+			while (j < 8) {
+				
+				mod[2] = j;
+				
+				j++;
+				
+				output = Utility.dateManipulator(dateMin, mod);
+				
+				if (output[0] == Integer.parseInt(currentValues[0]) &&
+						output[1] == Integer.parseInt(currentValues[1]) &&
+						output[2] == Integer.parseInt(currentValues[2])) {
+					
+					dateInBounds = true;
+					break;
+					
+				}
+				
+			}
+			
+			if (dateInBounds) {
 
 				//date can stay
 				
@@ -801,7 +880,7 @@ public class ScheduleManagement {
 		//reads employee detail file into memory
 		try {
 			
-			reader = new BufferedReader(new FileReader(employeeID + ".txt"));
+			reader = new BufferedReader(new FileReader(employeeID + "Bookings.txt"));
 			
 			while ((currentLine = reader.readLine()) != null) {
 
@@ -813,10 +892,10 @@ public class ScheduleManagement {
 						Integer.parseInt(dataValues[3]) >= dateTime[3] &&
 						Integer.parseInt(dataValues[3]) < dateTime[4]) {
 
-					currentLine = currentLine + customerID;
+					currentLine = dataValues[0] + "|" + dataValues[1] + "|" + dataValues[2] + "|" + dataValues[3] + "|" + customerID;
 					
 					//saves slot to customers scheduling information
-					saveCustomerSchedule(customerID, dataValues[0] + "|" + dataValues[1] + "|" + dataValues[2] + "|" + dataValues[3] + "|" + employeeID);
+					//saveCustomerSchedule(customerID, dataValues[0] + "|" + dataValues[1] + "|" + dataValues[2] + "|" + dataValues[3] + "|" + employeeID);
 						
 				}
 					
@@ -843,7 +922,7 @@ public class ScheduleManagement {
 		try {
 			
 			//wraps FileWriter in BufferedWrite, in order to use newLine()
-			writer = new BufferedWriter(new FileWriter(employeeID + ".txt", false));
+			writer = new BufferedWriter(new FileWriter(employeeID + "Bookings.txt", false));
 			
 			for (int j = 0; j < size; j++) {
 

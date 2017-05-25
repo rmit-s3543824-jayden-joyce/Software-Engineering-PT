@@ -15,6 +15,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -22,6 +23,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.util.Callback;
 
 public class CustomerMenu 
 {
@@ -33,19 +35,19 @@ public class CustomerMenu
 		Label heading = new Label("Welcome " + Menu.username);
 		
 		Button b1 = new Button("Make a Booking");
-		b1.setOnAction(e -> MenuGUI.window.setScene(makeBookingMenu()));
+		b1.setOnAction(e -> MenuGUI.window.setScene(BusinessOwnerMenu.employeeListMenu(true,4)));
 		b1.setMaxWidth(Double.MAX_VALUE);
 		Button b2 = new Button("View My Bookings");
 		b2.setOnAction(e ->	MenuGUI.window.setScene(bookingsMenu()));
 		b2.setMaxWidth(Double.MAX_VALUE);
 		Button b3 = new Button("View Availablility");
-		//b3.setOnAction(e ->	MenuGUI.window.setScene(bookingsMenu()));
+		b3.setOnAction(e ->	MenuGUI.window.setScene(BusinessOwnerMenu.showBookingMenu(null, true, false)));
 		b3.setMaxWidth(Double.MAX_VALUE);
 		Button b4 = new Button("View Business Opening Days/Time");
 		b4.setOnAction(e ->	MenuGUI.window.setScene(displayBusinessTimes()));
 		b4.setMaxWidth(Double.MAX_VALUE);
 		Button b5 = new Button("View Services");
-		b5.setOnAction(e ->	MenuGUI.window.setScene(serviceListMenu()));
+		b5.setOnAction(e ->	MenuGUI.window.setScene(serviceListMenu(false, null)));
 		b5.setMaxWidth(Double.MAX_VALUE);
 		Button logoutButton = new Button("LOGOUT");
 		logoutButton.setStyle("-fx-base: red;");
@@ -150,7 +152,7 @@ public class CustomerMenu
 	}
 	
 	//Displays a table of services
-	public static Scene serviceListMenu()
+	public static Scene serviceListMenu(boolean selectable, String data)
 	{
 		MenuGUI.window.setTitle("ABS - Service List");
 		BorderPane borderPane = new BorderPane();
@@ -172,6 +174,67 @@ public class CustomerMenu
 		table = new TableView<>();
 		table.setItems(getService());
 		table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+		
+		if (selectable == true) {
+			
+			serviceNameColumn.setCellFactory(
+				new Callback<TableColumn<Service, String>, TableCell<Service, String>>() {
+
+	                @Override
+	                public TableCell<Service, String> call(TableColumn<Service, String> idButton) {
+	                	return new TableCell<Service,String>() {
+	               		 
+	                     	String service = getItem();
+
+	                		Button cellButton = new Button(service);
+	                     		                     	
+	                     	@Override
+	                		protected void updateItem(String item, boolean value) {
+	                     		super.updateItem(item, value);
+	                     		cellButton.setOnAction(e -> {
+	                     			String service = getItem();
+	                     			System.out.println(service);
+	                     			
+	                     			if (MenuGUI.userType == 1) {
+		                     			
+		                     			String[] dataValues;
+		                    			
+		                     			String deliminator = "\\|";
+		                     				
+		                     			dataValues = data.split(deliminator);
+	                     				
+	                     				try {
+											BusinessManagement.addBooking(Integer.parseInt(dataValues[0]), Integer.parseInt(dataValues[1]), 
+													Integer.parseInt(dataValues[2]), 
+													(Integer.parseInt(dataValues[3]) - Integer.parseInt(dataValues[3]) % 100) / 100, 
+													Integer.parseInt(dataValues[3]) % 100, Menu.username, dataValues[5], service);
+										} catch (IOException e1) {
+											// TODO Auto-generated catch block
+											e1.printStackTrace();
+										}
+	                     				
+	                     			} else if (MenuGUI.userType == 2) {
+	                     				
+	                     				String dataOut = data + "|" + service;
+	                     				
+	                     				MenuGUI.window.setScene(BusinessOwnerMenu.showCustomers(dataOut, true));
+	                     				
+	                     			}
+	                     			
+	                     			});
+	                     		
+	                     		cellButton.setText(getItem());
+	                     		setGraphic(cellButton);
+	                     		
+	                     	}
+	                		
+	                	};
+	                }
+	                
+				});
+			
+		}
+		
 		table.getColumns().addAll(serviceNameColumn, serviceDurationColumn, serviceDescriptionColumn);
 		
 		Button homeButton = new Button("HOME");
@@ -294,7 +357,7 @@ public class CustomerMenu
 			{
 				dataValues = currentLine.split(deliminator);
 				
-				if(dataValues[7].equals(Menu.username))
+				if(dataValues[6].equals(Menu.username))
 				{
 					Booking.add(new Booking(dataValues[0], dataValues[1], dataValues[2], dataValues[3], dataValues[4], dataValues[5], dataValues[6], dataValues[7], dataValues[8]));
 				}	

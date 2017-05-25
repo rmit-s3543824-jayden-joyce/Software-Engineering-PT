@@ -1,5 +1,7 @@
 package main;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -470,6 +472,34 @@ public class CustomerManagement implements ManagementInterface{
 	
 	public Business getSelectedBusiness() {
 		return this.selectedBusiness;
+	}
+	
+	public static List<String> listCustomers() {
+		
+		List<String> data = new ArrayList<String>();
+		
+		String currentLine;
+		
+		BufferedReader reader = null;
+		
+		try {
+			
+			reader = new BufferedReader(new FileReader(Registration.customerList));
+			
+			while ((currentLine = reader.readLine()) != null) {
+				
+				data.add(currentLine);
+				
+			}
+			
+			reader.close();
+			
+		} catch (IOException ioe1) {
+			
+		}
+		
+		return data;
+		
 	}
 
 }

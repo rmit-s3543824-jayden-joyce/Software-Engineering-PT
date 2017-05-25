@@ -12,6 +12,7 @@ import java.util.StringTokenizer;
 import utility.BookingComparator;
 import utility.ReadFile;
 import utility.ServiceComparator;
+import utility.Utility;
 import utility.WriteFile;
 
 public class BusinessManagement implements ManagementInterface {
@@ -292,7 +293,7 @@ public class BusinessManagement implements ManagementInterface {
 
 	}
 
-	public List<Service> retrieveServices() {
+	public static List<Service> retrieveServices() {
 
 		// To read the name of the text file in the correct format
 		StringTokenizer st = new StringTokenizer(selectedBusiness.getName(), " ");
@@ -334,7 +335,7 @@ public class BusinessManagement implements ManagementInterface {
 	}
 
 	// Function to add new bookings to be stored in the text file.
-	public boolean addBooking(int year, int month, int date, int hour, int minute, String customerName,
+	public static boolean addBooking(int year, int month, int date, int hour, int minute, String customerName,
 			String employeeName, String serviceType) throws IOException {
 
 		StringTokenizer st = new StringTokenizer(selectedBusiness.getName(), " ");
@@ -343,12 +344,27 @@ public class BusinessManagement implements ManagementInterface {
 			file_name += st.nextToken();
 		}
 
+		int[] dateTime = {year, month, date, hour * 100 + minute, 0};
+		
+		List<Service> servicesList = retrieveServices();
+		
+		for (int i = 0; i < servicesList.size(); i++) {
+			
+			if (servicesList.get(i).getName().compareTo(serviceType) == 0) {
+				
+				dateTime[4] = Utility.timeManipulator(dateTime[3], servicesList.get(i).getDuration());
+				
+			}
+			
+		}
+
 		file_name += "Bookings.txt";
 
 		WriteFile writer = new WriteFile(file_name, true);
 		if (writer.writeToFile("\n" + "NEW" + "|" + year + "|" + month + "|" + date + "|" + hour + "|" + minute + "|"
 				+ customerName + "|" + employeeName + "|" + serviceType)) {
 			System.out.println("Booking added successfully");
+			ScheduleManagement.scheduleBooking(employeeName, customerName, dateTime);
 			return true;
 		} else
 			return false;

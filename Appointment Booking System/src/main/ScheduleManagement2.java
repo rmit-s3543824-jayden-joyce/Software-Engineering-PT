@@ -84,7 +84,76 @@ public class ScheduleManagement2 {
 		
 		saveEmployeeSchedule(employeeID, schedule);
 		
+	}
+	
+	public static void employeeRecuringScheduleRemoveGUI (int item, String employeeID) {
 		
+		List<String> schedule = getEmployeeSchedule(employeeID);
+		
+		Calendar date = Calendar.getInstance();
+		
+		int currentDay = date.get(Calendar.DAY_OF_WEEK);
+		
+		//converts currentDay so Monday is 1
+		if (currentDay == 0) {
+			
+			currentDay = 7;
+			
+		} else {
+			
+			currentDay--;
+			
+		}
+		
+		
+		int[] currentDate = {date.get(Calendar.YEAR), (date.get(Calendar.MONTH) + 1), date.get(Calendar.DAY_OF_MONTH)};
+
+		
+		System.out.println(currentDay);
+		
+		String[] dataValues;
+		
+		String deliminator = "\\|";
+		
+		int[] dateValue = new int[3];
+		int[] outputValue = new int[5];
+		int[] mod = {0,0,0};
+		
+		dataValues = schedule.get(item).split(deliminator);
+		
+		if (Integer.parseInt(dataValues[0]) != currentDay) {
+			
+			mod[2] = Integer.parseInt(dataValues[0]) - currentDay;
+			
+			System.out.println(mod[2]);
+			
+			if (mod[2] < 0) {
+				
+				mod[2] += 7;
+				
+			}
+			
+			dateValue = Utility.dateManipulator(currentDate, mod);
+			
+		} else {
+			
+			dateValue = currentDate;
+			
+		}
+
+		outputValue[0] = dateValue[0];
+		outputValue[1] = dateValue[1];
+		outputValue[2] = dateValue[2];
+		outputValue[3] = Integer.parseInt(dataValues[1]);
+		outputValue[4] = Integer.parseInt(dataValues[2]);
+		
+		System.out.println(outputValue[0] + "//" + outputValue[1] + "//" + outputValue[2] + "//" + outputValue[3] + "//" + outputValue[4]);
+		
+		ScheduleManagement.employeeScheduleRemove(employeeID, outputValue);
+		
+		schedule.remove(item);
+		
+		saveEmployeeSchedule(employeeID, schedule);
 		
 	}
 	
@@ -216,11 +285,26 @@ public class ScheduleManagement2 {
 		String[] dataValue;
 		int[] dateMod = {0,0,0};
 		
+		int[] dateManipOut = new int[3];
+		
 		int[] scheduleAdd = new int[5];
 
 		Calendar date = Calendar.getInstance();
 		
 		int currentDay = date.get(Calendar.DAY_OF_WEEK);
+		
+		//converts currentDay so Monday is 1
+		if (currentDay == 0) {
+			
+			currentDay = 7;
+			
+		} else {
+			
+			currentDay--;
+			
+		}
+		
+		System.out.println("Current Day = " + currentDay);
 		int[] currentDate = {date.get(Calendar.YEAR), (date.get(Calendar.MONTH) + 1), date.get(Calendar.DAY_OF_MONTH)};
 		
 		int i, j, k;
@@ -247,17 +331,27 @@ public class ScheduleManagement2 {
 			
 			dateMod[2] = i;
 			
-			if (currentDate.equals(Utility.dateManipulator(currentUpdateDate, dateMod))) {
+			dateManipOut = Utility.dateManipulator(currentUpdateDate, dateMod);
+			
+			if (dateManipOut[0] == currentDate[0] && dateManipOut[1] == currentDate[1] && dateManipOut[2] == currentDate[2]) {
 				
 				break;
 				
 			}
 			
-			//keeps track of the day of the week we are looking at
-			currentDay++;
+			//counts what day we are looking at
+			if (i != 0 && i <= 7) {
+				
+				currentDay++;
+				
+			}
 			
 		}
 		
+		System.out.println("Current Day = " + currentDay);
+		
+		// sets currentDate to where we want to start adding
+		dateMod[2] = 7 - dateMod[2];
 		currentDate = Utility.dateManipulator(currentDate, dateMod);
 		
 		
@@ -265,7 +359,7 @@ public class ScheduleManagement2 {
 		for (j = 1; j <= i; j++) {
 			
 			// loops around the week
-			if (currentDay > 7) {
+			while (currentDay > 7) {
 				
 				currentDay -= 7;
 				
@@ -274,6 +368,8 @@ public class ScheduleManagement2 {
 			for (k = 1; k < schedule.size(); k++) {
 				
 				dataValue = schedule.get(k).split(deliminator);
+				
+				System.out.println("Schedule date = " + dataValue[0] + " Current Day = " + currentDay);
 				
 				if (Integer.parseInt(dataValue[0]) == currentDay) {
 					
@@ -327,6 +423,8 @@ public class ScheduleManagement2 {
 			reader.close();
 			
 		} catch (IOException ioe1) {
+
+			ioe1.printStackTrace();
 			
 		}
 		

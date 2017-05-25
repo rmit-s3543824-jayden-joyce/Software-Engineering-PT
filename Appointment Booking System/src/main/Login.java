@@ -26,7 +26,7 @@ public class Login
 			System.out.println("Username:");
 			System.out.print(">>> ");
 			Username = consoleReader.next();
-
+			
 			//sets username for global user
 			Menu.username = Username;
 					
@@ -56,13 +56,13 @@ public class Login
 		if(userType == 1)
 		{
 			System.out.println("Login successful!\n");
-			currentUser = Username;
+			Menu.username = Username;
 			return 1;
 		}
 		else if(userType == 2)
 		{
 			System.out.println("Login successful!\n");
-			currentUser = Username;
+			Menu.username = Username;
 			return 2;
 		}
 		
@@ -85,9 +85,10 @@ public class Login
 
 	public static int verifyLoginDetails(String username, String password) throws IOException
 	{
-		//sets username for global user
+
+		//defines global variable username to be used in customization
 		Menu.username = username;
-		
+				
 		if(password.isEmpty() || username.isEmpty())
 		{
 			System.out.println("Username or password are invalid.\n");

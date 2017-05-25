@@ -23,7 +23,7 @@ public class MenuGUI extends Application
 	static Stage window;
 	static Scene loginScene, registrationScene;
 	String username, password;
-	int userType;
+	public static int userType;
 	static Label[] regLabel = new Label[8];
 	static TextField[] regTextField = new TextField[8];
 	static Label[] regBlankIndicator = new Label[8];
@@ -79,6 +79,9 @@ public class MenuGUI extends Application
 		{ 
 			try
 			{
+				/*window.setScene(BusinessOwnerMenu.displayMenu());
+				new UserManagement("Suggar Haircut");
+				MenuGUI.userType = 2;*/
 				//Taking the data from the username and password textfields and validating them
 				userType = Login.verifyLoginDetails(usernameField.getText(), passwordField.getText());
 				if(userType == 1)
@@ -158,7 +161,15 @@ public class MenuGUI extends Application
 			regLabel[i] = new Label(labelName[i]);
 			GridPane.setConstraints(regLabel[i], 0, i*3);
 			
-			regTextField[i] = new TextField();
+			if (i == 1 || i == 2) {
+				
+				regTextField[i] = new PasswordField();
+				
+			} else {
+				
+				regTextField[i] = new TextField();
+				
+			}
 			regTextField[i].setPromptText(textFieldValues[i]);
 			regTextField[i].setPrefWidth(250);
 			GridPane.setConstraints(regTextField[i], 0, i*3+1);

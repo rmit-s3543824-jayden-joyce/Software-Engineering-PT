@@ -3,8 +3,10 @@ package main;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.List;
 import java.util.StringTokenizer;
 
+import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
@@ -14,6 +16,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
@@ -25,13 +28,13 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.TextAlignment;
+import javafx.util.Callback;
 import utility.Utility;
 
 public class BusinessOwnerMenu {
 	
 	static Scene mainScene;
 	
-	//Displays main business owner scene
 	public static Scene displayMenu()
 	{		
 		MenuGUI.window.setTitle("ABS - Busniess Menu");
@@ -41,41 +44,34 @@ public class BusinessOwnerMenu {
 		Button b1 = new Button("Employee Management");
 		b1.setOnAction(e -> MenuGUI.window.setScene(displayEmployeeManagement()));
 		b1.setMaxWidth(Double.MAX_VALUE);
-		Button b2 = new Button("View Booking Summaries");
-		b2.setOnAction(e ->	MenuGUI.window.setScene(bookingsMenu()));
+		Button b2 = new Button("Booking Management");
+		b2.setOnAction(e ->	MenuGUI.window.setScene(displayBookingManagement()));
 		b2.setMaxWidth(Double.MAX_VALUE);
-		Button b3 = new Button("View New Bookings");
+		Button b3 = new Button("Add service");
+		b3.setOnAction(e ->	MenuGUI.window.setScene(addServiceMenu()));
 		b3.setMaxWidth(Double.MAX_VALUE);
-		Button b4 = new Button("Add service");
-		b4.setOnAction(e ->	MenuGUI.window.setScene(addServiceMenu()));
-		b4.setMaxWidth(Double.MAX_VALUE);
-		//Logout button
 		Button logoutButton = new Button("LOGOUT");
 		logoutButton.setStyle("-fx-base: red;");
 		logoutButton.setOnAction(e -> MenuGUI.window.setScene(MenuGUI.loginScene));
 		
-		//Center box will display the main scene functions
 		VBox centerBox = new VBox();
-		centerBox.getChildren().addAll(b1, b2, b3, b4);
+		centerBox.getChildren().addAll(b1, b2, b3);
 		centerBox.setSpacing(10);
 		centerBox.setPadding(new Insets(15, 15, 15, 15));
 		centerBox.setAlignment(Pos.CENTER);
 		
-		//Top box will display the scenes name and business name when necessary
 		HBox topBox = new HBox();
 		topBox.setStyle("-fx-font-size: 24; -fx-background-color: #1976D2;");
 		topBox.setPadding(new Insets(10, 10, 10, 10));
 		topBox.setAlignment(Pos.CENTER);
 		topBox.getChildren().add(heading);
 		
-		//Left box contains navigational buttons
 		VBox leftBox = new VBox();
 		leftBox.setStyle("-fx-background-color: grey;");
 		leftBox.setPadding(new Insets(10, 10, 10, 10));
 		leftBox.setAlignment(Pos.TOP_CENTER);
 		leftBox.getChildren().add(logoutButton);
 		
-		//Assign nodes to layout
 		borderPane.setTop(topBox);
 		borderPane.setCenter(centerBox);
 		borderPane.setLeft(leftBox);
@@ -84,13 +80,12 @@ public class BusinessOwnerMenu {
 		return mainScene;		
 	}
 	
-	//Displays employee management functions
 	public static Scene displayEmployeeManagement()
 	{
 		MenuGUI.window.setTitle("ABS - Employee Management");
 		BorderPane borderPane = new BorderPane();
 		String[] buttonNames = {"Add employee", "List employees", "Show Schedule", "Add Schedule", "Remove Schedule", "Show Employee Availability", "Update Schedules"};
-		Button[] buttons = new Button[7];		
+		Button[] buttons = new Button[7];	
 		Label heading = new Label("Employee Management");
 		
 		VBox centerBox = new VBox();
@@ -98,7 +93,6 @@ public class BusinessOwnerMenu {
 		centerBox.setPadding(new Insets(15, 15, 15, 15));
 		centerBox.setAlignment(Pos.CENTER);
 		
-		//Created loop for creating and naming buttons
 		for(int i = 0; i < 7; i++)
 		{
 			buttons[i] = new Button(buttonNames[i]);
@@ -107,8 +101,13 @@ public class BusinessOwnerMenu {
 		}
 		
 		buttons[0].setOnAction(e -> MenuGUI.window.setScene(addEmployeeMenu()));
-		buttons[1].setOnAction(e -> MenuGUI.window.setScene(employeeListMenu()));
+		buttons[1].setOnAction(e -> MenuGUI.window.setScene(employeeListMenu(false,-1)));
+		buttons[2].setOnAction(e -> MenuGUI.window.setScene(employeeListMenu(true,0)));
+		buttons[3].setOnAction(e -> MenuGUI.window.setScene(employeeListMenu(true,1)));
+		buttons[4].setOnAction(e -> MenuGUI.window.setScene(employeeListMenu(true,2)));
+		buttons[5].setOnAction(e -> MenuGUI.window.setScene(employeeListMenu(true,3)));
 		buttons[6].setStyle("-fx-base: #03A9F4;");
+		buttons[6].setOnAction(e -> ScheduleManagement2.updateAllSchedules());
 		Button homeButton = new Button("HOME");
 		homeButton.setOnAction(e -> MenuGUI.window.setScene(mainScene));
 		homeButton.setMaxWidth(100);
@@ -137,12 +136,165 @@ public class BusinessOwnerMenu {
 		return scene;
 	}
 	
-	//Displays function to add employee
+	public static Scene displayBookingManagement()
+	{
+		MenuGUI.window.setTitle("ABS - Booking Management");
+		BorderPane borderPane = new BorderPane();
+		String[] buttonNames = {"View Booking Summaries", "View New Bookings", "Add Booking"};
+		Button[] buttons = new Button[3];		
+		Label heading = new Label("--Business Name--");
+		
+		VBox centerBox = new VBox();
+		centerBox.setSpacing(10);
+		centerBox.setPadding(new Insets(15, 15, 15, 15));
+		centerBox.setAlignment(Pos.CENTER);
+		
+		for(int i = 0; i < 3; i++)
+		{
+			buttons[i] = new Button(buttonNames[i]);
+			buttons[i].setMaxWidth(300);
+			centerBox.getChildren().add(buttons[i]);
+		}
+
+		buttons[0].setOnAction(e -> MenuGUI.window.setScene(bookingsMenu(false)));
+		buttons[1].setOnAction(e -> MenuGUI.window.setScene(bookingsMenu(true)));
+		buttons[2].setOnAction(e -> MenuGUI.window.setScene(employeeListMenu(true,4)));
+		Button homeButton = new Button("HOME");
+		homeButton.setOnAction(e -> MenuGUI.window.setScene(mainScene));
+		homeButton.setMaxWidth(100);
+		Button logoutButton = new Button("LOGOUT");
+		logoutButton.setStyle("-fx-base: red;");
+		logoutButton.setOnAction(e -> MenuGUI.window.setScene(MenuGUI.loginScene));
+				
+		HBox topBox = new HBox();
+		topBox.setStyle("-fx-font-size: 24; -fx-background-color: #1976D2;");
+		topBox.setPadding(new Insets(10, 10, 10, 10));
+		topBox.setAlignment(Pos.CENTER);
+		topBox.getChildren().add(heading);
+		
+		VBox leftBox = new VBox();
+		leftBox.setStyle("-fx-background-color: grey;");
+		leftBox.setSpacing(10);
+		leftBox.setPadding(new Insets(10, 10, 10, 10));
+		leftBox.setAlignment(Pos.TOP_CENTER);
+		leftBox.getChildren().addAll(homeButton, logoutButton);
+		
+		borderPane.setTop(topBox);
+		borderPane.setCenter(centerBox);
+		borderPane.setLeft(leftBox);
+		
+		Scene scene = new Scene(borderPane, 400, 350);
+		return scene;
+	}
+	
+	//if remove is true, it will add a button allow for removing of schedule items
+	public static Scene showScheduleMenu(String employee, boolean remove) {
+				
+		BorderPane borderPane = new BorderPane();
+		Label heading = new Label("--Business Name--");
+		
+		TableView<Schedule> table;
+		TableColumn<Schedule, String> dayColumn = new TableColumn<>("Day");
+		dayColumn.setMinWidth(50);
+		dayColumn.setCellValueFactory(new PropertyValueFactory<>("day"));
+		
+		TableColumn<Schedule, String> startTimeColumn = new TableColumn<>("Start Time");
+		startTimeColumn.setMinWidth(50);
+		startTimeColumn.setCellValueFactory(new PropertyValueFactory<>("startTime"));
+		
+		TableColumn<Schedule, String> endTimeColumn = new TableColumn<>("End Time");
+		endTimeColumn.setMinWidth(50);
+		endTimeColumn.setCellValueFactory(new PropertyValueFactory<>("endTime"));
+		
+		TableColumn<Schedule, String> actionColumn = new TableColumn<>("");
+		actionColumn.setCellValueFactory(new PropertyValueFactory<>("index"));
+		
+		table = new TableView<>();
+		table.setItems(getSchedule(employee));
+		table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+		
+		if (remove == true) {
+			actionColumn.setCellFactory(
+				new Callback<TableColumn<Schedule, String>, TableCell<Schedule, String>>() {
+
+	                @Override
+	                public TableCell<Schedule, String> call(TableColumn<Schedule, String> idButton) {
+	                	return new TableCell<Schedule,String>() {
+	               		 
+	                		Button cellButton = new Button("Remove");
+	                     		                     	
+	                     	@Override
+	                		protected void updateItem(String item, boolean value) {
+	                     		super.updateItem(item, value);
+	                     		cellButton.setOnAction(e -> {
+	                     			String employeeID = getItem();
+		                     				                     		
+		                     		ScheduleManagement2.employeeRecuringScheduleRemoveGUI(Integer.parseInt(getItem()), employee);
+		                     		
+		                     		MenuGUI.window.setScene(showScheduleMenu(employee,true));
+	                     			
+	                     			});
+	                     		
+	                     		if (getItem() != null) {
+		                     		
+		                     		setGraphic(cellButton);
+	                     			
+	                     		}
+	                     		
+	                     	}
+	                		
+	                	};
+	                }
+	                
+				});
+
+			table.getColumns().addAll(actionColumn, dayColumn, startTimeColumn, endTimeColumn);
+			
+		} else {
+
+			table.getColumns().addAll(dayColumn, startTimeColumn, endTimeColumn);
+			
+		}
+		
+		Button homeButton = new Button("HOME");
+		homeButton.setOnAction(e -> MenuGUI.window.setScene(displayMenu()));
+		homeButton.setMaxWidth(100);
+		
+		Button backButton = new Button("BACK");
+		backButton.setOnAction(e -> MenuGUI.window.setScene(employeeListMenu(true,2)));
+		backButton.setMaxWidth(100);
+		
+		Button logoutButton = new Button("LOGOUT");
+		logoutButton.setStyle("-fx-base: red;");
+		logoutButton.setOnAction(e -> MenuGUI.window.setScene(MenuGUI.loginScene));
+		
+		HBox topBox = new HBox();
+		topBox.setStyle("-fx-font-size: 24; -fx-background-color: #1976D2;");
+		topBox.setPadding(new Insets(10, 10, 10, 10));
+		topBox.setAlignment(Pos.CENTER);
+		topBox.getChildren().add(heading);
+		
+		VBox leftBox = new VBox();
+		leftBox.setStyle("-fx-background-color: grey;");
+		leftBox.setSpacing(10);
+		leftBox.setPadding(new Insets(10, 10, 10, 10));
+		leftBox.setAlignment(Pos.TOP_CENTER);
+		leftBox.getChildren().addAll(homeButton, backButton, logoutButton);
+				
+		borderPane.setTop(topBox);
+		borderPane.setCenter(table);
+		borderPane.setLeft(leftBox);
+		
+		Scene scene = new Scene(borderPane, 400, 300);
+		return scene;
+		
+	}
+	
 	public static Scene addEmployeeMenu()
 	{
 		MenuGUI.window.setTitle("ABS - Add Employee");
 		BorderPane borderPane = new BorderPane();
-		Label heading = new Label("Add Employee");
+		Label heading = new Label("--Business Name--");
 		
 		GridPane grid = new GridPane();
 		grid.setPadding(new Insets(25, 25, 25, 25));
@@ -170,12 +322,9 @@ public class BusinessOwnerMenu {
 		{
 			try
 			{
-				//If inputs are valid
 				if(EmployeeManagement.addEmployeeGUI(firstNameField.getText(), lastNameField.getText()))
 				{
-					//Employee is added to system and scene is set back
 					MenuGUI.window.setScene(displayEmployeeManagement());
-					//Alert box display success
 					MenuGUI.alertBox("ALERT!", "Employee has been successfully added!");
 					message.setText("");
 				}
@@ -228,7 +377,142 @@ public class BusinessOwnerMenu {
 		return scene;
 	}
 	
-	//Creates list of employees
+	public static Scene addScheduleMenu(String employee) {
+		
+		MenuGUI.window.setTitle("ABS - Add Employee");
+		BorderPane borderPane = new BorderPane();
+		Label heading = new Label("--Business Name--");
+		
+		GridPane grid = new GridPane();
+		grid.setPadding(new Insets(25, 25, 25, 25));
+		grid.setAlignment(Pos.CENTER);
+		grid.setVgap(8);
+		grid.setHgap(10);
+		
+		String[] weekDays = {"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"};
+		
+		ObservableList<String> days = FXCollections.observableArrayList();
+		for (int i = 0; i < 7; i++) {
+			
+			days.add(weekDays[i]);
+			
+		}
+		
+		ObservableList<String> hours = FXCollections.observableArrayList();
+		for (int i = 1; i < 24; i++) {
+			
+			hours.add("" + i);
+			
+		}
+		
+		ObservableList<String> minutes = FXCollections.observableArrayList();
+		for (int i = 0; i < 60; i++) {
+			
+			if (i < 10) {
+				minutes.add("0" + i);
+			} else {
+				minutes.add("" + i);
+			}
+			
+		}
+
+		Label dayLabel = new Label("Day:");
+		GridPane.setConstraints(dayLabel, 0, 0);
+		Label startHourLabel = new Label("Start Hour:");
+		GridPane.setConstraints(startHourLabel, 0, 1);
+		Label startMinuteLabel = new Label("Start Minute:");
+		GridPane.setConstraints(startMinuteLabel, 0, 2);
+		Label endHourLabel = new Label("End Hour:");
+		GridPane.setConstraints(endHourLabel, 0, 3);
+		Label endMinuteLabel = new Label("End Minute:");
+		GridPane.setConstraints(endMinuteLabel, 0, 4);
+		
+		ComboBox dayBox = new ComboBox(days);
+		ComboBox startHourBox = new ComboBox(hours);
+		ComboBox startMinuteBox = new ComboBox(minutes);
+		ComboBox endHourBox = new ComboBox(hours);
+		ComboBox endMinuteBox = new ComboBox(minutes);
+		
+		dayBox.setPrefWidth(200);
+		GridPane.setConstraints(dayBox, 1, 0);
+		startHourBox.setPrefWidth(200);
+		GridPane.setConstraints(startHourBox, 1, 1);
+		startMinuteBox.setPrefWidth(200);
+		GridPane.setConstraints(startMinuteBox, 1, 2);
+		endHourBox.setPrefWidth(200);
+		GridPane.setConstraints(endHourBox, 1, 3);
+		endMinuteBox.setPrefWidth(200);
+		GridPane.setConstraints(endMinuteBox, 1, 4);
+		final Label message = new Label("");
+		message.setTextFill(Color.rgb(210, 39, 30));
+		GridPane.setConstraints(message, 0, 5);
+		
+		
+		Button confirmButton = new Button("Confirm");
+		confirmButton.setOnAction(e -> 
+		{
+			int[] daytime = new int[3];
+			
+			for (int i = 0; i < 7; i++) {
+				
+				if ((String) dayBox.getValue() == weekDays[i]) {
+					
+					daytime[0] = i + 1;
+					
+				}
+				
+			}
+			
+			daytime[1] = Integer.parseInt((String) startHourBox.getValue()) * 100 + Integer.parseInt((String) startMinuteBox.getValue());
+			daytime[2] = Integer.parseInt((String) endHourBox.getValue()) * 100 + Integer.parseInt((String) endMinuteBox.getValue());
+			
+			if(ScheduleManagement2.employeeRecuringScheduleAdd(employee, daytime))
+			{
+				MenuGUI.window.setScene(displayEmployeeManagement());
+				MenuGUI.alertBox("ALERT!", "Schedule has been successfully added");
+				message.setText("");
+			}
+			else
+			{
+				message.setText("Error. Please try again.");
+			}
+		});
+		GridPane.setConstraints(confirmButton, 1, 5);
+		Button logoutButton = new Button("LOGOUT");
+		logoutButton.setStyle("-fx-base: red;");
+		logoutButton.setOnAction(e -> MenuGUI.window.setScene(MenuGUI.loginScene));
+		Button homeButton = new Button("HOME");
+		homeButton.setOnAction(e -> MenuGUI.window.setScene(mainScene));
+		homeButton.setMaxWidth(100);
+		Button backButton = new Button("BACK");
+		backButton.setOnAction(e -> MenuGUI.window.setScene(employeeListMenu(true,0)));
+		backButton.setMaxWidth(100);
+				
+		
+		grid.getChildren().addAll(dayLabel, dayBox, startHourLabel, startHourBox, startMinuteLabel, startMinuteBox, endHourLabel, endHourBox, endMinuteLabel, endMinuteBox, confirmButton);
+		
+		HBox topBox = new HBox();
+		topBox.setStyle("-fx-font-size: 24; -fx-background-color: #1976D2;");
+		topBox.setPadding(new Insets(10, 10, 10, 10));
+		topBox.setAlignment(Pos.CENTER);
+		topBox.getChildren().add(heading);
+		
+		VBox leftBox = new VBox();
+		leftBox.setStyle("-fx-background-color: grey;");
+		leftBox.setSpacing(10);
+		leftBox.setPadding(new Insets(10, 10, 10, 10));
+		leftBox.setAlignment(Pos.TOP_CENTER);
+		leftBox.getChildren().addAll(homeButton, backButton, logoutButton);
+		
+		borderPane.setTop(topBox);
+		borderPane.setCenter(grid);
+		borderPane.setLeft(leftBox);
+		
+		Scene scene = new Scene(borderPane, 410, 300);
+		return scene;
+		
+	}
+	
 	public static ObservableList<Employee> getEmployee()
 	{
 		ObservableList<Employee> employees = FXCollections.observableArrayList();
@@ -240,16 +524,12 @@ public class BusinessOwnerMenu {
 				
 		try 
 		{	
-			//Read in employees from list
 			reader = new BufferedReader(new FileReader("employeeList.txt"));
 			
-			//While there are employees
 			while ((currentLine = reader.readLine()) != null)
 			{
-				//Grab employee details
 				dataValues = currentLine.split(deliminator);
 				
-				//Create new employee and add the list
 				employees.add(new Employee(dataValues[0], dataValues[1], dataValues[2]));	
 			}
 			
@@ -263,43 +543,157 @@ public class BusinessOwnerMenu {
 		return employees;
 	}
 	
-	//Display list of employees
-	public static Scene employeeListMenu()
+	public static ObservableList<Bookings> getBookings(String employeeID, boolean freeOnly) {
+		
+		ObservableList<Bookings> bookings = FXCollections.observableArrayList();
+			
+		List<String> booking;
+		
+		if (employeeID == null) {
+
+			booking = ScheduleManagement.returnGeneralAvailability();
+			
+		} else {
+		
+			booking = ScheduleManagement.scheduleGet(employeeID);
+			
+		}
+		
+		if (freeOnly == true) {
+			
+			booking = ScheduleManagement.scheduleRemoveNonFree(booking);
+			
+		}
+			
+		String[] dataValues;
+			
+		String deliminator = "\\|";
+			
+		for (int i = 1; i < booking.size(); i++) {
+				
+			dataValues = booking.get(i).split(deliminator);
+				
+			bookings.add(new Bookings(booking.get(i), dataValues[0], dataValues[1], dataValues[2], dataValues[3], dataValues[4]));
+				
+		}
+			
+		return bookings;
+		
+	}
+	
+	public static ObservableList<Schedule> getSchedule(String employeeID)
 	{
+		ObservableList<Schedule> scheduled = FXCollections.observableArrayList();
+		
+		List<String> schedule = ScheduleManagement2.getEmployeeSchedule(employeeID);
+		
+		String[] dataValues;
+		
+		String deliminator = "\\|";
+		
+		String[] weekDays = {"Ix", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"};
+		
+		for (int i = 1; i < schedule.size(); i++) {
+			
+			dataValues = schedule.get(i).split(deliminator);
+			
+			scheduled.add(new Schedule("" + i, weekDays[Integer.parseInt(dataValues[0])], dataValues[1], dataValues[2]));
+			
+		}
+		
+		return scheduled;
+	}
+	
+	public static Scene showCustomers(String data, boolean selectable) {
+		
 		BorderPane borderPane = new BorderPane();
 		Label heading = new Label("--Business Name--");
 		
-		//Create table
-		TableView<Employee> table;
-		//Create column for employee id
-		TableColumn<Employee, String> employeeIdColumn = new TableColumn<>("Employee ID");
-		//Set width of column
-		employeeIdColumn.setMinWidth(50);
-		//Set the type of value which the cell is taking
-		employeeIdColumn.setCellValueFactory(new PropertyValueFactory<>("employeeId"));
+		TableView<Customer> table;
+		TableColumn<Customer, String> nameColumn = new TableColumn<>("Name");
+		nameColumn.setMinWidth(50);
+		nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
 		
-		//Create column for employee first name
-		TableColumn<Employee, String> firstNameColumn = new TableColumn<>("First Name");
-		firstNameColumn.setMinWidth(50);
-		firstNameColumn.setCellValueFactory(new PropertyValueFactory<>("firstName"));
+		TableColumn<Customer, String> streetColumn = new TableColumn<>("Street");
+		streetColumn.setMinWidth(50);
+		streetColumn.setCellValueFactory(new PropertyValueFactory<>("street"));
 		
-		//Create column for employee last name
-		TableColumn<Employee, String> lastNameColumn = new TableColumn<>("Last Name");
-		lastNameColumn.setMinWidth(50);
-		lastNameColumn.setCellValueFactory(new PropertyValueFactory<>("lastName"));
+		TableColumn<Customer, String> suburbColumn = new TableColumn<>("Suburb");
+		suburbColumn.setMinWidth(50);
+		suburbColumn.setCellValueFactory(new PropertyValueFactory<>("suburb"));
 		
-		//Initialize table
+		TableColumn<Customer, String> postcodeColumn = new TableColumn<>("Postcode");
+		postcodeColumn.setMinWidth(50);
+		postcodeColumn.setCellValueFactory(new PropertyValueFactory<>("postcode"));
+		
+		TableColumn<Customer, String> phoneColumn = new TableColumn<>("Phone");
+		phoneColumn.setMinWidth(50);
+		phoneColumn.setCellValueFactory(new PropertyValueFactory<>("phone"));
+		
+		if (selectable == true) {
+			
+			nameColumn.setCellFactory(
+				new Callback<TableColumn<Customer, String>, TableCell<Customer, String>>() {
+
+	                @Override
+	                public TableCell<Customer, String> call(TableColumn<Customer, String> idButton) {
+	                	return new TableCell<Customer,String>() {
+	               		 
+	                     	String name = getItem();
+
+	                		Button cellButton = new Button(name);
+	                     		                     	
+	                     	@Override
+	                		protected void updateItem(String item, boolean value) {
+	                     		super.updateItem(item, value);
+	                     		cellButton.setOnAction(e -> {
+	                     			String name = getItem();
+	                     			System.out.println(name);
+	                     			
+	                     			String[] dataValues;
+	                    			
+	                     			String deliminator = "\\|";
+	                     				
+	                     			dataValues = data.split(deliminator);
+	                     			
+	                     			System.out.println(Integer.parseInt(dataValues[3]));
+	                     			
+	                     			System.out.println((Integer.parseInt(dataValues[3])) % 100);
+	                     			System.out.println(Integer.parseInt(dataValues[3]) - Integer.parseInt(dataValues[3]) % 100);
+	                     			System.out.println((Integer.parseInt(dataValues[3]) - Integer.parseInt(dataValues[3]) % 100) / 100);
+	                     			
+	                     			System.out.println(dataValues[0] + "," + dataValues[1] + "," + dataValues[2] + "," + (Integer.parseInt(dataValues[3]) - Integer.parseInt(dataValues[3]) % 100) / 100 + ","
+	                     					+ dataValues[4] + "," + dataValues[5] + "," + dataValues[6]);
+                     				
+                     				try {
+										BusinessManagement.addBooking(Integer.parseInt(dataValues[0]), Integer.parseInt(dataValues[1]), 
+												Integer.parseInt(dataValues[2]), 
+												(Integer.parseInt(dataValues[3]) - Integer.parseInt(dataValues[3]) % 100) / 100, 
+												Integer.parseInt(dataValues[3]) % 100, name, dataValues[5], dataValues[6]);
+									} catch (IOException e1) {
+										System.out.println("error");
+										e1.printStackTrace();
+									}
+	                     			
+	                     			
+	                     			});
+	                     		cellButton.setText(getItem());
+	                     		setGraphic(cellButton);
+	                     		
+	                     	}
+	                		
+	                	};
+	                }
+	                
+				});
+			
+		}
+		
 		table = new TableView<>();
-		//Display message if table is empty
-		table.setPlaceholder(new Label("No employees currently in the system"));
-		//Gets the items from employee list to display
-		table.setItems(getEmployee());
-		//Restrict the number of column shown
+		table.setItems(getCustomers());
 		table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-		//Add columns to table
-		table.getColumns().addAll(employeeIdColumn, firstNameColumn, lastNameColumn);
+		table.getColumns().addAll(nameColumn, streetColumn, suburbColumn, postcodeColumn, phoneColumn);
 		
-		//Home button
 		Button homeButton = new Button("HOME");
 		homeButton.setOnAction(e -> MenuGUI.window.setScene(displayMenu()));
 		homeButton.setMaxWidth(100);
@@ -327,15 +721,265 @@ public class BusinessOwnerMenu {
 		
 		Scene scene = new Scene(borderPane, 400, 300);
 		return scene;
+		
 	}
 	
-	//Create list of bookings
-	public static ObservableList<Booking> getBookings()
+	public static ObservableList<Customer> getCustomers() {
+		
+		ObservableList<Customer> customers = FXCollections.observableArrayList();
+			
+		List<String> customerList = CustomerManagement.listCustomers();
+		
+		String[] dataValues;
+			
+		String deliminator = "\\|";
+			
+		for (int i = 1; i < customerList.size(); i++) {
+				
+			dataValues = customerList.get(i).split(deliminator);
+				
+			customers.add(new Customer(dataValues[0], dataValues[2], dataValues[3], dataValues[4], dataValues[5]));
+				
+		}
+			
+		return customers;
+		
+	}
+	
+	public static Scene showBookingMenu(String employeeID, boolean freeOnly, boolean makeBooking) {
+		BorderPane borderPane = new BorderPane();
+		Label heading = new Label("--Business Name--");
+		
+		TableView<Bookings> table;
+		
+		TableColumn<Bookings, String> actionColumn = new TableColumn<>("");
+		actionColumn.setMinWidth(50);
+		actionColumn.setCellValueFactory(new PropertyValueFactory<>("index"));
+				
+		TableColumn<Bookings, String> yearColumn = new TableColumn<>("Year");
+		yearColumn.setMinWidth(50);
+		yearColumn.setCellValueFactory(new PropertyValueFactory<>("year"));
+		
+		TableColumn<Bookings, String> monthColumn = new TableColumn<>("Month");
+		monthColumn.setMinWidth(50);
+		monthColumn.setCellValueFactory(new PropertyValueFactory<>("month"));
+		
+		TableColumn<Bookings, String> dayColumn = new TableColumn<>("Day");
+		dayColumn.setMinWidth(50);
+		dayColumn.setCellValueFactory(new PropertyValueFactory<>("day"));
+		
+		TableColumn<Bookings, String> startTimeColumn = new TableColumn<>("Start Time");
+		startTimeColumn.setMinWidth(50);
+		startTimeColumn.setCellValueFactory(new PropertyValueFactory<>("startTime"));
+		
+		TableColumn<Bookings, String> valueColumn = new TableColumn<>("Customer");
+		valueColumn.setMinWidth(50);
+		valueColumn.setCellValueFactory(new PropertyValueFactory<>("value"));
+		
+		table = new TableView<>();
+		table.setItems(getBookings(employeeID, freeOnly || makeBooking));
+		table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+		
+		if (makeBooking == true) {
+			actionColumn.setCellFactory(
+				new Callback<TableColumn<Bookings, String>, TableCell<Bookings, String>>() {
+
+	                @Override
+	                public TableCell<Bookings, String> call(TableColumn<Bookings, String> idButton) {
+	                	return new TableCell<Bookings,String>() {
+	               		 
+	                		Button cellButton = new Button("Book");
+	                     		                     	
+	                     	@Override
+	                		protected void updateItem(String item, boolean value) {
+	                     		super.updateItem(item, value);
+	                     		cellButton.setOnAction(e -> {
+	                     			String index = getItem();
+	                     			
+	                     			System.out.println(index);
+	                     			
+	                     			index = index + "|" + employeeID;
+	                     				                     			
+	                     			MenuGUI.window.setScene(CustomerMenu.serviceListMenu(true, index));
+	                     			
+	                     			});
+	                     		
+	                     		if (getItem() != null) {
+		                     		
+		                     		setGraphic(cellButton);
+	                     			
+	                     		}
+	                     		
+	                     	}
+	                		
+	                	};
+	                }
+	                
+				});
+			
+			table.getColumns().addAll(actionColumn,yearColumn, monthColumn, dayColumn, startTimeColumn);
+			
+		} else if (freeOnly == true) {
+			
+			table.getColumns().addAll(yearColumn, monthColumn, dayColumn, startTimeColumn);
+			
+		} else {
+			
+			table.getColumns().addAll(yearColumn, monthColumn, dayColumn, startTimeColumn, valueColumn);
+			
+		}
+		
+		Button homeButton = new Button("HOME");
+		if (MenuGUI.userType == 1) {
+			
+			homeButton.setOnAction(e -> MenuGUI.window.setScene(CustomerMenu.displayMenu()));
+			
+		} else {
+			
+			homeButton.setOnAction(e -> MenuGUI.window.setScene(displayMenu()));
+						
+		}		
+		homeButton.setMaxWidth(100);
+		
+		Button logoutButton = new Button("LOGOUT");
+		logoutButton.setStyle("-fx-base: red;");
+		logoutButton.setOnAction(e -> MenuGUI.window.setScene(MenuGUI.loginScene));
+		
+		HBox topBox = new HBox();
+		topBox.setStyle("-fx-font-size: 24; -fx-background-color: #1976D2;");
+		topBox.setPadding(new Insets(10, 10, 10, 10));
+		topBox.setAlignment(Pos.CENTER);
+		topBox.getChildren().add(heading);
+		
+		VBox leftBox = new VBox();
+		leftBox.setStyle("-fx-background-color: grey;");
+		leftBox.setSpacing(10);
+		leftBox.setPadding(new Insets(10, 10, 10, 10));
+		leftBox.setAlignment(Pos.TOP_CENTER);
+		leftBox.getChildren().addAll(homeButton, logoutButton);
+				
+		borderPane.setTop(topBox);
+		borderPane.setCenter(table);
+		borderPane.setLeft(leftBox);
+		
+		Scene scene = new Scene(borderPane, 400, 300);
+		return scene;
+	
+	}
+	
+	//buttons is true if the employeelistmenu is being used to select an employee for some purpose
+	public static Scene employeeListMenu(boolean buttons, int function)
+	{
+		BorderPane borderPane = new BorderPane();
+		Label heading = new Label("--Business Name--");
+		
+		TableView<Employee> table;
+		TableColumn<Employee, String> employeeIdColumn = new TableColumn<>("Employee ID");
+		employeeIdColumn.setMinWidth(50);
+		employeeIdColumn.setCellValueFactory(new PropertyValueFactory<>("employeeId"));
+		
+		TableColumn<Employee, String> firstNameColumn = new TableColumn<>("First Name");
+		firstNameColumn.setMinWidth(50);
+		firstNameColumn.setCellValueFactory(new PropertyValueFactory<>("firstName"));
+		
+		TableColumn<Employee, String> lastNameColumn = new TableColumn<>("Last Name");
+		lastNameColumn.setMinWidth(50);
+		lastNameColumn.setCellValueFactory(new PropertyValueFactory<>("lastName"));
+		
+		if (buttons == true) {
+			
+			employeeIdColumn.setCellFactory(
+				new Callback<TableColumn<Employee, String>, TableCell<Employee, String>>() {
+
+	                @Override
+	                public TableCell<Employee, String> call(TableColumn<Employee, String> idButton) {
+	                	return new TableCell<Employee,String>() {
+	               		 
+	                     	String employeeID = getItem();
+
+	                		Button cellButton = new Button(employeeID);
+	                     		                     	
+	                     	@Override
+	                		protected void updateItem(String item, boolean value) {
+	                     		super.updateItem(item, value);
+	                     		cellButton.setOnAction(e -> {
+	                     			String employeeID = getItem();
+	                     			System.out.println(employeeID);
+	                     			if (function == 0) {
+		                     			MenuGUI.window.setScene(showScheduleMenu(employeeID,false));
+	                     			} else if (function == 1) {
+		                     			MenuGUI.window.setScene(addScheduleMenu(employeeID));
+	                     			} else if (function == 2) {
+		                     			MenuGUI.window.setScene(showScheduleMenu(employeeID,true));
+	                     			} else if (function == 3) {
+		                     			MenuGUI.window.setScene(showBookingMenu(employeeID,true,false));
+	                     			} else if (function == 4) {
+		                     			MenuGUI.window.setScene(showBookingMenu(employeeID,true,true));
+	                     			}
+	                     			
+	                     			});
+	                     		cellButton.setText(getItem());
+	                     		setGraphic(cellButton);
+	                     		
+	                     	}
+	                		
+	                	};
+	                }
+	                
+				});
+			
+		}
+		
+		table = new TableView<>();
+		table.setItems(getEmployee());
+		table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+		table.getColumns().addAll(employeeIdColumn, firstNameColumn, lastNameColumn);
+		
+		Button homeButton = new Button("HOME");
+		if (MenuGUI.userType == 1) {
+			
+			homeButton.setOnAction(e -> MenuGUI.window.setScene(CustomerMenu.displayMenu()));
+			
+		} else {
+			
+			homeButton.setOnAction(e -> MenuGUI.window.setScene(displayMenu()));
+						
+		}
+		homeButton.setMaxWidth(100);
+		
+		Button logoutButton = new Button("LOGOUT");
+		logoutButton.setStyle("-fx-base: red;");
+		logoutButton.setOnAction(e -> MenuGUI.window.setScene(MenuGUI.loginScene));
+		
+		HBox topBox = new HBox();
+		topBox.setStyle("-fx-font-size: 24; -fx-background-color: #1976D2;");
+		topBox.setPadding(new Insets(10, 10, 10, 10));
+		topBox.setAlignment(Pos.CENTER);
+		topBox.getChildren().add(heading);
+		
+		VBox leftBox = new VBox();
+		leftBox.setStyle("-fx-background-color: grey;");
+		leftBox.setSpacing(10);
+		leftBox.setPadding(new Insets(10, 10, 10, 10));
+		leftBox.setAlignment(Pos.TOP_CENTER);
+		leftBox.getChildren().addAll(homeButton, logoutButton);
+				
+		borderPane.setTop(topBox);
+		borderPane.setCenter(table);
+		borderPane.setLeft(leftBox);
+		
+		Scene scene = new Scene(borderPane, 400, 300);
+		return scene;
+	}
+	
+	public static ObservableList<Booking> getBookings(boolean newOnly)
 	{
 		ObservableList<Booking> Booking = FXCollections.observableArrayList();
 		String deliminator = "\\|";
 		String[] dataValues;
 		String currentLine;
+		
+		Booking bookingSlot;
 		
 		BufferedReader reader = null;
 		
@@ -356,7 +1000,20 @@ public class BusinessOwnerMenu {
 			{
 				dataValues = currentLine.split(deliminator);
 				
-				Booking.add(new Booking(dataValues[0], dataValues[1], dataValues[2], dataValues[3], dataValues[4], dataValues[5], dataValues[6], dataValues[7], dataValues[8]));	
+				if (newOnly == false || dataValues[0].compareTo("NEW") == 0) {
+				
+					bookingSlot = new Booking(dataValues[0], dataValues[1], dataValues[2], dataValues[3], dataValues[4], dataValues[5], dataValues[6], dataValues[7], dataValues[8]);
+					
+					Booking.add(bookingSlot);	
+					
+					if (newOnly == true) {
+						
+						bookingSlot.refreshNew();
+						
+					}
+					
+				}
+				
 			}
 			
 			reader.close();	
@@ -369,8 +1026,7 @@ public class BusinessOwnerMenu {
 		return Booking;
 	}
 	
-	//Displays list of bookings by customers
-	public static Scene bookingsMenu()
+	public static Scene bookingsMenu(boolean newOnly)
 	{
 		MenuGUI.window.setTitle("ABS - View Booking Summaries");
 		BorderPane borderPane = new BorderPane();
@@ -408,10 +1064,18 @@ public class BusinessOwnerMenu {
 		serviceColumn.setCellValueFactory(new PropertyValueFactory<>("serviceType"));
 		
 		table = new TableView<>();
-		table.setPlaceholder(new Label("No bookings have been made"));
-		table.setItems(getBookings());
+		table.setItems(getBookings(newOnly));
 		table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-		table.getColumns().addAll(dateColumn, timeColumn, statusColumn, cusomterColumn, employeeColumn, serviceColumn);
+		
+		if (newOnly == true) {
+
+			table.getColumns().addAll(dateColumn, timeColumn, cusomterColumn, employeeColumn, serviceColumn);
+			
+		} else {
+			
+			table.getColumns().addAll(dateColumn, timeColumn, statusColumn, cusomterColumn, employeeColumn, serviceColumn);
+			
+		}
 		
 		Button homeButton = new Button("HOME");
 		homeButton.setOnAction(e ->	MenuGUI.window.setScene(displayMenu()));
@@ -441,12 +1105,11 @@ public class BusinessOwnerMenu {
 		return scene;
 	}
 	
-	//Displays add service function
 	public static Scene addServiceMenu()
 	{
 		MenuGUI.window.setTitle("ABS - Add Service");
 		BorderPane borderPane = new BorderPane();
-		Label heading = new Label("Add Service");
+		Label heading = new Label("--Busniess Name--");
 		
 		GridPane grid = new GridPane();
 		grid.setPadding(new Insets(25, 25, 25, 25));
@@ -469,9 +1132,7 @@ public class BusinessOwnerMenu {
 		serviceDescriptionField.setPrefRowCount(3);
 		GridPane.setConstraints(serviceDescriptionField, 1, 2);
 		
-		//Drop down box
 		ChoiceBox<String> durationBox = new ChoiceBox<>();
-		//Sets the items in the drop down box
 		durationBox.getItems().addAll(
 				"15",
 				"30",
@@ -491,20 +1152,14 @@ public class BusinessOwnerMenu {
 		Button addButton = new Button("Add Service");
 		addButton.setOnAction(e -> 
 		{
-			//Validates input
 			if(BusinessManagement.isNumericAndPositive(durationBox.getValue()) && !Utility.isBlank(durationBox.getValue()))
 			{
-				//Checks if input is not blank
 				if(!Utility.isBlank(addServiceField.getText()) && !Utility.isBlank(serviceDescriptionField.getText()))
 				{
 					try
 					{
-						//Addes service to system
 						BusinessManagement.addService(addServiceField.getText(), durationBox.getValue(), serviceDescriptionField.getText());
-						//Displays success alert
 						MenuGUI.alertBox("ALERT!", "Service has been successfully added!");
-						//Return to main page
-						MenuGUI.window.setScene(mainScene);
 					}
 					catch (IOException e1)
 					{
@@ -552,4 +1207,6 @@ public class BusinessOwnerMenu {
 		Scene scene = new Scene(borderPane, 555, 300);
 		return scene;
 	}
+	
+	
 }

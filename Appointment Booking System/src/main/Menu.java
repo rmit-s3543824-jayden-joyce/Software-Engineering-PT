@@ -8,11 +8,8 @@ import main.CustomerManagement;
 
 public class Menu {
 	
-	//creates a global variable to hold the current users name
-	//if there is an error, it will default to Customer, in order
-	// to hide said error
-	public static String username = "Customer";
-
+	public static String username = "test";
+	
 	public static void main(String[] args) throws IOException {
 		int selection;
 		Scanner sc = new Scanner(System.in);
