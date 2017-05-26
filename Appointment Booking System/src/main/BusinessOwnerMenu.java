@@ -3,6 +3,9 @@ package main;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.time.DayOfWeek;
+import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
@@ -39,7 +42,7 @@ public class BusinessOwnerMenu {
 	{		
 		MenuGUI.window.setTitle("ABS - Busniess Menu");
 		BorderPane borderPane = new BorderPane();
-		Label heading = new Label("--Business Name--");
+		Label heading = new Label(BusinessManagement.selectedBusiness.getName());
 		
 		Button b1 = new Button("Employee Management");
 		b1.setOnAction(e -> MenuGUI.window.setScene(displayEmployeeManagement()));
@@ -142,7 +145,7 @@ public class BusinessOwnerMenu {
 		BorderPane borderPane = new BorderPane();
 		String[] buttonNames = {"View Booking Summaries", "View New Bookings", "Add Booking"};
 		Button[] buttons = new Button[3];		
-		Label heading = new Label("--Business Name--");
+		Label heading = new Label(BusinessManagement.selectedBusiness.getName());
 		
 		VBox centerBox = new VBox();
 		centerBox.setSpacing(10);
@@ -191,7 +194,7 @@ public class BusinessOwnerMenu {
 	public static Scene showScheduleMenu(String employee, boolean remove) {
 				
 		BorderPane borderPane = new BorderPane();
-		Label heading = new Label("--Business Name--");
+		Label heading = new Label(BusinessManagement.selectedBusiness.getName());
 		
 		TableView<Schedule> table;
 		TableColumn<Schedule, String> dayColumn = new TableColumn<>("Day");
@@ -294,7 +297,7 @@ public class BusinessOwnerMenu {
 	{
 		MenuGUI.window.setTitle("ABS - Add Employee");
 		BorderPane borderPane = new BorderPane();
-		Label heading = new Label("--Business Name--");
+		Label heading = new Label(BusinessManagement.selectedBusiness.getName());
 		
 		GridPane grid = new GridPane();
 		grid.setPadding(new Insets(25, 25, 25, 25));
@@ -381,7 +384,8 @@ public class BusinessOwnerMenu {
 		
 		MenuGUI.window.setTitle("ABS - Add Employee");
 		BorderPane borderPane = new BorderPane();
-		Label heading = new Label("--Business Name--");
+		Label heading = new Label(BusinessManagement.selectedBusiness.getName());
+
 		
 		GridPane grid = new GridPane();
 		grid.setPadding(new Insets(25, 25, 25, 25));
@@ -390,13 +394,19 @@ public class BusinessOwnerMenu {
 		grid.setHgap(10);
 		
 		String[] weekDays = {"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"};
+
+		ArrayList<DayOfWeek> numberOfDays = BusinessManagement.selectedBusiness.getOpeningDays();
+		ArrayList<LocalTime> openingTimes = BusinessManagement.selectedBusiness.getOpenTime();
+		ArrayList<LocalTime> closingTimes = BusinessManagement.selectedBusiness.getCloseTime();
 		
 		ObservableList<String> days = FXCollections.observableArrayList();
-		for (int i = 0; i < 7; i++) {
-			
-			days.add(weekDays[i]);
+		for (int i = 0; i < numberOfDays.size(); i++) {
+									
+			days.add(weekDays[numberOfDays.get(i).getValue() - 1]);
 			
 		}
+		
+		int dayValue = 0;
 		
 		ObservableList<String> hours = FXCollections.observableArrayList();
 		for (int i = 1; i < 24; i++) {
@@ -415,6 +425,24 @@ public class BusinessOwnerMenu {
 			}
 			
 		}
+		
+		ObservableList<String> closeHours = FXCollections.observableArrayList();
+		for (int i = 1; i < 24; i++) {
+			
+			closeHours.add("" + i);
+			
+		}
+		
+		ObservableList<String> closeMinutes = FXCollections.observableArrayList();
+		for (int i = 0; i < 60; i++) {
+			
+			if (i < 10) {
+				closeMinutes.add("0" + i);
+			} else {
+				closeMinutes.add("" + i);
+			}
+			
+		}
 
 		Label dayLabel = new Label("Day:");
 		GridPane.setConstraints(dayLabel, 0, 0);
@@ -427,11 +455,355 @@ public class BusinessOwnerMenu {
 		Label endMinuteLabel = new Label("End Minute:");
 		GridPane.setConstraints(endMinuteLabel, 0, 4);
 		
-		ComboBox dayBox = new ComboBox(days);
-		ComboBox startHourBox = new ComboBox(hours);
-		ComboBox startMinuteBox = new ComboBox(minutes);
-		ComboBox endHourBox = new ComboBox(hours);
-		ComboBox endMinuteBox = new ComboBox(minutes);
+		
+		ComboBox<String> dayBox = new ComboBox<>(days);
+		dayBox.setOnAction(e ->
+		{
+			
+			hours.clear();
+			minutes.clear();
+			closeHours.clear();
+			closeMinutes.clear();
+			
+			
+		});
+		
+		ComboBox<String> startHourBox = new ComboBox(hours);
+		ComboBox<String> startMinuteBox = new ComboBox(minutes);
+		ComboBox<String> endHourBox = new ComboBox(closeHours);
+		ComboBox<String> endMinuteBox = new ComboBox(closeMinutes);
+		
+		startHourBox.setOnMousePressed(e ->
+		{
+			
+			hours.clear();
+
+			int j = 0;
+			
+			for (int i = 0; i < 7; i++) {
+				
+				if ((String) dayBox.getValue() == weekDays[i]) {
+					
+					for (j = 0; j < numberOfDays.size(); j++) {
+						
+						if (i + 1 == numberOfDays.get(j).getValue()) {
+							
+							break;
+							
+						}
+						
+					}
+					
+				}
+				
+			}
+			
+			if (endHourBox.getValue() == null) {
+				
+				int k;
+				
+				for (k = openingTimes.get(j).getHour(); k < closingTimes.get(j).getHour(); k++) {
+					
+					hours.add("" + k);
+					
+				}
+				
+				if (closingTimes.get(j).getMinute() != 0) {
+
+					hours.add("" + (k++));
+					
+				}
+				
+			} else {
+				
+				int k;
+				
+				for (k = openingTimes.get(j).getHour(); k < Integer.parseInt(endHourBox.getValue()); k++) {
+					
+					hours.add("" + k);
+					
+				}			
+				
+				if (endMinuteBox.getValue() != null) {
+					
+					if (Integer.parseInt(endMinuteBox.getValue()) != 0) {
+
+						hours.add("" + (k++));
+						
+					}					
+					
+				} else if (closingTimes.get(j).getMinute() != 0) {
+
+					hours.add("" + (k++));
+					
+				}
+				
+			}
+								
+		});
+		
+		endHourBox.setOnMousePressed(e ->
+		{
+			
+			closeHours.clear();
+
+			int j = 0;
+			
+			for (int i = 0; i < 7; i++) {
+				
+				if ((String) dayBox.getValue() == weekDays[i]) {
+					
+					for (j = 0; j < numberOfDays.size(); j++) {
+						
+						if (i + 1 == numberOfDays.get(j).getValue()) {
+							
+							break;
+							
+						}
+						
+					}
+					
+				}
+				
+			}
+			
+			if (startHourBox.getValue() == null) {
+				
+				int k;
+				
+				int modifierClose = 0;
+				int modifierOpen = 0;
+				
+				if (endMinuteBox.getValue() != null) {
+					
+					if (Integer.parseInt(endMinuteBox.getValue()) > closingTimes.get(j).getMinute()) {
+						
+						modifierClose = -1;
+						
+					}
+					
+					if (startMinuteBox.getValue() != null) {
+						
+						if (Integer.parseInt(endMinuteBox.getValue()) < Integer.parseInt(startMinuteBox.getValue())) {
+							
+							modifierOpen = 1;
+							
+						}
+						
+					}
+					
+				}
+				
+				for (k = openingTimes.get(j).getHour() + modifierOpen; k <= closingTimes.get(j).getHour() - modifierClose; k++) {
+					
+					closeHours.add("" + k);
+					
+				}
+				
+			} else {
+				
+				int k;
+				
+				int modifierClose = 0;
+				int modifierOpen = 0;
+				
+				if (endMinuteBox.getValue() != null) {
+					
+					if (Integer.parseInt(endMinuteBox.getValue()) > closingTimes.get(j).getMinute()) {
+						
+						modifierClose = -1;
+						
+					}
+					
+					if (startMinuteBox.getValue() != null) {
+						
+						if (Integer.parseInt(endMinuteBox.getValue()) < Integer.parseInt(startMinuteBox.getValue())) {
+							
+							modifierOpen = 1;
+							
+						}
+						
+					}
+					
+				}
+				
+				for (k = Integer.parseInt(startHourBox.getValue()) + modifierOpen; k <= closingTimes.get(j).getHour() - modifierClose; k++) {
+					
+					closeHours.add("" + k);
+					
+				}
+				
+			}
+								
+		});
+		
+		endMinuteBox.setOnMousePressed(e ->
+		{
+			
+			closeMinutes.clear();
+
+			int j = 0;
+			
+			for (int i = 0; i < 7; i++) {
+				
+				if ((String) dayBox.getValue() == weekDays[i]) {
+					
+					for (j = 0; j < numberOfDays.size(); j++) {
+						
+						if (i + 1 == numberOfDays.get(j).getValue()) {
+							
+							break;
+							
+						}
+						
+					}
+					
+				}
+				
+			}
+			
+			int start = 0;
+			int end = 60;
+			
+			if (endHourBox.getValue() != null) {
+				
+				if (Integer.parseInt(endHourBox.getValue()) == closingTimes.get(j).getHour()) {
+					
+					end = closingTimes.get(j).getMinute();
+					
+				}
+				
+			}
+			
+			if (startHourBox.getValue() != null) {
+				
+				if (Integer.parseInt(startHourBox.getValue()) == closingTimes.get(j).getHour()) {
+					
+					end = closingTimes.get(j).getMinute();
+					
+				}
+				
+				if (endHourBox.getValue() != null) {
+					
+					if (Integer.parseInt(endHourBox.getValue()) == Integer.parseInt(startHourBox.getValue())) {
+						
+						if (startMinuteBox.getValue() != null) {
+							
+							start = Integer.parseInt(startMinuteBox.getValue());
+							
+						}
+						
+					}
+					
+				}
+				
+			} else if (endHourBox.getValue() != null) {
+				
+				if (Integer.parseInt(endHourBox.getValue()) == openingTimes.get(j).getHour()) {
+										
+					start = openingTimes.get(j).getMinute();
+					
+				}
+				
+			}
+			
+			for (int k = start; k < end; k++) {
+	
+				if (k < 10) {
+					closeMinutes.add("0" + k);
+				} else {
+					closeMinutes.add("" + k);
+				}
+				
+			}
+			
+			
+								
+		});
+		
+		startMinuteBox.setOnMousePressed(e ->
+		{
+			
+			minutes.clear();
+
+			int j = 0;
+			
+			for (int i = 0; i < 7; i++) {
+				
+				if ((String) dayBox.getValue() == weekDays[i]) {
+					
+					for (j = 0; j < numberOfDays.size(); j++) {
+						
+						if (i + 1 == numberOfDays.get(j).getValue()) {
+							
+							break;
+							
+						}
+						
+					}
+					
+				}
+				
+			}
+			
+			int start = 0;
+			int end = 60;
+			
+			if (startHourBox.getValue() != null) {
+				
+				if (Integer.parseInt(startHourBox.getValue()) == openingTimes.get(j).getHour()) {
+					
+					start = openingTimes.get(j).getMinute();
+					
+				}
+				
+			}
+			
+			if (endHourBox.getValue() != null) {
+				
+				if (Integer.parseInt(endHourBox.getValue()) == openingTimes.get(j).getHour()) {
+					
+					start = openingTimes.get(j).getMinute();
+					
+				}
+				
+				if (startHourBox.getValue() != null) {
+					
+					if (Integer.parseInt(startHourBox.getValue()) == Integer.parseInt(endHourBox.getValue())) {
+						
+						if (endMinuteBox.getValue() != null) {
+							
+							end = Integer.parseInt(endMinuteBox.getValue());
+							
+						}
+						
+					}
+					
+				}
+				
+			} else if (startHourBox.getValue() != null) {
+				
+				if (Integer.parseInt(startHourBox.getValue()) == closingTimes.get(j).getHour()) {
+										
+					end = closingTimes.get(j).getMinute();
+					
+				}
+				
+			}
+			
+			for (int k = start; k < end; k++) {
+	
+				if (k < 10) {
+					minutes.add("0" + k);
+				} else {
+					minutes.add("" + k);
+				}
+				
+			}
+			
+			
+								
+		});
 		
 		dayBox.setPrefWidth(200);
 		GridPane.setConstraints(dayBox, 1, 0);
@@ -451,32 +823,41 @@ public class BusinessOwnerMenu {
 		Button confirmButton = new Button("Confirm");
 		confirmButton.setOnAction(e -> 
 		{
-			int[] daytime = new int[3];
 			
-			for (int i = 0; i < 7; i++) {
+			if(startHourBox.getValue() != null &&
+					endHourBox.getValue() != null &&
+					startMinuteBox.getValue() != null &&
+					endMinuteBox.getValue() != null) {
 				
-				if ((String) dayBox.getValue() == weekDays[i]) {
+				
+				int[] daytime = new int[3];
+				
+				for (int i = 0; i < 7; i++) {
 					
-					daytime[0] = i + 1;
+					if ((String) dayBox.getValue() == weekDays[i]) {
+						
+						daytime[0] = i + 1;
+						
+					}
 					
 				}
 				
-			}
-			
-			daytime[1] = Integer.parseInt((String) startHourBox.getValue()) * 100 + Integer.parseInt((String) startMinuteBox.getValue());
-			daytime[2] = Integer.parseInt((String) endHourBox.getValue()) * 100 + Integer.parseInt((String) endMinuteBox.getValue());
-			
-			if(ScheduleManagement2.employeeRecuringScheduleAdd(employee, daytime))
-			{
+				daytime[1] = Integer.parseInt((String) startHourBox.getValue()) * 100 + Integer.parseInt((String) startMinuteBox.getValue());
+				daytime[2] = Integer.parseInt((String) endHourBox.getValue()) * 100 + Integer.parseInt((String) endMinuteBox.getValue());
+				
+				ScheduleManagement2.employeeRecuringScheduleAdd(employee, daytime);
+				
 				MenuGUI.window.setScene(displayEmployeeManagement());
-				MenuGUI.alertBox("ALERT!", "Schedule has been successfully added");
-				message.setText("");
-			}
-			else
-			{
+				
+				
+			} else {
+				
 				message.setText("Error. Please try again.");
+				
 			}
+			
 		});
+		
 		GridPane.setConstraints(confirmButton, 1, 5);
 		Button logoutButton = new Button("LOGOUT");
 		logoutButton.setStyle("-fx-base: red;");
@@ -524,7 +905,7 @@ public class BusinessOwnerMenu {
 				
 		try 
 		{	
-			reader = new BufferedReader(new FileReader("employeeList.txt"));
+			reader = new BufferedReader(new FileReader(BusinessManagement.selectedBusiness.getFileName() + "employeeList.txt"));
 			
 			while ((currentLine = reader.readLine()) != null)
 			{
@@ -871,7 +1252,7 @@ public class BusinessOwnerMenu {
 	public static Scene employeeListMenu(boolean buttons, int function)
 	{
 		BorderPane borderPane = new BorderPane();
-		Label heading = new Label("--Business Name--");
+		Label heading = new Label(BusinessManagement.selectedBusiness.getName());
 		
 		TableView<Employee> table;
 		TableColumn<Employee, String> employeeIdColumn = new TableColumn<>("Employee ID");
@@ -919,7 +1300,12 @@ public class BusinessOwnerMenu {
 	                     			
 	                     			});
 	                     		cellButton.setText(getItem());
-	                     		setGraphic(cellButton);
+	                     		
+	                     		if (getItem() != null) {
+
+		                     		setGraphic(cellButton);
+		                     		
+	                     		}
 	                     		
 	                     	}
 	                		
@@ -983,7 +1369,7 @@ public class BusinessOwnerMenu {
 		
 		BufferedReader reader = null;
 		
-		StringTokenizer st = new StringTokenizer(BusinessManagement.selectedBusiness.getName(), " ");
+		StringTokenizer st = new StringTokenizer(BusinessManagement.selectedBusiness.getFileName(), " ");
 		String file_name = "";
 		while (st.hasMoreTokens())
 		{
