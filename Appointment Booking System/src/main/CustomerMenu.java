@@ -132,7 +132,7 @@ public class CustomerMenu
 				
 		try 
 		{	
-			reader = new BufferedReader(new FileReader("SuggarHaircutServices.txt"));
+			reader = new BufferedReader(new FileReader(BusinessManagement.selectedBusiness.getFileName() + "Services.txt"));
 			
 			while ((currentLine = reader.readLine()) != null)
 			{
@@ -340,7 +340,7 @@ public class CustomerMenu
 		
 		BufferedReader reader = null;
 		
-		StringTokenizer st = new StringTokenizer(BusinessManagement.selectedBusiness.getName(), " ");
+		StringTokenizer st = new StringTokenizer(BusinessManagement.selectedBusiness.getFileName(), " ");
 		String file_name = "";
 		while (st.hasMoreTokens())
 		{

@@ -79,6 +79,18 @@ public class Business {
 	public String getName() {
 		return this.name;
 	}
+	
+	public String getFileName() {
+		
+		StringTokenizer st = new StringTokenizer(this.getName(), " ");
+		String file_name = "";
+		while (st.hasMoreTokens()) {
+			file_name += st.nextToken();
+		}
+		
+		return file_name;
+		
+	}
 
 	public String getOwner() {
 		return this.owner;

@@ -3,19 +3,26 @@ package main;
 import java.io.IOException;
 
 import javafx.application.Application;
+import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
+import javafx.scene.control.TableCell;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.util.Callback;
 
 public class MenuGUI extends Application
 {
@@ -27,6 +34,7 @@ public class MenuGUI extends Application
 	static Label[] regLabel = new Label[8];
 	static TextField[] regTextField = new TextField[8];
 	static Label[] regBlankIndicator = new Label[8];
+	public UserManagement userManagement;
 	
 	public static void main(String[] args)
 	{
@@ -39,15 +47,104 @@ public class MenuGUI extends Application
 		//Creates window
 		window = primaryStage;
 		//Creates the scene which hosts the 'Log in' scene
-		Scene scene = displayLoginScene();
-		window.setTitle("ABS - Log In");
+		Scene scene = displayBusinessSelection();
+		window.setTitle("Business Selection");
 		//Sets and displays the 'Log in' scene
 		window.setScene(scene);
 		window.show();
+		
+	}
+	
+	public Scene displayBusinessSelection() {
+
+		BorderPane borderPane = new BorderPane();
+		Label heading = new Label("Business Selection");
+		
+		TableView<Business> table;
+		TableColumn<Business, String> businessColumn = new TableColumn<>("Business Name");
+		businessColumn.setMinWidth(125);
+		businessColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
+		
+		TableColumn<Business, String> leftColumn = new TableColumn<>("");
+		leftColumn.setMinWidth(50);
+		leftColumn.setCellValueFactory(new PropertyValueFactory<>("BLANK"));
+		
+		TableColumn<Business, String> rightColumn = new TableColumn<>("");
+		rightColumn.setMinWidth(50);
+		rightColumn.setCellValueFactory(new PropertyValueFactory<>("BLANK"));
+
+		
+		table = new TableView<>();
+		table.setItems(FXCollections.observableArrayList(BusinessManagement.retrieveBusiness()));
+		table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+		table.getColumns().addAll(leftColumn, businessColumn, rightColumn);
+		
+		businessColumn.setCellFactory(
+				new Callback<TableColumn<Business, String>, TableCell<Business, String>>() {
+
+	                @Override
+	                public TableCell<Business, String> call(TableColumn<Business, String> idButton) {
+	                	return new TableCell<Business,String>() {
+	               		 
+	                     	String business = getItem();
+
+	                		Button cellButton = new Button(business);
+	                     		                     	
+	                     	@Override
+	                		protected void updateItem(String item, boolean value) {
+	                     		super.updateItem(item, value);
+	                     		cellButton.setOnAction(e -> {
+	                     			String business = getItem();
+	                     			
+	                     			try {
+										userManagement = new UserManagement(business);
+									} catch (IOException e1) {
+										// TODO Auto-generated catch block
+										e1.printStackTrace();
+									}
+	                     			
+	                     			window.setScene(displayLoginScene());
+	                     			
+	                     			});
+	                     		cellButton.setText(getItem());
+	                     		cellButton.setMaxSize(Double.MAX_VALUE, computeMaxHeight(0));
+	                     		
+	                     		if (getItem() != null) {
+
+		                     		setGraphic(cellButton);
+		                     		
+	                     		}
+	                     		
+	                     		
+	                     	}
+	                		
+	                	};
+	                }
+	                
+				});		
+
+		HBox topBox = new HBox();
+		topBox.setStyle("-fx-font-size: 24; -fx-background-color: #1976D2;");
+		topBox.setPadding(new Insets(10, 10, 10, 10));
+		topBox.setAlignment(Pos.CENTER);
+		topBox.getChildren().add(heading);
+		
+
+		borderPane.setTop(topBox);
+		borderPane.setCenter(table);
+		
+		Scene scene = new Scene(borderPane, 400, 300);
+		return scene;
+		
 	}
 	
 	public Scene displayLoginScene()
 	{
+
+		BorderPane borderPane = new BorderPane();
+		window.setTitle("Login");
+		Label heading = new Label(BusinessManagement.selectedBusiness.getName());
+		
 		//Create a grid to hold the necessary items in a clean layout
 		GridPane grid = new GridPane();
 		grid.setPadding(new Insets(25, 25, 25, 25));
@@ -79,11 +176,11 @@ public class MenuGUI extends Application
 		{ 
 			try
 			{
-				/*window.setScene(BusinessOwnerMenu.displayMenu());
+				window.setScene(BusinessOwnerMenu.displayMenu());
 				new UserManagement("Suggar Haircut");
-				MenuGUI.userType = 2;*/
+				MenuGUI.userType = 2;
 				//Taking the data from the username and password textfields and validating them
-				userType = Login.verifyLoginDetails(usernameField.getText(), passwordField.getText());
+				/*userType = Login.verifyLoginDetails(usernameField.getText(), passwordField.getText());
 				if(userType == 1)
 				{
 					//If customer details are found
@@ -91,7 +188,6 @@ public class MenuGUI extends Application
 					message.setText("");
 					usernameField.clear();
 					passwordField.clear();
-					new UserManagement("Suggar Haircut");
 				}
 				else if(userType == 2)
 				{
@@ -100,14 +196,13 @@ public class MenuGUI extends Application
 					message.setText("");
 					usernameField.clear();
 					passwordField.clear();
-					new UserManagement("Suggar Haircut");
 				}
 				else
 				{
 					//If no users are found
 					message.setText("Your username or password is incorrect!");
 					passwordField.clear();
-				}
+				}*/
 			}
 			catch (IOException e1)
 			{
@@ -138,7 +233,17 @@ public class MenuGUI extends Application
 		//Add all items/nodes to grid pane
 		grid.getChildren().addAll(usernameLabel, usernameField, passwordLabel, passwordField, hBtns, message);
 		//Set grid pane to scene
-		loginScene = new Scene(grid, 400, 275);
+
+		HBox topBox = new HBox();
+		topBox.setStyle("-fx-font-size: 24; -fx-background-color: #1976D2;");
+		topBox.setPadding(new Insets(10, 10, 10, 10));
+		topBox.setAlignment(Pos.CENTER);
+		topBox.getChildren().add(heading);
+		
+		borderPane.setTop(topBox);
+		borderPane.setCenter(grid);
+		
+		loginScene = new Scene(borderPane, 400, 275);
 		return loginScene;
 	}
 	

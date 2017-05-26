@@ -73,7 +73,7 @@ public class InputRequest {
 			
 			try {
 				
-				reader = new BufferedReader(new FileReader(Utility.employeeList));
+				reader = new BufferedReader(new FileReader(BusinessManagement.selectedBusiness.getFileName() + Utility.employeeList));
 					
 					System.out.println("ID: ");
 					employeeID = consoleReader.nextLine();

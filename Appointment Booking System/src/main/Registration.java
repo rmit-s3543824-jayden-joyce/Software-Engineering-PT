@@ -150,7 +150,7 @@ public class Registration {
 	}
 	
 	/* ensures that the user has actually entered a data value */
-	static boolean isNotBlank(String value) {
+	public static boolean isNotBlank(String value) {
 		
 		if (value.isEmpty()) {
 
@@ -261,7 +261,7 @@ public class Registration {
 				
 		try {
 			
-			reader = new BufferedReader(new FileReader(customerList));
+			reader = new BufferedReader(new FileReader(BusinessManagement.selectedBusiness.getFileName() + customerList));
 			
 			while ((currentLine = reader.readLine()) != null) {
 				
@@ -325,7 +325,7 @@ public class Registration {
 		try {
 			
 			//wraps FileWriter in BufferedWrite, in order to use newLine()
-			writer = new BufferedWriter(new FileWriter(customerList, true));
+			writer = new BufferedWriter(new FileWriter(BusinessManagement.selectedBusiness.getFileName() + customerList, true));
 			
 			writer.write(username);
 			writer.write("|");

@@ -83,7 +83,7 @@ public class EmployeeManagement {
 	public static Boolean addEmployeeGUI(String firstName, String lastName) throws IOException
 	{
 		String employeeDetails, employeeId;
-		BufferedWriter bw = new BufferedWriter(new FileWriter(employeeList, true));
+		BufferedWriter bw = new BufferedWriter(new FileWriter(BusinessManagement.selectedBusiness.getFileName() + employeeList, true));
 		
 		employeeId = generateId();
 		employeeDetails = employeeId + delimWrite + firstName + delimWrite + lastName;
@@ -93,19 +93,19 @@ public class EmployeeManagement {
 			//Checks if the input contains only letters
 			if(isString(firstName) && isString(lastName))
 			{
-				if(!Utility.createFile(employeeId + "Bookings"))
+				if(!Utility.createFile(BusinessManagement.selectedBusiness.getFileName() + employeeId + "Bookings"))
 				{
 					//ensures that the employee details are not saved if a file is not created
 					return false;
 				}
 				
-				if(!Utility.createFile(employeeId + "Schedule"))
+				if(!Utility.createFile(BusinessManagement.selectedBusiness.getFileName() + employeeId + "Schedule"))
 				{
 					//ensures that the employee details are not saved if a file is not created
 					return false;	
 				}
 				
-				BufferedWriter scheduleBooter = new BufferedWriter(new FileWriter(employeeId + "Schedule.txt", true));
+				BufferedWriter scheduleBooter = new BufferedWriter(new FileWriter(BusinessManagement.selectedBusiness.getFileName() + employeeId + "Schedule.txt", true));
 
 				scheduleBooter.write("1|1|1");
 				scheduleBooter.newLine();
@@ -137,7 +137,7 @@ public class EmployeeManagement {
 		String employeeDetails = employeeId + delimWrite, firstName = null, lastName = null, selection;
 		Boolean menu = true, firstNameCheck = true, lastNameCheck = true, confirmation = true;
 		Scanner sc = new Scanner(System.in);
-		BufferedWriter bw = new BufferedWriter(new FileWriter(employeeList, true));
+		BufferedWriter bw = new BufferedWriter(new FileWriter(BusinessManagement.selectedBusiness.getFileName() + employeeList, true));
 		
 		do
 		{
@@ -193,14 +193,14 @@ public class EmployeeManagement {
 						if(selection.equals("1"))
 						{
 							//creates employee files
-							if(!Utility.createFile(employeeId + "Bookings")) {
+							if(!Utility.createFile(BusinessManagement.selectedBusiness.getFileName() + employeeId + "Bookings")) {
 								
 								//ensures that the employee details are not saved if a file is not created
 								break;
 								
 							}
 							
-							if(!Utility.createFile(employeeId + "Schedule")) {
+							if(!Utility.createFile(BusinessManagement.selectedBusiness.getFileName() + employeeId + "Schedule")) {
 								
 								//ensures that the employee details are not saved if a file is not created
 								break;
@@ -208,7 +208,7 @@ public class EmployeeManagement {
 							}
 							
 							//adds a 'last update' date to Schedule, to ensure that it writes from the start
-							BufferedWriter scheduleBooter = new BufferedWriter(new FileWriter(employeeId + "Schedule.txt", true));
+							BufferedWriter scheduleBooter = new BufferedWriter(new FileWriter(BusinessManagement.selectedBusiness.getFileName() + employeeId + "Schedule.txt", true));
 
 							scheduleBooter.write("1|1|1");
 							scheduleBooter.newLine();
@@ -250,7 +250,7 @@ public class EmployeeManagement {
 				
 		try {
 			
-			reader = new BufferedReader(new FileReader(employeeList));
+			reader = new BufferedReader(new FileReader(BusinessManagement.selectedBusiness.getFileName() + employeeList));
 			int i = 0;
 			
 			while ((currentLine = reader.readLine()) != null) {
@@ -275,7 +275,7 @@ public class EmployeeManagement {
 	{
 		int lastEmployeeId = 0, newEmployeeId = 1; 
 		String employeeId;
-		InputStream is = new BufferedInputStream(new FileInputStream(employeeList));
+		InputStream is = new BufferedInputStream(new FileInputStream(BusinessManagement.selectedBusiness.getFileName() + employeeList));
 		
 		//Loop counts number of lines in file
 		try

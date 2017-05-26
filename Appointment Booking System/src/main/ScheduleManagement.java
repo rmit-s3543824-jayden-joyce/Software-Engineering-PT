@@ -51,7 +51,7 @@ public class ScheduleManagement {
 				
 		try {
 			
-			reader = new BufferedReader(new FileReader(Utility.employeeList));
+			reader = new BufferedReader(new FileReader(BusinessManagement.selectedBusiness.getFileName() + Utility.employeeList));
 			i = 0;
 			
 			while ((currentLine = reader.readLine()) != null) {
@@ -96,7 +96,7 @@ public class ScheduleManagement {
 				
 		try {
 			
-			reader = new BufferedReader(new FileReader(Utility.employeeList));
+			reader = new BufferedReader(new FileReader(BusinessManagement.selectedBusiness.getFileName() + Utility.employeeList));
 			
 			while ((currentLine = reader.readLine()) != null) {
 				
@@ -143,7 +143,7 @@ public class ScheduleManagement {
 				
 		try {
 			
-			reader = new BufferedReader(new FileReader(Utility.employeeList));
+			reader = new BufferedReader(new FileReader(BusinessManagement.selectedBusiness.getFileName() + Utility.employeeList));
 			
 			while ((currentLine = reader.readLine()) != null) {
 				
@@ -264,7 +264,7 @@ public class ScheduleManagement {
 			
 			try {
 				
-				reader = new BufferedReader(new FileReader(Utility.employeeList));
+				reader = new BufferedReader(new FileReader(BusinessManagement.selectedBusiness.getFileName() + Utility.employeeList));
 					
 					System.out.println("ID: ");
 					employeeID = consoleReader.nextLine();
@@ -485,7 +485,7 @@ public class ScheduleManagement {
 		
 		try {
 			
-			reader = new BufferedReader(new FileReader(EmployeeManagement.employeeList));
+			reader = new BufferedReader(new FileReader(BusinessManagement.selectedBusiness.getFileName() + EmployeeManagement.employeeList));
 			
 			while ((currentLine = reader.readLine()) != null) {
 				
@@ -557,7 +557,7 @@ public class ScheduleManagement {
 		try {
 			
 			//wraps FileWriter in BufferedWrite, in order to use newLine()
-			writer = new BufferedWriter(new FileWriter(employeeID + "Bookings.txt", true));
+			writer = new BufferedWriter(new FileWriter(BusinessManagement.selectedBusiness.getFileName() + employeeID + "Bookings.txt", true));
 
 			//saves a separate item into the employee specific folder for each booking block
 			for (dateTime[3] = dateTime[3]; dateTime[3] < dateTime[4]; dateTime[3] = Utility.timeManipulator(dateTime[3], Utility.blockTime)) {
@@ -613,7 +613,7 @@ public class ScheduleManagement {
 		//reads employee detail file into memory
 		try {
 			
-			reader = new BufferedReader(new FileReader(employeeID + "Bookings.txt"));
+			reader = new BufferedReader(new FileReader(BusinessManagement.selectedBusiness.getFileName() + employeeID + "Bookings.txt"));
 			
 			while ((currentLine = reader.readLine()) != null) {
 
@@ -656,7 +656,7 @@ public class ScheduleManagement {
 		
 		try {
 			
-			reader = new BufferedReader(new FileReader(employeeID + "Bookings.txt"));
+			reader = new BufferedReader(new FileReader(BusinessManagement.selectedBusiness.getFileName() + employeeID + "Bookings.txt"));
 			
 			while ((currentLine = reader.readLine()) != null) {
 				
@@ -880,7 +880,7 @@ public class ScheduleManagement {
 		//reads employee detail file into memory
 		try {
 			
-			reader = new BufferedReader(new FileReader(employeeID + "Bookings.txt"));
+			reader = new BufferedReader(new FileReader(BusinessManagement.selectedBusiness.getFileName() + employeeID + "Bookings.txt"));
 			
 			while ((currentLine = reader.readLine()) != null) {
 
@@ -922,7 +922,7 @@ public class ScheduleManagement {
 		try {
 			
 			//wraps FileWriter in BufferedWrite, in order to use newLine()
-			writer = new BufferedWriter(new FileWriter(employeeID + "Bookings.txt", false));
+			writer = new BufferedWriter(new FileWriter(BusinessManagement.selectedBusiness.getFileName() + employeeID + "Bookings.txt", false));
 			
 			for (int j = 0; j < size; j++) {
 
@@ -961,7 +961,7 @@ public class ScheduleManagement {
 		try {
 			
 			//wraps FileWriter in BufferedWrite, in order to use newLine()
-			writer = new BufferedWriter(new FileWriter(EmployeeManagement.employeeList, false));
+			writer = new BufferedWriter(new FileWriter(BusinessManagement.selectedBusiness.getFileName() + EmployeeManagement.employeeList, false));
 			
 			for (int j = 0; j < data.size(); j++) {
 
@@ -1000,7 +1000,7 @@ public class ScheduleManagement {
 		try {
 			
 			//wraps FileWriter in BufferedWrite, in order to use newLine()
-			writer = new BufferedWriter(new FileWriter(customerID + ".txt", true));
+			writer = new BufferedWriter(new FileWriter(BusinessManagement.selectedBusiness.getFileName() + customerID + ".txt", true));
 			
 			writer.write(data);
 			writer.newLine();

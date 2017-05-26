@@ -99,7 +99,7 @@ public class Login
 		{
 			String[] words;
 			String line = "";
-			FileReader fr = new FileReader(businessOwnerList);
+			FileReader fr = new FileReader(BusinessManagement.selectedBusiness.getFileName() + businessOwnerList);
 			BufferedReader reader = new BufferedReader(fr);
 			
 			//Reads each line from respective text file
@@ -123,7 +123,7 @@ public class Login
 		{
 			String[] words;
 			String line = "";
-			FileReader fr = new FileReader(customerList);
+			FileReader fr = new FileReader(BusinessManagement.selectedBusiness.getFileName() + customerList);
 			BufferedReader reader = new BufferedReader(fr);
 			
 			//Reads each line from respective text file

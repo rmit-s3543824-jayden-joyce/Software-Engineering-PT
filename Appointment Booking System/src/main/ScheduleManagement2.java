@@ -31,7 +31,7 @@ public class ScheduleManagement2 {
 		
 		try {
 			
-			reader = new BufferedReader(new FileReader(Utility.employeeList));
+			reader = new BufferedReader(new FileReader(BusinessManagement.selectedBusiness.getFileName() + Utility.employeeList));
 			
 			while ((currentLine = reader.readLine()) != null) {
 				
@@ -166,7 +166,7 @@ public class ScheduleManagement2 {
 		try {
 			
 			//wraps FileWriter in BufferedWrite, in order to use newLine()
-			writer = new BufferedWriter(new FileWriter(employeeID + "Schedule.txt", true));
+			writer = new BufferedWriter(new FileWriter(BusinessManagement.selectedBusiness.getFileName() + employeeID + "Schedule.txt", true));
 
 			writer.write(Integer.toString(dayTime[0]));
 			writer.write("|");
@@ -412,7 +412,7 @@ public class ScheduleManagement2 {
 		
 		try {
 			
-			reader = new BufferedReader(new FileReader(employeeID + "Schedule.txt"));
+			reader = new BufferedReader(new FileReader(BusinessManagement.selectedBusiness.getFileName() + employeeID + "Schedule.txt"));
 			
 			while ((currentLine = reader.readLine()) != null) {
 				
@@ -478,7 +478,7 @@ public class ScheduleManagement2 {
 		try {
 			
 			//wraps FileWriter in BufferedWrite, in order to use newLine()
-			writer = new BufferedWriter(new FileWriter(employeeID + "Schedule.txt", false));
+			writer = new BufferedWriter(new FileWriter(BusinessManagement.selectedBusiness.getFileName() + employeeID + "Schedule.txt", false));
 			
 			for (int j = 0; j < data.size(); j++) {
 
@@ -518,7 +518,7 @@ public class ScheduleManagement2 {
 			try {
 				
 				//wraps FileWriter in BufferedWrite, in order to use newLine()
-				writer = new BufferedWriter(new FileWriter(employeeID + "Bookings.txt", false));
+				writer = new BufferedWriter(new FileWriter(BusinessManagement.selectedBusiness.getFileName() + employeeID + "Bookings.txt", false));
 				
 				for (int j = 0; j < data.size(); j++) {
 

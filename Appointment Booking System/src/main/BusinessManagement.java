@@ -17,7 +17,7 @@ import utility.WriteFile;
 
 public class BusinessManagement implements ManagementInterface {
 
-	static Business selectedBusiness;
+	public static Business selectedBusiness;
 	private List<Business> businessList;
 
 	public BusinessManagement(String businessName) throws IOException {
@@ -501,7 +501,7 @@ public class BusinessManagement implements ManagementInterface {
 
 	// Function to retrieve businesses from the text file
 	// and present them in an array List
-	public List<Business> retrieveBusiness() {
+	public static List<Business> retrieveBusiness() {
 
 		// To read the name of the text file in the correct format
 		String file_name = "Business.txt";
