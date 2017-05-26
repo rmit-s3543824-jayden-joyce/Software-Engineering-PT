@@ -1,0 +1,3 @@
+Richard|Richard1|56 Ratroyal Lane|Heathrow|3543|0412345678
+John|John1234|10 Vatroyal Lane|Griffith|3541|0412344321
+Andrew|Andrew12|99 Kennith High|Terith|3741|0412345678
